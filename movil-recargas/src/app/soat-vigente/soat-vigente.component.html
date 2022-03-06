@@ -1,0 +1,57 @@
+<ion-header translucent>
+  <ion-toolbar class="background-image header_page">
+    <ion-title>{{mrn.empresaSeleccionada.nom_empresa}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+</ion-header>
+
+<ion-content fullscreen>
+  <div style="text-align: center;margin: 25px 0 25px 0">
+    <img style="width: 40%"  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
+  </div>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['vehiculo']['lineaVehiculo']}}</h2>
+        <h3>placa: {{mrn.formVentasSoat.value['placa']}}</h3>
+        <h3>Este vehiculo aun tiene el soat vigente.</h3>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['inicioVigencia']|date :'dd/MM/yyyy'}}</h2>
+        <h3>Inicio vigencia</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['finVigencia']|date :'dd/MM/yyyy'}}</h2>
+        <h3>Fin vigencia</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>$ {{this.mrn.datos_soat['tarifa']['total']|number}}</h2>
+        <h3>Valor total</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['vehiculo']['marca']}}</h2>
+        <h3>Marca</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h3>{{this.mrn.datos_soat['vehiculo']['cilindraje']|number}}</h3>
+        <h2>Cilindraje</h2>
+      </ion-label>
+    </ion-item>
+    <!--<div style="padding-top: 25px">
+      <ion-button expand="full" (click)="mrn.descarga_soat_ms()" size="small">Descargar certificado SOAT</ion-button>
+    </div>-->
+  </ion-list>
+</ion-content>

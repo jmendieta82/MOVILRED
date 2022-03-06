@@ -1,0 +1,47 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="background-image header_page">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>¿Que vamos a vender?</ion-title>
+    <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item lines="none">
+    <ion-label style="color: #5e81ac">
+      <h1>Hola,</h1>
+      <h2>{{api.nodoActual['representanteLegal']}}</h2>
+    </ion-label>
+  </ion-item>
+  <ion-list>
+    <ion-item *ngFor="let categoria of mrn.lista_comisiones_venta let i = index" (click)="seleccionarCategoria(categoria)" detail="">
+        <img style="width: 15%;margin: 10px" src="{{categoria['data'].proveedorEmpresa.empresa.catServicio.imagen}}" />
+      <ion-label>
+        <h2>{{categoria['data'].proveedorEmpresa.empresa.catServicio.nombre}}</h2>
+        <p>{{ categoria['items'].length}} {{ categoria['items'].length>1?'servicios registrados':'servicio registrado'}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.saldo_disponible|number}}</span>
+          <p style="font-size: 0.6em">
+            <i class="fas fa-dollar-sign" style="margin-right: 2px"></i>
+            Saldo disponible</p>
+        </ion-col>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.utilidad|number}}</span>
+          <p style="font-size: 0.6em">
+            <i class="fas fa-wallet"  style="margin-right: 2px"></i>
+            Mis ganancias</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

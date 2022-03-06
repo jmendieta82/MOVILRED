@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar class="background-image header_page">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cliente en mora</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngFor="let transaccion of mrn.facturasMora">
+    <ion-card-content>
+      <table class="table_transact">
+        <tr>
+          <th>Transaccion id</th>
+          <td>{{transaccion.id}}</td>
+        </tr>
+        <tr>
+          <th>Fecha de solicitud</th>
+          <td>{{transaccion.created_at|date:"dd-MM-yyyy"}} {{transaccion.hour_at|date:'shortTime'}}</td>
+        </tr>
+        <tr>
+          <th>Fecha de pago</th>
+          <td>{{transaccion.fecha_pago|date:"dd-MM-yyyy"}}</td>
+        </tr>
+        <tr>
+          <th>Fecha de pago</th>
+          <td>{{transaccion.dias_mora}}</td>
+        </tr>
+        <tr>
+          <th>Usuario</th>
+          <td>{{transaccion.usuario.first_name}}</td>
+        </tr>
+        <tr>
+          <th>Forma de pago</th>
+          <td>{{(transaccion.tipo_transaccion == 'SSC')?'Contado':'Credito'}}</td>
+        </tr>
+        <tr>
+          <th>Tipo de comision</th>
+          <td>{{(transaccion.tipoServicio=='CV')?'Comision venta':'Comision anticipada'}}</td>
+        </tr>
+        <tr>
+          <th>Valor solicitado</th>
+          <td>$ {{transaccion.valor|number}}</td>
+        </tr>
+        <tr>
+          <th>Estado de pago</th>
+          <td>{{transaccion.estadoPago}}</td>
+        </tr>
+      </table>
+      <div style="text-align: center;width: 100%;margin-top: 30px">
+        <ion-button (click)="presentModal()" shape="round" size="small" expand="block">Pagar factura</ion-button></div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar class="header_page">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="mrn.categoriaSeleccionada">
+      {{mrn.categoriaSeleccionada.label}}
+    </ion-title>
+    <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+    <ion-item *ngFor="let empresa of mrn.categoriaSeleccionada.items" (click)="seleccionarEmpresa(empresa)" detail="">
+      <ion-avatar slot="start">
+        <img src="{{empresa['imagen']}}"/>
+      </ion-avatar>
+      <ion-label>
+        <h2>{{empresa.info.proveedorEmpresa.empresa.nom_empresa}}</h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

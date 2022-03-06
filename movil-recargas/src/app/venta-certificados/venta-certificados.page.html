@@ -1,0 +1,129 @@
+<ion-header>
+  <ion-toolbar class="background-image header_page">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="mrn.empresaSeleccionada">{{mrn.empresaSeleccionada.nom_empresa}}</ion-title>
+    <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="mrn.formVentasCertificados">
+    <ion-list lines="full" class="ion-no-margin">
+      <ion-item detail (click)="presentModal()">
+        <ion-avatar slot="start">
+          <img  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
+        </ion-avatar>
+        <ion-label>
+          <h2>Oficina seleccionada</h2>
+          <p class="wrap">{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Seleccione una oficina.'}}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Numero de matricula</ion-label>
+        <ion-input formControlName="matricula" type="number"></ion-input>
+      </ion-item>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="full"  [disabled]="!mrn.formVentasCertificados.value['matricula']" (click)="mrn.consultarCertificado()" size="small" >Consultar</ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="full"  (click)="mrn.formVentasCertificados.reset();mrn.productoCodificadoSeleccionado = ''" size="small"
+                        size="small" color="light" >Limpiar</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-item *ngIf="mrn.formVentasCertificados.value['direccion']">
+        <ion-label >
+         <h3>Direccion del inmueble</h3>
+          <p>{{mrn.formVentasCertificados.value['direccion']}}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item *ngIf="mrn.formVentasCertificados.value['direccion']">
+        <ion-label position="stacked">Numero celular</ion-label>
+        <ion-input formControlName="telefono" type="number"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="mrn.formVentasCertificados.value['direccion']">
+        <ion-label position="stacked">Numero documento del propietario</ion-label>
+        <ion-input formControlName="noDocumento" type="number"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="mrn.formVentasCertificados.value['direccion']">
+        <ion-label position="stacked">Correo electronico del propietario</ion-label>
+        <ion-input formControlName="email" type="number"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="mrn.formVentasCertificados.value['direccion']">
+        <ion-avatar slot="start">
+          <i style="font-size: 2.4em;color: gray" class="fas fa-dollar-sign"></i>
+        </ion-avatar>
+        <ion-label>
+          <h1>{{mrn.formVentasCertificados.value['valor']|number}}</h1>
+          <p>{{'Certificado en venta'}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    <div style="margin-top: 35px" *ngIf="mrn.formVentasCertificados.value['direccion']">
+      <ion-button size="small" expand="block" [disabled]="!mrn.formVentasCertificados.valid ||
+               !(mrn.formVentasCertificados.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
+                  id="trigger-button">Vender con saldo</ion-button>
+      <ion-button size="small" expand="block"
+                  [disabled]="!mrn.formVentasCertificados.valid
+                || !(mrn.formVentasCertificados.value['valor'] <= mrn.misBoslsasDinero.utilidad)"
+      >Vender con ganacias</ion-button>
+    </div>
+  </form>
+  <ion-modal trigger="trigger-button" [swipeToClose]="true">
+    <ng-template>
+      <ion-content>
+        <div style="text-align: center;margin: 25px 0 25px 0">
+          <img style="width: 40%"  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
+        </div>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>{{mrn.formVentasCertificados.value['telefono']}}</h3>
+              <p>Destino</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Recarga tiempo al aire'}}</h3>
+              <p>Producto en venta</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>${{mrn.formVentasCertificados.value['valor']|number}}</h3>
+              <p>Valor de venta</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+        <ion-button size="small" expand="block" [disabled]="!mrn.formVentasCertificados.valid ||
+               !(mrn.formVentasCertificados.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
+                    (click)="mrn.venderRecarga(false);modalController.dismiss()"
+        >Vender con saldo</ion-button>
+        <ion-button size="small" expand="block" (click)="modalController.dismiss()" color="light">Cancelar</ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.saldo_disponible|number}}</span>
+          <p style="font-size: 0.6em">
+            <i class="fas fa-dollar-sign" style="margin-right: 2px"></i>
+            Saldo disponible</p>
+        </ion-col>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.utilidad|number}}</span>
+          <p style="font-size: 0.6em">
+            <i class="fas fa-wallet"  style="margin-right: 2px"></i>
+            Mis ganancias</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

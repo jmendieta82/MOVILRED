@@ -1,0 +1,130 @@
+<ion-header>
+  <ion-toolbar class="background-image header_page">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="mrn.empresaSeleccionada">{{mrn.empresaSeleccionada.nom_empresa}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="mrn.formVentasRecargas">
+    <ion-list lines="full" class="ion-no-margin">
+      <ion-item detail (click)="presentModal()">
+        <ion-avatar slot="start">
+          <img  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
+        </ion-avatar>
+        <ion-label>
+          <h2>Paquete seleccionado</h2>
+          <p class="wrap">{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Seleccione un paquete.'}}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Numero celular</ion-label>
+        <ion-input formControlName="telefono" type="number"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Valor de la venta</ion-label>
+        <ion-input formControlName="valor" type="number"></ion-input>
+      </ion-item>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <ion-button expand="full"  [disabled]="!mrn.formVentasRecargas.value['telefono']" (click)="cambiarValor(1000)" size="small" >1.000</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button expand="full"  [disabled]="!mrn.formVentasRecargas.value['telefono']" (click)="cambiarValor(2000)" size="small" >2.000</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button  expand="full" [disabled]="!mrn.formVentasRecargas.value['telefono']" (click)="cambiarValor(3000)" size="small" >3.000</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button expand="full"  [disabled]="!mrn.formVentasRecargas.value['telefono']" (click)="cambiarValor(5000)" size="small" >5.000</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button expand="full"  [disabled]="!mrn.formVentasRecargas.value['telefono']" (click)="cambiarValor(10000)" size="small" >10.000</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button expand="full"  [disabled]="!mrn.formVentasRecargas.value['telefono']" (click)="cambiarValor(20000)" size="small" >20.000</ion-button>
+          </ion-col>
+
+        </ion-row>
+      </ion-grid>
+      <ion-item>
+        <ion-avatar slot="start">
+          <i style="font-size: 2.4em;color: gray" class="fas fa-dollar-sign"></i>
+        </ion-avatar>
+        <ion-label *ngIf="mrn.productoCodificadoSeleccionado">
+          <h1>{{mrn.productoCodificadoSeleccionado?(mrn.productoCodificadoSeleccionado.producto.valor_producto|number):mrn.formVentasRecargas.value['valor']}}</h1>
+          <h3>{{mrn.productoCodificadoSeleccionado?'Paquete en venta':'Tiempo al aire en venta'}}</h3>
+          <p *ngIf="mrn.productoCodificadoSeleccionado.producto.descuento_promosional">{{mrn.empresaSeleccionada.nom_empresa}}
+            te regala ${{mrn.productoCodificadoSeleccionado.producto.descuento_promosional|number}}
+            adicional de ganancia en esta venta.</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    <div style="margin-top: 35px">
+      <ion-button size="small" expand="block" [disabled]="!mrn.formVentasRecargas.valid ||
+               !(mrn.formVentasRecargas.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
+                  id="trigger-button">Vender con saldo</ion-button>
+      <ion-button size="small" expand="block"
+                  [disabled]="!mrn.formVentasRecargas.valid
+                || !(mrn.formVentasRecargas.value['valor'] <= mrn.misBoslsasDinero.utilidad)"
+      >Vender con ganacias</ion-button>
+    </div>
+  </form>
+  <ion-modal trigger="trigger-button" [swipeToClose]="true">
+    <ng-template>
+      <ion-content>
+        <div style="text-align: center;margin: 25px 0 25px 0">
+          <img style="width: 40%"  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
+        </div>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>{{mrn.formVentasRecargas.value['telefono']}}</h3>
+              <p>Destino</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Recarga tiempo al aire'}}</h3>
+              <p>Producto en venta</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>${{mrn.formVentasRecargas.value['valor']|number}}</h3>
+              <p>Valor de venta</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+        <ion-button size="small" expand="block" [disabled]="!mrn.formVentasRecargas.valid ||
+               !(mrn.formVentasRecargas.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
+                    (click)="mrn.venderRecarga(false);modalController.dismiss()"
+        >Vender con saldo</ion-button>
+        <ion-button size="small" expand="block" (click)="modalController.dismiss()" color="light">Cancelar</ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.saldo_disponible|number}}</span>
+          <p style="font-size: 0.6em">
+            <i class="fas fa-dollar-sign" style="margin-right: 2px"></i>
+            Saldo disponible</p>
+        </ion-col>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.utilidad|number}}</span>
+          <p style="font-size: 0.6em">
+            <i class="fas fa-wallet"  style="margin-right: 2px"></i>
+            Mis ganancias</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

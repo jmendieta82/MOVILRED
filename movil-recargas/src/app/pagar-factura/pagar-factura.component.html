@@ -1,0 +1,30 @@
+<ion-header translucent>
+  <ion-toolbar class="background-image header_page">
+    <ion-title>Pagos a factura</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+</ion-header>
+
+<ion-content fullscreen>
+  <form [formGroup]="mrn.formPagos">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Valor de abono a la factura</ion-label>
+        <ion-input formControlName="abono"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Numero de comprobante de pago</ion-label>
+        <ion-input formControlName="numero_recibo"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Entidad de recaudo</ion-label>
+        <ion-select formControlName="entidad">
+          <ion-select-option *ngFor="let entidad of mrn.entidad_recaudo" value="{{entidad.value}}">{{entidad.label}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+  </form>
+</ion-content>

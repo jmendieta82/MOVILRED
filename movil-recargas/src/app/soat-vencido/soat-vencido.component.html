@@ -1,0 +1,116 @@
+<ion-header translucent>
+  <ion-toolbar class="background-image header_page">
+    <ion-title>{{mrn.empresaSeleccionada.nom_empresa}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+</ion-header>
+
+<ion-content fullscreen>
+  <div style="text-align: center;margin: 25px 0 25px 0">
+    <img style="width: 40%"  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
+  </div>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        <h2>Informacion del SOAT</h2>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['inicioVigencia']|date :'dd/MM/yyyy'}}</h2>
+        <h3>Inicio vigencia</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['finVigencia']|date :'dd/MM/yyyy'}}</h2>
+        <h3>Fin vigencia</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>$ {{this.mrn.datos_soat['tarifa']['total']|number}}</h2>
+        <h3>Valor total</h3>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        <h2>Informacion del vehiculo</h2>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['vehiculo']['claseVehiculoMinisterio']}}</h2>
+        <h3>Tipo vehiculo</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.formVentasSoat.value['placa']}}</h2>
+        <h3>Placa</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['vehiculo']['marca']}}</h2>
+        <h3>Marca</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h3>{{this.mrn.datos_soat['vehiculo']['cilindraje']|number}}</h3>
+        <h2>Cilindraje</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h3>{{this.mrn.datos_soat['vehiculo']['lineaVehiculo']}}</h3>
+        <h2>Linea</h2>
+      </ion-label>
+    </ion-item>
+    <!--<div style="padding-top: 25px">
+      <ion-button expand="full" (click)="mrn.descarga_soat_ms()" size="small">Descargar certificado SOAT</ion-button>
+    </div>-->
+  </ion-list>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        <h2>Informacion del propietario</h2>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['tomador']['nombres']}}</h2>
+        <h3>Nombres</h3>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>{{this.mrn.datos_soat['tomador']['apellidos']}}</h2>
+        <h3>Apellidos</h3>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <div style="margin-top: 35px" *ngIf="mrn.formVentasSoat.value['direccion']">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-button size="small" expand="block" [disabled]="!mrn.formVentasSoat.valid ||
+               !(mrn.formVentasSoat.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
+                      id="trigger-button">Vender con saldo</ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button size="small" expand="block"
+                      [disabled]="!mrn.formVentasSoat.valid
+                || !(mrn.formVentasSoat.value['valor'] <= mrn.misBoslsasDinero.utilidad)"
+          >Vender con ganacias</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

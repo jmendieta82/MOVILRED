@@ -1,0 +1,63 @@
+<ion-header translucent>
+  <ion-toolbar class="background-image header_page">
+    <ion-title>Solicitud de saldo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <form [formGroup]="mrn.formTransaccion">
+    <ion-list>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <ion-button shape="round" expand="full"  (click)="cambiarValor(10000)" size="small" >10.000</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button shape="round" expand="full"  (click)="cambiarValor(30000)" size="small" >30.000</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button shape="round" expand="full"  (click)="cambiarValor(50000)" size="small" >50.000</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button shape="round" expand="full"  (click)="cambiarValor(100000)" size="small" >100.000</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-item>
+        <ion-label position="stacked" >Otro valor</ion-label>
+        <ion-input formControlName="valor"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Forma de pago</ion-label>
+        <ion-select formControlName="tipo_transaccion">
+          <ion-select-option value="SSC">Contado</ion-select-option>
+          <ion-select-option value="SSCR">Credito</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+  </form>
+  <div style="padding_top: 15px">
+    <ion-button expand="full" shape="round" color="dark"  (click)="solicitarSaldo()">Solicitar saldo</ion-button>
+  </div>
+</ion-content>
+<ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6" style="text-align: center">
+        <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.saldo_disponible|number}}</span>
+        <p style="font-size: 0.6em">
+          <i class="fas fa-dollar-sign" style="margin-right: 2px"></i>
+          Saldo disponible</p>
+      </ion-col>
+      <ion-col size="6" style="text-align: center">
+        <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.utilidad|number}}</span>
+        <p style="font-size: 0.6em">
+          <i class="fas fa-wallet"  style="margin-right: 2px"></i>
+          Mis ganancias</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-toolbar>
