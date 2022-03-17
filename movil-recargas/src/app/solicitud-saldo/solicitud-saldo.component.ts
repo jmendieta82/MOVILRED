@@ -28,7 +28,7 @@ export class SolicitudSaldoComponent implements OnInit {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'MRN Colombia',
-      message: 'Desea realizar la solicitud de saldo?',
+      message: '¿Desea realizar la solicitud de saldo '+ (this.mrn.formTransaccion.value['tipo_transaccion']=='SSCR'?'Credito':'Contado')+' por un valor de $'+ this.mrn.formTransaccion.value['valor']+'?',
       buttons: [
         {
           text: 'Cancelar',

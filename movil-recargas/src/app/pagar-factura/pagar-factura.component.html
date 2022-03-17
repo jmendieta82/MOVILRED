@@ -9,22 +9,70 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <form [formGroup]="mrn.formPagos">
-    <ion-list>
-      <ion-item>
-        <ion-label position="stacked">Valor de abono a la factura</ion-label>
-        <ion-input formControlName="abono"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Numero de comprobante de pago</ion-label>
-        <ion-input formControlName="numero_recibo"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Entidad de recaudo</ion-label>
-        <ion-select formControlName="entidad">
-          <ion-select-option *ngFor="let entidad of mrn.entidad_recaudo" value="{{entidad.value}}">{{entidad.label}}</ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-list>
-  </form>
+  <div *ngIf="!mrn.abonos.length">
+    <form [formGroup]="mrn.formPagos">
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked">Valor de abono a la factura</ion-label>
+          <input class="input_number" mask="separator.0" thousandSeparator="," inputmode="decimal" formControlName="abono">
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Numero de comprobante</ion-label>
+          <ion-input  formControlName="numero_recibo" #numero (input)="mrn.verificar_soporte_pago(numero.value)"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Entidad de recaudo</ion-label>
+          <ion-select formControlName="entidad">
+            <ion-select-option *ngFor="let entidad of mrn.entidad_recaudo" value="{{entidad.value}}">{{entidad.label}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </form>
+    <div style="text-align: center;width: 100%;margin-top: 30px">
+      <ion-button [disabled]="!mrn.formPagos.valid" shape="round" (click)="guardarPago()"
+                  size="small" expand="block">Enviar pago</ion-button>
+    </div>
+  </div>
+  <div *ngIf="mrn.abonos.length">
+    <ion-card *ngFor="let pago of mrn.abonos">
+      <ion-card-content>
+        <table class="table_transact">
+          <tr>
+            <th>Entidad recaudo</th>
+            <td>{{pago.entidad}}</td>
+          </tr>
+          <tr>
+            <th>Numero de comprobante</th>
+            <td>{{pago.numero_recibo}}</td>
+          </tr>
+          <tr>
+            <th>Valor de abono</th>
+            <td>${{pago.abono|number}}</td>
+          </tr>
+          <tr>
+            <th>Fecha</th>
+            <td>{{pago.created_at|date}}</td>
+          </tr>
+          <tr>
+            <th>Estado de pago</th>
+            <td>{{'Pendiente aprobacion'}}</td>
+          </tr>
+        </table>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>
+<ion-footer>
+  <ion-toolbar class="header_page">
+    <ion-grid>
+      <ion-row>
+        <ion-col style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.transaccionSeleccionada.valor|number}}</span>
+          <p style="font-size: 0.8em">
+            <i class="fas fa-dollar-sign" style="margin-right: 2px"></i>
+            Pago minimo</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

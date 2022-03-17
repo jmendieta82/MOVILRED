@@ -1,7 +1,12 @@
 {
-  "name": "Movil Recargas",
+  "name": "MRN Colombia",
   "integrations": {
     "capacitor": {}
+  },
+  "SplashScreen": {
+    "launchAutoHide": false,
+    "showSpinner": true,
+    "splashImmersive": true
   },
   "type": "angular"
 }

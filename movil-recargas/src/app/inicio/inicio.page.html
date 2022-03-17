@@ -7,23 +7,122 @@
     <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
-  <ion-item lines="none">
-    <ion-label style="color: #5e81ac">
-      <h1>Hola,</h1>
-      <h2>{{api.nodoActual['representanteLegal']}}</h2>
-    </ion-label>
-  </ion-item>
-  <ion-list>
-    <ion-item *ngFor="let categoria of mrn.lista_comisiones_venta let i = index" (click)="seleccionarCategoria(categoria)" detail="">
-        <img style="width: 15%;margin: 10px" src="{{categoria['data'].proveedorEmpresa.empresa.catServicio.imagen}}" />
-      <ion-label>
-        <h2>{{categoria['data'].proveedorEmpresa.empresa.catServicio.nombre}}</h2>
-        <p>{{ categoria['items'].length}} {{ categoria['items'].length>1?'servicios registrados':'servicio registrado'}}</p>
+  <ion-segment value="ventas" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="ventas">
+      <ion-label style="font-size: 0.8em">
+        <i class="fas fa-store"></i>
+        Punto de venta
       </ion-label>
-    </ion-item>
-  </ion-list>
+    </ion-segment-button>
+    <ion-segment-button value="ultimas">
+      <ion-label style="font-size: 0.8em">
+        <i class="fas fa-list"></i>
+        Ultimas ventas
+      </ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  <div *ngIf="segmento == 'ventas'" style="margin-top: 25px">
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let categoria of mrn.lista_comisiones_venta" value="{{categoria['data'].proveedorEmpresa.id}}">
+        <ion-item slot="header" (click)="seleccionarCategoria(categoria)">
+          <ion-avatar style="text-align: center;padding: 6px;margin-right: 20px">
+            <i style="font-size: 2em;color:#5e81ac" class="fas fa-{{categoria['data'].proveedorEmpresa.empresa.catServicio.imagen}}"></i>
+          </ion-avatar>
+          <!--<img style="width: 15%;margin: 10px" src="{{categoria['data'].proveedorEmpresa.empresa.catServicio.imagen}}" />-->
+          <ion-label>
+            <h2>{{categoria['data'].proveedorEmpresa.empresa.catServicio.nombre}}</h2>
+            <p style="font-size: 0.8em">{{ categoria['items'].length}}
+              {{ categoria['items'].length>1?'servicios registrados':'servicio registrado'}}</p>
+          </ion-label>
+        </ion-item>
+        <div style="padding: 10px" slot="content">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="{{categoria.items.length>=3?4:12}}" *ngFor="let empresa of categoria.items" (click)="seleccionarEmpresa(empresa)" style="padding:10px;text-align: center">
+                <img style="width:{{categoria.items.length>3?'':'100px'}}" src="{{empresa['imagen']}}"/>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+   <!-- <ion-list>
+      <ion-item *ngFor="let categoria of mrn.lista_comisiones_venta let i = index"
+                (click)="seleccionarCategoria(categoria)" detail="">
+        <ion-avatar style="text-align: center;padding: 6px;margin-right: 20px">
+          <i style="font-size: 2em;color:#5e81ac" class="fas fa-{{categoria['data'].proveedorEmpresa.empresa.catServicio.imagen}}"></i>
+        </ion-avatar>
+        &lt;!&ndash;<img style="width: 15%;margin: 10px" src="{{categoria['data'].proveedorEmpresa.empresa.catServicio.imagen}}" />&ndash;&gt;
+        <ion-label>
+          <h2>{{categoria['data'].proveedorEmpresa.empresa.catServicio.nombre}}</h2>
+          <p style="font-size: 0.8em">{{ categoria['items'].length}}
+            {{ categoria['items'].length>1?'servicios registrados':'servicio registrado'}}</p>
+        </ion-label>
+      </ion-item>
+      &lt;!&ndash; <ion-item (click)="presentModalUltimasVentas()" detail="">
+         <img style="width: 15%;margin: 10px"
+              src="https://firebasestorage.googleapis.com/v0/b/recargas-326621.appspot.com/o/Logos%20categorias%2Fmrn-transacciones%20(1).svg?alt=media&token=3fac405d-b605-4435-bef2-7d10f56a607c" />
+         <ion-label>
+           <h2>Ultimas ventas</h2>
+           <p>{{ this.mrn.getHoy()}}</p>
+         </ion-label>
+       </ion-item>&ndash;&gt;
+    </ion-list>-->
+  </div>
+  <div *ngIf="segmento == 'ultimas'">
+    <ion-searchbar showCancelButton="focus" animated placeholder="Buscar" #value (ionInput)="mrn.get_ventas_by_celular(value.value)"></ion-searchbar>
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let venta of mrn.ventas_by_nodo" value="{{venta.id}}">
+        <ion-item slot="header">
+          <ion-label>
+            <h3><i class="fas fa-{{venta.codigo_resultado != '001'?'exclamation-circle':'check-circle'}}"
+                   [style]="{'color':(venta.codigo_resultado != '001'?' darkred':'darkgreen')}"></i>
+              {{venta.numeroDestino}}</h3>
+            <p>{{venta.created_at|date:"dd-MM-yyyy"}} {{venta.hour_at|date:'shortTime'}} </p>
+          </ion-label>
+        </ion-item>
+        <div style="padding: 10px" slot="content">
+          <table class="table_transact">
+            <tr>
+              <td colspan="2" style="text-align: justify">{{venta.producto_venta.producto.nom_producto}}</td>
+            </tr>
+            <tr>
+              <th>Venta id</th>
+              <td>{{venta.id}}</td>
+            </tr>
+            <tr>
+              <th>Venta desde</th>
+              <td>{{venta.venta_desde}}</td>
+            </tr>
+            <tr>
+              <th>Operador</th>
+              <td>{{venta.producto_venta.producto.empresa.nom_empresa}}</td>
+            </tr>
+            <tr>
+              <th>Saldo anterior</th>
+              <td>$ {{venta.ultimoSaldo|number}}</td>
+            </tr>
+            <tr>
+              <th>Valor de la venta</th>
+              <td>$ {{venta.valor|number}}</td>
+            </tr>
+            <tr>
+              <th>Nuevo saldo</th>
+              <td>$ {{venta.saldo_actual|number}}</td>
+            </tr>
+            <tr>
+              <th>Codigo resultado</th>
+              <td>{{venta.codigo_resultado}}</td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: justify;color: grey">{{venta.resultado}}</td>
+            </tr>
+          </table>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </div>
 </ion-content>
 <ion-footer>
   <ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">
@@ -31,13 +130,13 @@
       <ion-row>
         <ion-col size="6" style="text-align: center">
           <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.saldo_disponible|number}}</span>
-          <p style="font-size: 0.6em">
+          <p style="font-size: 0.8em">
             <i class="fas fa-dollar-sign" style="margin-right: 2px"></i>
             Saldo disponible</p>
         </ion-col>
         <ion-col size="6" style="text-align: center">
           <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.utilidad|number}}</span>
-          <p style="font-size: 0.6em">
+          <p style="font-size: 0.8em">
             <i class="fas fa-wallet"  style="margin-right: 2px"></i>
             Mis ganancias</p>
         </ion-col>

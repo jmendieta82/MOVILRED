@@ -21,18 +21,18 @@
     <ion-item>
       <ion-label>
         <h2>{{this.mrn.datos_soat['inicioVigencia']|date :'dd/MM/yyyy'}}</h2>
-        <h3>Inicio vigencia</h3>
+        <h3>Inicio proxima vigencia</h3>
       </ion-label>
     </ion-item>
     <ion-item>
       <ion-label>
         <h2>{{this.mrn.datos_soat['finVigencia']|date :'dd/MM/yyyy'}}</h2>
-        <h3>Fin vigencia</h3>
+        <h3>Fin proxima vigencia</h3>
       </ion-label>
     </ion-item>
     <ion-item>
-      <ion-label>
-        <h2>$ {{this.mrn.datos_soat['tarifa']['total']|number}}</h2>
+      <ion-label slot="end">
+        <h1>$ {{this.mrn.datos_soat['tarifa']['total']|number}}</h1>
         <h3>Valor total</h3>
       </ion-label>
     </ion-item>
@@ -63,21 +63,18 @@
     </ion-item>
     <ion-item>
       <ion-label>
-        <h3>{{this.mrn.datos_soat['vehiculo']['cilindraje']|number}}</h3>
+        <h2>{{this.mrn.datos_soat['vehiculo']['cilindraje']|number}}</h2>
         <h2>Cilindraje</h2>
       </ion-label>
     </ion-item>
     <ion-item>
       <ion-label>
-        <h3>{{this.mrn.datos_soat['vehiculo']['lineaVehiculo']}}</h3>
-        <h2>Linea</h2>
+        <h2>{{this.mrn.datos_soat['vehiculo']['lineaVehiculo']}}</h2>
+        <h3>Linea</h3>
       </ion-label>
     </ion-item>
-    <!--<div style="padding-top: 25px">
-      <ion-button expand="full" (click)="mrn.descarga_soat_ms()" size="small">Descargar certificado SOAT</ion-button>
-    </div>-->
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf="this.mrn.datos_soat['tomador']">
     <ion-list-header>
       <ion-label>
         <h2>Informacion del propietario</h2>
@@ -96,16 +93,16 @@
       </ion-label>
     </ion-item>
   </ion-list>
-  <div style="margin-top: 35px" *ngIf="mrn.formVentasSoat.value['direccion']">
+  <div style="margin-top: 35px">
     <ion-grid>
       <ion-row>
-        <ion-col>
-          <ion-button size="small" expand="block" [disabled]="!mrn.formVentasSoat.valid ||
+        <ion-col sise="6">
+          <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasSoat.valid ||
                !(mrn.formVentasSoat.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
                       id="trigger-button">Vender con saldo</ion-button>
         </ion-col>
-        <ion-col>
-          <ion-button size="small" expand="block"
+        <ion-col sise="6">
+          <ion-button shape="round" expand="block"
                       [disabled]="!mrn.formVentasSoat.valid
                 || !(mrn.formVentasSoat.value['valor'] <= mrn.misBoslsasDinero.utilidad)"
           >Vender con ganacias</ion-button>

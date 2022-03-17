@@ -30,7 +30,7 @@ export class ProductosComponent implements OnInit {
         })
         break;
       }
-      case 'Recargas y paquetes': {
+      case 'Recargas y Paquetes': {
         this.mrn.formVentasRecargas.patchValue({
           valor:producto.producto.valor_producto
         })

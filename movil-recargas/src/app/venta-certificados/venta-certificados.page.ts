@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Mrn} from "../providers/mrn";
 import {ProductosComponent} from "../productos/productos.component";
 import {ModalController} from "@ionic/angular";
+import {ResumenVentaComponent} from "../resumen-venta/resumen-venta.component";
 
 @Component({
   selector: 'app-venta-certificados',
@@ -15,10 +16,19 @@ export class VentaCertificadosPage implements OnInit {
   ngOnInit() {
   }
   async presentModal() {
+    this.mrn.obj_venta = this.mrn.formVentasCertificados.value
     const modal = await this.modalController.create({
       component: ProductosComponent,
     });
     return await modal.present();
   }
 
+  async present_resumen_ventas() {
+    this.mrn.obj_venta = '';
+    this.mrn.obj_venta = this.mrn.formVentasCertificados.value
+    const modal = await this.modalController.create({
+      component: ResumenVentaComponent,
+    });
+    return await modal.present();
+  }
 }

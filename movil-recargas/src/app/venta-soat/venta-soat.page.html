@@ -15,8 +15,7 @@
           <img  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
         </ion-avatar>
         <ion-label>
-          <h2>Producto seleccionado</h2>
-          <p class="wrap">{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Seleccione una producto.'}}</p>
+          <h2>{{mrn.empresaSeleccionada.nom_empresa}}</h2>
         </ion-label>
       </ion-item>
       <ion-item>
@@ -27,7 +26,7 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Numero de documento</ion-label>
-        <ion-input formControlName="documento" type="text"></ion-input>
+        <ion-input formControlName="documento" type="number"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Placa vehiculo</ion-label>
@@ -35,7 +34,7 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Telefono del tomador</ion-label>
-        <ion-input formControlName="celular" type="text"></ion-input>
+        <ion-input formControlName="celular" type="number"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Correo electronico del tomador</ion-label>
@@ -50,47 +49,13 @@
                         (click)="mrn.consulta_placasoat_ms(false)" size="small" >Consultar</ion-button>
           </ion-col>
           <ion-col>
-            <ion-button expand="full"  (click)="mrn.formVentasSoat.reset();mrn.productoCodificadoSeleccionado = ''" size="small"
+            <ion-button expand="full"  (click)="mrn.formVentasSoat.reset();mrn.productoCodificadoSeleccionado = ''"
                         size="small" color="light" >Limpiar</ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
     </ion-list>
   </form>
-  <ion-modal trigger="trigger-button" [swipeToClose]="true">
-    <ng-template>
-      <ion-content>
-        <div style="text-align: center;margin: 25px 0 25px 0">
-          <img style="width: 40%"  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
-        </div>
-        <ion-list>
-          <ion-item>
-            <ion-label>
-              <h3>{{mrn.formVentasSoat.value['telefono']}}</h3>
-              <p>Destino</p>
-            </ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>
-              <h3>{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Recarga tiempo al aire'}}</h3>
-              <p>Producto en venta</p>
-            </ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>
-              <h3>${{mrn.formVentasSoat.value['valor']|number}}</h3>
-              <p>Valor de venta</p>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-        <ion-button size="small" expand="block" [disabled]="!mrn.formVentasSoat.valid ||
-               !(mrn.formVentasSoat.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
-                    (click)="mrn.venderRecarga(false);modalController.dismiss()"
-        >Vender con saldo</ion-button>
-        <ion-button size="small" expand="block" (click)="modalController.dismiss()" color="light">Cancelar</ion-button>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
 </ion-content>
 <ion-footer>
   <ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">

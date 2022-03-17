@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Mrn} from "../providers/mrn";
 import {ModalController} from "@ionic/angular";
-import {ProductosComponent} from "../productos/productos.component";
 import {PagarFacturaComponent} from "../pagar-factura/pagar-factura.component";
 
 @Component({
@@ -16,7 +15,12 @@ export class MoraPage implements OnInit {
 
   ngOnInit() {
   }
-  async presentModal() {
+  async presentModal(transaccion) {
+    this.mrn.transaccionSeleccionada = transaccion
+    this.mrn.get_abonos_factura(transaccion)
+    this.mrn.formPagos.patchValue({
+      abono:transaccion.valor
+    })
     const modal = await this.modalController.create({
       component: PagarFacturaComponent,
     });

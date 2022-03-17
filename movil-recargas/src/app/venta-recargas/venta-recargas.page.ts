@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Mrn} from "../providers/mrn";
 import {ModalController} from "@ionic/angular";
 import {ProductosComponent} from "../productos/productos.component";
+import {ResumenVentaComponent} from "../resumen-venta/resumen-venta.component";
 
 @Component({
   selector: 'app-venta-recargas',
@@ -10,6 +11,7 @@ import {ProductosComponent} from "../productos/productos.component";
 })
 export class VentaRecargasPage implements OnInit {
   valorVenta;
+  segmento='tiempo_al_aire';
   constructor(public mrn:Mrn,public modalController: ModalController) {
   }
 
@@ -26,17 +28,22 @@ export class VentaRecargasPage implements OnInit {
 
   cambiarValor(valor: any) {
     this.mrn.productoCodificadoSeleccionado = ''
-    if(valor != this.mrn.formVentasRecargas.value['valor']){
-      this.valorVenta = valor
-      this.mrn.formVentasRecargas.patchValue({
-        valor:valor
-      })
-    }else {
-      this.valorVenta = 0
-      this.mrn.formVentasRecargas.patchValue({
-        valor:0
-      })
-    }
+    this.mrn.formVentasRecargas.patchValue({
+      valor:valor
+    })
   }
-
+  valorPersonalizado() {
+    this.mrn.productoCodificadoSeleccionado = '';
+  }
+  async present_resumen_ventas() {
+    this.mrn.obj_venta = '';
+    this.mrn.obj_venta = this.mrn.formVentasRecargas.value
+    const modal = await this.modalController.create({
+      component: ResumenVentaComponent,
+    });
+    return await modal.present();
+  }
+  segmentChanged(ev: any) {
+    this.segmento = ev.detail.value
+  }
 }

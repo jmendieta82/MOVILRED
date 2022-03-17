@@ -6,7 +6,6 @@
     <ion-title *ngIf="mrn.empresaSeleccionada">{{mrn.empresaSeleccionada.nom_empresa}}</ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
   <form [formGroup]="mrn.formVentasPines">
     <ion-list lines="full" class="ion-no-margin">
@@ -21,7 +20,7 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Numero celular</ion-label>
-        <ion-input formControlName="telefono" type="number"></ion-input>
+        <ion-input style="font-size: 1.5em" formControlName="telefono" type="number"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Correo electronico</ion-label>
@@ -38,13 +37,8 @@
       </ion-item>
     </ion-list>
     <div style="margin-top: 35px">
-      <ion-button size="small" expand="block" [disabled]="!mrn.formVentasPines.valid ||
-               !(mrn.formVentasPines.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
-      >Vender con saldo</ion-button>
-      <ion-button size="small" expand="block"
-                  [disabled]="!mrn.formVentasPines.valid
-                || !(mrn.formVentasPines.value['valor'] <= mrn.misBoslsasDinero.utilidad)"
-      >Vender con ganacias</ion-button>
+      <ion-button size="small" expand="block" [disabled]="!mrn.formVentasPines.valid"
+      (click)="present_resumen_ventas()">Vender</ion-button>
     </div>
   </form>
 </ion-content>

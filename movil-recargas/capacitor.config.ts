@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'Movil Recargas',
+  appId: 'com.recargas_movil',
+  appName: 'MRN Colombia',
   webDir: 'www',
   bundledWebRuntime: false
 };

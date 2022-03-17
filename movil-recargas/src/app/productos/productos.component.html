@@ -10,12 +10,12 @@
 
 <ion-content fullscreen>
   <ion-searchbar showCancelButton="focus" animated placeholder="Buscar" #value (ionInput)="buscar(value.value)"></ion-searchbar>
-  <ion-card *ngFor="let producto of mrn.listaFiltradaProductos" (click)="seleccionarProducto(producto)">
+ <ion-card *ngFor="let producto of mrn.listaFiltradaProductos" (click)="seleccionarProducto(producto)">
     <ion-card-header>
       <ion-card-title *ngIf="producto.producto.valor_producto">${{producto.producto.valor_producto|number}}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>{{producto.producto.nom_producto}}</p>
+      <h5>{{producto.producto.nom_producto}}</h5>
       <p  *ngIf="producto.producto.descuento_promosional" style="font-size: 0.8em;text-align: justify">
         <i class="fas fa-star" style="color: orange; margin-right: 10px"></i>
         vendiendo este producto {{mrn.empresaSeleccionada.nom_empresa}} te regala $ {{producto.producto.descuento_promosional|number}}  de ganancia adicional.</p>

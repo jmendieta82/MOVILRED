@@ -14,36 +14,40 @@
           <img  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
         </ion-avatar>
         <ion-label>
-          <h2>Producto seleccionado</h2>
-          <p class="wrap">{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Seleccione un producto.'}}</p>
+          <h2>{{mrn.empresaSeleccionada.nom_empresa}}</h2>
         </ion-label>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Numero celular</ion-label>
-        <ion-input formControlName="celular" type="number"></ion-input>
+        <ion-input style="font-size: 1.5em" formControlName="celular" type="number"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Numero de documento</ion-label>
         <ion-input formControlName="documento"></ion-input>
       </ion-item>
       <ion-item>
+        <ion-label position="stacked">Valor de la venta</ion-label>
+        <input class="input_number" mask="separator.0" thousandSeparator="," inputmode="decimal" formControlName="valor">
+      </ion-item>
+      <ion-item>
         <ion-avatar slot="start">
           <i style="font-size: 2.4em;color: gray" class="fas fa-dollar-sign"></i>
         </ion-avatar>
         <ion-label>
-          <h1>{{mrn.productoCodificadoSeleccionado?(mrn.productoCodificadoSeleccionado.producto.valor_producto|number):0}}</h1>
+          <h1>{{mrn.formVentasApuestas.value['valor']|number}}</h1>
           <p>Esta en venta.</p>
         </ion-label>
       </ion-item>
     </ion-list>
     <div style="margin-top: 35px">
-      <ion-button size="small" expand="block" [disabled]="!mrn.formVentasApuestas.valid ||
-               !(mrn.formVentasApuestas.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
-                  (click)="mrn.venderApuestas(false)">Vender con saldo</ion-button>
-      <ion-button size="small" expand="block"
-                  [disabled]="!mrn.formVentasApuestas.valid
-                || !(mrn.formVentasApuestas.value['valor'] <= mrn.misBoslsasDinero.utilidad)"
-      >Vender con ganacias</ion-button>
+      <ion-grid>
+        <ion-row style="font-size: 0.8em">
+          <ion-col>
+            <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasApuestas.valid"
+                        (click)="present_resumen_ventas();">Vender</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
   </form>
 </ion-content>

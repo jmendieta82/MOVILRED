@@ -1,8 +1,5 @@
 <ion-header>
   <ion-toolbar class="background-image header_page">
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
     <ion-title>Cliente en mora</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -49,7 +46,8 @@
         </tr>
       </table>
       <div style="text-align: center;width: 100%;margin-top: 30px">
-        <ion-button (click)="presentModal()" shape="round" size="small" expand="block">Pagar factura</ion-button></div>
+        <ion-button (click)="presentModal(transaccion)" shape="round" size="small" expand="block">Pagar factura</ion-button>
+      </div>
     </ion-card-content>
   </ion-card>
 </ion-content>

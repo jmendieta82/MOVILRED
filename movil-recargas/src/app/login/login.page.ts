@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {ApiService} from "../providers/api";
 import {Mrn} from "../providers/mrn";
-import {AlertController} from "@ionic/angular";
+import {AlertController, Platform} from "@ionic/angular";
 import {HttpHeaders} from "@angular/common/http";
 
 @Component({
@@ -13,25 +13,29 @@ import {HttpHeaders} from "@angular/common/http";
 })
 export class LoginPage implements OnInit {
 
-  constructor(private router:Router,public api:ApiService,private fb:FormBuilder,public mrn:Mrn,public alertController: AlertController) { }
+  constructor(private router:Router,public api:ApiService,private fb:FormBuilder,
+              public mrn:Mrn,public alertController: AlertController,
+              private platform: Platform) {
+    this.platform.keyboardDidShow.subscribe(ev => {
+      const { keyboardHeight } = ev;
+      if(ev['keyboardHeight']){
+        this.mrn.teclado_show = false;
+      }
+      // Do something with the keyboard height such as translating an input above the keyboard.
+    });
+
+    this.platform.keyboardDidHide.subscribe(() => {
+
+    });
+  }
   loginForm:FormGroup;
   ngOnInit() {
     this.loginForm = this.fb.group({
       id : [''],
-      username : ['carmencastro',Validators.required],
-      password : ['900123456',Validators.required],
+      username : ['',Validators.required],
+      password : ['',Validators.required],
       email : [''],
-      //recaptcha: ['']
-      //recaptcha: ['', Validators.required]
     });
-    /* this.loginForm = this.fb.group({
-       id : [''],
-       username : ['jamen17',Validators.required],
-       password : ['1nclus10nP4st0.',Validators.required],
-       email : [''],
-       //recaptcha: ['']
-       //recaptcha: ['', Validators.required]
-     });*/
   }
 
   login(){
@@ -46,7 +50,8 @@ export class LoginPage implements OnInit {
       this.api.login('api-token-auth', this.loginForm.value)
         .subscribe(
           data => {
-            if (data) {
+            if (data!= undefined) {
+              this.mrn.teclado_show = true;
               this.api.usuario = data;
               this.api.nodoActual = data['nodo'];
               this.api.headersAll = new HttpHeaders().set('Content-Type','application/json')
@@ -56,26 +61,32 @@ export class LoginPage implements OnInit {
               this.api.usuario['puntoAcceso'] = this.mrn.tokenMessage
               this.mrn.registrarPuntoDeAcceso(this.api.usuario)
               if (!this.api.nodoActual['mora']) {
-                this.mrn.getMisBolsasDinero();
-                this.mrn.activeState = [true, true];
-                this.mrn.getCatServicio();
-                this.mrn.getMiCredito()
-                this.mrn.getMisSolicitudesSaldo();
-                this.mrn.getLastVentasByNodo()
-                this.mrn.getComisiones(this.api.nodoActual)
-                this.router.navigate(['inicio']);
+                if(this.api.nodoActual['tipo']=='Comercio'){
+                  this.mrn.getMisBolsasDinero();
+                  this.mrn.activeState = [true, true];
+                  this.mrn.getCatServicio();
+                  this.mrn.getMiCredito()
+                  this.mrn.getMisSolicitudesSaldo();
+                  this.mrn.getLastVentasByNodo()
+                  this.mrn.getComisiones(this.api.nodoActual)
+                  this.router.navigate(['inicio']);
+                }else {
+                  this.mrn.mensajes('El usuario que esta intentando ingresar es de tipo distribuidor, ' +
+                    'en MRN Colombia tenemos otra aplicacion especializada para usted.')
+                }
               } else {
                 this.mrn.getNodoPadre()
                 this.mrn.getFacturasMora(this.api.nodoActual,false)
                 this.router.navigate(['mora']);//redireccionar a pagos
               }
             }else {
-              this.mrn.bad_login = 'El usuario o la contraseña son incorrectos.'
+              this.mrn.mensajes('El usuario o la contraseña son incorrectos.')
             }
           }
         )
     }
   }
+
   async notLogged(){
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',

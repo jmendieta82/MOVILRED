@@ -14,8 +14,7 @@ export class EmpresasPage implements OnInit {
 
   ngOnInit() {
   }
-  seleccionarEmpresa(empresa: any)
-  {
+  seleccionarEmpresa(empresa: any) {
     this.mrn.empresaSeleccionada = empresa['info'].proveedorEmpresa.empresa;
     this.mrn.proveedorSeleccionado = empresa['info'].proveedorEmpresa.proveedor;
     this.mrn.getProductosProveedor(empresa['info'].proveedorEmpresa.proveedor.id,this.mrn.empresaSeleccionada.id)
@@ -33,30 +32,11 @@ export class EmpresasPage implements OnInit {
         break;
       }
       case 'SOAT': {
-        this.api.get('proveedor_producto/?proveedor=' + empresa['info'].proveedorEmpresa.proveedor.id)
-          .subscribe(
-            data => {
-              if (data.length) {
-                this.mrn.productoCodificadoSeleccionado = data.filter(item => item.producto.empresa.id == this.mrn.empresaSeleccionada.id)[0]
-                this.router.navigate(['venta-soat']);
-              }
-              this.mrn.loading = false
-            }
-          )
+        this.router.navigate(['venta-soat']);
         break;
       }
       case 'Apuestas': {
-        this.mrn.loading = true
-        this.api.get('proveedor_producto/?proveedor=' + empresa['info'].proveedorEmpresa.proveedor.id)
-          .subscribe(
-            data => {
-              if (data.length) {
-                this.mrn.productoCodificadoSeleccionado = data.filter(item => item.producto.empresa.id == this.mrn.empresaSeleccionada.id)[0]
-                this.router.navigate(['venta-apuestas']);
-              }
-              this.mrn.loading = false
-            }
-          )
+        this.router.navigate(['venta-apuestas']);
         break;
       }
       default: {

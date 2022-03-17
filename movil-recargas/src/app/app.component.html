@@ -1,15 +1,43 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay">
-      <ion-content>
+  <ion-split-pane contentId="main-content" >
+    <ion-menu contentId="main-content" type="overlay" *ngIf="api.usuario">
+      <ion-content >
         <ion-list id="inbox-list">
-          <ion-list-header>MRN Colombia</ion-list-header>
-          <ion-note>www.mrncolombia.com</ion-note>
-
-          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
-            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-              <i slot="start" class="{{p.icon}}"></i>
-              <ion-label>{{ p.title }}</ion-label>
+          <ion-item >
+            <div style="text-align: center;width: 100%;padding: 10px 0 25px 0">
+              <img style="width: 50%" src="assets/logo-mirage@2x.svg" alt="mirage-layout"/>
+            </div>
+          </ion-item>
+          <ion-item>
+            <ion-avatar slot="end" style="text-align: center;padding-top: 10px">
+              <i style="font-size: 1.5em;color:#5e81ac" class="fas fa-user-cog"></i>
+            </ion-avatar>
+            <ion-label style="color:#5e81ac">
+              <h2>{{api.nodoActual['representanteLegal']}}</h2>
+              <p style="font-size: 0.9em">{{api.nodoActual['tipoComision']=='CA'?'Comision anticipada':'Comision por venta'}}</p>
+            </ion-label>
+          </ion-item>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root"
+                      [routerLink]="'/inicio'" lines="none" detail="false">
+              <i style="color:#5e81ac" slot="start" class="fas fa-store"></i>
+              <ion-label style="color:#5e81ac">
+                <h2>Ventas</h2>
+              </ion-label>
+            </ion-item>
+            <ion-item routerDirection="root"
+                      [routerLink]="'/saldo'" lines="none" detail="false">
+              <i style="color:#5e81ac" slot="start" class="fas fa-hand-holding-usd"></i>
+              <ion-label style="color:#5e81ac">
+                <h2>Solicitud de saldo</h2>
+              </ion-label>
+            </ion-item>
+            <ion-item routerDirection="root" (click)="api.logOut()"
+                      [routerLink]="'/inicio'" lines="none" detail="false">
+              <i style="color:#5e81ac" slot="start" class="fas fa-sign-out-alt"></i>
+              <ion-label style="color:#5e81ac">
+                <h2>Salir</h2>
+              </ion-label>
             </ion-item>
           </ion-menu-toggle>
         </ion-list>

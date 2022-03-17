@@ -24,11 +24,13 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap');
-html{
-  font-family: 'Ubuntu', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+*{
+  font-family: 'Roboto', sans-serif;
 }
-
+body{
+  background: #efefef;
+}
 .caption_content {
   display: flex;
   flex-flow: row wrap;
@@ -46,7 +48,7 @@ html{
   --background: url('assets/fondo-app-movil-login.jpg') 0 0/100% 100% no-repeat;
 }
 .header_page {
-  --background: url('assets/header_img.jpg') 0 0/100% 100% no-repeat;
+  --background: #5e81ac;
   color: white;
 }
 
@@ -61,16 +63,26 @@ html{
   justify-content: center;
   align-items: center;
 }
-
 .table_transact {
-  font-size: 0.8em;
+  font-size: 0.95em;
   width: 100%;
 }
 .table_transact th{
   padding: 5px;
+  color: gray;
   text-align: left;
+}
+.table_transact tr{
+  border-bottom: 1px solid lightgrey;
 }
 .table_transact td{
   padding: 5px;
   text-align: right;
+}
+.input_number {
+  border: none;
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  outline: none;
 }

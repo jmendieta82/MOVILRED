@@ -3,6 +3,7 @@ import {Observable, of} from 'rxjs/';
 import { catchError, map } from 'rxjs/operators';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Router} from "@angular/router";
+import {AlertController} from "@ionic/angular";
 
 @Injectable()
 export class ApiService {
@@ -18,7 +19,7 @@ export class ApiService {
   public usuario;
   public nodoActual = '';
 
-  constructor(private http: HttpClient,private router:Router,) {}
+  constructor(private http: HttpClient,private router:Router,public alertController: AlertController) {}
 
   login(finisher:string,data){
     let url = `${this.baseURL+'/'+finisher}`;
@@ -63,9 +64,30 @@ export class ApiService {
     return this.http.delete(url,this.optionsAll).pipe(catchError(this.handleError<any>()))
   }
 
-  logOut(){
-    this.usuario = '';
-    this.router.navigate(['/login']);
+  async logOut(){
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'MRN Colombia',
+      message: 'Desea salir de la aplicación?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          id: 'cancel-button',
+          handler: (blah) => {
+          }
+        }, {
+          text: 'Aceptar',
+          id: 'confirm-button',
+          handler: () => {
+            this.usuario = '';
+            this.router.navigate(['/login']);
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   public getIPAddress()

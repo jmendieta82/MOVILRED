@@ -21,7 +21,7 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Numero de matricula</ion-label>
-        <ion-input formControlName="matricula" type="number"></ion-input>
+        <ion-input formControlName="matricula" style="font-size: 1.5em" type="number"></ion-input>
       </ion-item>
       <ion-grid>
         <ion-row>
@@ -37,7 +37,7 @@
       <ion-item *ngIf="mrn.formVentasCertificados.value['direccion']">
         <ion-label >
          <h3>Direccion del inmueble</h3>
-          <p>{{mrn.formVentasCertificados.value['direccion']}}</p>
+          <p style="font-size: 0.7em">{{mrn.formVentasCertificados.value['direccion']}}</p>
         </ion-label>
       </ion-item>
       <ion-item *ngIf="mrn.formVentasCertificados.value['direccion']">
@@ -50,7 +50,7 @@
       </ion-item>
       <ion-item *ngIf="mrn.formVentasCertificados.value['direccion']">
         <ion-label position="stacked">Correo electronico del propietario</ion-label>
-        <ion-input formControlName="email" type="number"></ion-input>
+        <ion-input formControlName="email" type="text"></ion-input>
       </ion-item>
       <ion-item *ngIf="mrn.formVentasCertificados.value['direccion']">
         <ion-avatar slot="start">
@@ -63,49 +63,10 @@
       </ion-item>
     </ion-list>
     <div style="margin-top: 35px" *ngIf="mrn.formVentasCertificados.value['direccion']">
-      <ion-button size="small" expand="block" [disabled]="!mrn.formVentasCertificados.valid ||
-               !(mrn.formVentasCertificados.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
-                  id="trigger-button">Vender con saldo</ion-button>
-      <ion-button size="small" expand="block"
-                  [disabled]="!mrn.formVentasCertificados.valid
-                || !(mrn.formVentasCertificados.value['valor'] <= mrn.misBoslsasDinero.utilidad)"
-      >Vender con ganacias</ion-button>
+      <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasCertificados.valid"
+      (click)="present_resumen_ventas();">Vender</ion-button>
     </div>
   </form>
-  <ion-modal trigger="trigger-button" [swipeToClose]="true">
-    <ng-template>
-      <ion-content>
-        <div style="text-align: center;margin: 25px 0 25px 0">
-          <img style="width: 40%"  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
-        </div>
-        <ion-list>
-          <ion-item>
-            <ion-label>
-              <h3>{{mrn.formVentasCertificados.value['telefono']}}</h3>
-              <p>Destino</p>
-            </ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>
-              <h3>{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Recarga tiempo al aire'}}</h3>
-              <p>Producto en venta</p>
-            </ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>
-              <h3>${{mrn.formVentasCertificados.value['valor']|number}}</h3>
-              <p>Valor de venta</p>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-        <ion-button size="small" expand="block" [disabled]="!mrn.formVentasCertificados.valid ||
-               !(mrn.formVentasCertificados.value['valor'] <= mrn.misBoslsasDinero.saldo_disponible)"
-                    (click)="mrn.venderRecarga(false);modalController.dismiss()"
-        >Vender con saldo</ion-button>
-        <ion-button size="small" expand="block" (click)="modalController.dismiss()" color="light">Cancelar</ion-button>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
 </ion-content>
 <ion-footer>
   <ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">

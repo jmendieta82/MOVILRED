@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "931464291925",
+    "firebase_url": "https://recargas-326621-default-rtdb.firebaseio.com",
+    "project_id": "recargas-326621",
+    "storage_bucket": "recargas-326621.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931464291925:android:5f8f3d8b16f029f4d7d6dc",
+        "android_client_info": {
+          "package_name": "com.recargas_movil"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931464291925-pofpnn1rm2tpl5u5d1m5e2db74ddov4j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZWMmZbMJ88VAESr-OyGJYDWw50NBVusY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "931464291925-pofpnn1rm2tpl5u5d1m5e2db74ddov4j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
