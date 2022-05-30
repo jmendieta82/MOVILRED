@@ -3,8 +3,9 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {ApiService} from "../providers/api";
 import {Mrn} from "../providers/mrn";
-import {AlertController, Platform} from "@ionic/angular";
+import {AlertController, LoadingController, Platform} from "@ionic/angular";
 import {HttpHeaders} from "@angular/common/http";
+import { Storage } from '@ionic/storage-angular';
 
 @Component({
   selector: 'app-login',
@@ -13,8 +14,8 @@ import {HttpHeaders} from "@angular/common/http";
 })
 export class LoginPage implements OnInit {
 
-  constructor(private router:Router,public api:ApiService,private fb:FormBuilder,
-              public mrn:Mrn,public alertController: AlertController,
+  constructor(private router:Router,public api:ApiService,private fb:FormBuilder,private storage: Storage,
+              public mrn:Mrn,public alertController: AlertController,public loadingController: LoadingController,
               private platform: Platform) {
     this.platform.keyboardDidShow.subscribe(ev => {
       const { keyboardHeight } = ev;
@@ -29,13 +30,22 @@ export class LoginPage implements OnInit {
     });
   }
   loginForm:FormGroup;
-  ngOnInit() {
+  async ngOnInit() {
     this.loginForm = this.fb.group({
       id : [''],
       username : ['',Validators.required],
       password : ['',Validators.required],
-      email : [''],
+      loggedIn : [''],
     });
+    this.loginForm.reset();
+    await this.storage.create();
+    this.storage.get('usuario').then((val) => {
+      if(val!= undefined){
+        this.login_actions(JSON.parse(val))
+      }else {
+        this.router.navigate(['login']);
+      }
+    })
   }
 
   login(){
@@ -44,46 +54,53 @@ export class LoginPage implements OnInit {
         username: this.loginForm.value['username'].toLowerCase(),
         password: this.loginForm.value['password'].toLowerCase(),
       })
-      this.mrn.loading = true;
+      this.mrn.presentLoading()
       this.mrn.bad_login =  ''
       this.mrn.loadingText = 'Verificando usuario'
       this.api.login('api-token-auth', this.loginForm.value)
         .subscribe(
           data => {
             if (data!= undefined) {
-              this.mrn.teclado_show = true;
-              this.api.usuario = data;
-              this.api.nodoActual = data['nodo'];
-              this.api.headersAll = new HttpHeaders().set('Content-Type','application/json')
-                .set('Authorization','Token '+data['token']);
-              this.api.optionsAll = { headers: this.api.headersAll};
-              this.mrn.loading = false;
-              this.api.usuario['puntoAcceso'] = this.mrn.tokenMessage
-              this.mrn.registrarPuntoDeAcceso(this.api.usuario)
-              if (!this.api.nodoActual['mora']) {
-                if(this.api.nodoActual['tipo']=='Comercio'){
-                  this.mrn.getMisBolsasDinero();
-                  this.mrn.activeState = [true, true];
-                  this.mrn.getCatServicio();
-                  this.mrn.getMiCredito()
-                  this.mrn.getMisSolicitudesSaldo();
-                  this.mrn.getLastVentasByNodo()
-                  this.mrn.getComisiones(this.api.nodoActual)
-                  this.router.navigate(['inicio']);
-                }else {
-                  this.mrn.mensajes('El usuario que esta intentando ingresar es de tipo distribuidor, ' +
-                    'en MRN Colombia tenemos otra aplicacion especializada para usted.')
-                }
-              } else {
-                this.mrn.getNodoPadre()
-                this.mrn.getFacturasMora(this.api.nodoActual,false)
-                this.router.navigate(['mora']);//redireccionar a pagos
-              }
+             this.login_actions(data)
             }else {
               this.mrn.mensajes('El usuario o la contraseña son incorrectos.')
             }
+            this.loadingController.dismiss()
           }
         )
+    }
+  }
+
+  login_actions(usuario){
+    this.mrn.teclado_show = true;
+    this.api.usuario = usuario;
+    if(this.loginForm.value['loggedIn']){
+      this.storage.set('usuario', JSON.stringify(usuario));
+    }
+    this.api.nodoActual = usuario['nodo'];
+    this.api.headersAll = new HttpHeaders().set('Content-Type','application/json')
+      .set('Authorization','Token '+usuario['token']);
+    this.api.optionsAll = { headers: this.api.headersAll};
+    this.api.usuario['puntoAcceso'] = this.mrn.tokenMessage
+    this.mrn.registrarPuntoDeAcceso(this.api.usuario)
+    if (!this.api.nodoActual['mora']) {
+      if(this.api.nodoActual['tipo']=='Comercio'){
+        this.mrn.getMisBolsasDinero();
+        this.mrn.activeState = [true, true];
+        this.mrn.getCatServicio();
+        this.mrn.getMiCredito()
+        this.mrn.getMisSolicitudesSaldo();
+        this.mrn.getLastVentasByNodo()
+        this.mrn.getComisiones(this.api.nodoActual)
+        this.router.navigate(['inicio']);
+      }else {
+        this.mrn.mensajes('El usuario que esta intentando ingresar es de tipo distribuidor, ' +
+          'en MRN Colombia tenemos otra aplicacion especializada para usted.')
+      }
+    } else {
+      this.mrn.getNodoPadre()
+      this.mrn.getFacturasMora(this.api.nodoActual,false)
+      this.router.navigate(['mora']);//redireccionar a pagos
     }
   }
 

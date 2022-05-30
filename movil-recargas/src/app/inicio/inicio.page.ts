@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Mrn} from "../providers/mrn";
 import {ApiService} from "../providers/api";
 import {ProductosComponent} from "../productos/productos.component";
-import {ModalController} from "@ionic/angular";
+import {ModalController, Platform} from "@ionic/angular";
 import {UltimasVentasComponent} from "../ultimas-ventas/ultimas-ventas.component";
 
 @Component({
@@ -15,11 +15,17 @@ export class InicioPage implements OnInit {
   public folder: string;
   segmento='ventas';
   constructor(private router:Router,private activatedRoute: ActivatedRoute,public mrn:Mrn,public api:ApiService
-  ,public modalController: ModalController) { }
+  ,public modalController: ModalController,private platform: Platform) {
+    this.platform.backButton.subscribeWithPriority(9999, () => {
+      this.api.logOut()
+    });
+
+  }
 
   ngOnInit() {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id');
   }
+
   seleccionarCategoria(categoria) {
     this.mrn.categoriaSeleccionada = categoria;
     this.mrn.productoCodificadoSeleccionado = ''
@@ -33,6 +39,7 @@ export class InicioPage implements OnInit {
     });
     return await modal.present();
   }
+
   seleccionarEmpresa(empresa: any) {
     this.mrn.empresaSeleccionada = empresa['info'].proveedorEmpresa.empresa;
     this.mrn.proveedorSeleccionado = empresa['info'].proveedorEmpresa.proveedor;
@@ -47,6 +54,7 @@ export class InicioPage implements OnInit {
         break;
       }
       case 'Certificados': {
+
         this.router.navigate(['venta-certificados']);
         break;
       }
@@ -67,5 +75,12 @@ export class InicioPage implements OnInit {
 
   segmentChanged(ev: any) {
     this.segmento = ev.detail.value
+  }
+
+  actualizarVentasInicio(event: any) {
+    this.mrn.getComisiones(this.api.nodoActual)
+    setTimeout(() => {
+      event.target.complete();
+    }, 2000);
   }
 }

@@ -18,22 +18,35 @@
             </ion-label>
           </ion-item>
           <ion-menu-toggle auto-hide="false">
-            <ion-item routerDirection="root"
+            <ion-item *ngIf="!api.nodoActual['mora']" routerDirection="root"
                       [routerLink]="'/inicio'" lines="none" detail="false">
               <i style="color:#5e81ac" slot="start" class="fas fa-store"></i>
               <ion-label style="color:#5e81ac">
                 <h2>Ventas</h2>
               </ion-label>
             </ion-item>
-            <ion-item routerDirection="root"
+            <ion-item *ngIf="!api.nodoActual['mora']" routerDirection="root"
                       [routerLink]="'/saldo'" lines="none" detail="false">
               <i style="color:#5e81ac" slot="start" class="fas fa-hand-holding-usd"></i>
               <ion-label style="color:#5e81ac">
                 <h2>Solicitud de saldo</h2>
               </ion-label>
             </ion-item>
-            <ion-item routerDirection="root" (click)="api.logOut()"
-                      [routerLink]="'/inicio'" lines="none" detail="false">
+            <ion-item *ngIf="!api.nodoActual['mora']" routerDirection="root" (click)="this.mrn.getCartera(this.api.nodoActual)"
+                      [routerLink]="'/cartera'" lines="none" detail="false">
+              <i style="color:#5e81ac" slot="start" class="fas fa-file-invoice-dollar"></i>
+              <ion-label style="color:#5e81ac">
+                <h2>Estado de cartera</h2>
+              </ion-label>
+            </ion-item>
+            <ion-item routerDirection="root"
+                      [routerLink]="'/reportes'" lines="none" detail="false">
+              <i style="color:#5e81ac" slot="start" class="fas fa-chart-bar"></i>
+              <ion-label style="color:#5e81ac">
+                <h2>Consultas</h2>
+              </ion-label>
+            </ion-item>
+            <ion-item routerDirection="root" (click)="api.logOut()" lines="none" detail="false">
               <i style="color:#5e81ac" slot="start" class="fas fa-sign-out-alt"></i>
               <ion-label style="color:#5e81ac">
                 <h2>Salir</h2>

@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import {ElementRef, Injectable, ViewChild} from "@angular/core";
 import {ApiService} from "./api";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 /*import {RealTimeService} from "./firebase-realtime";
@@ -6,10 +6,12 @@ import {FirebaseStorage} from "./firebase-storage";*/
 import * as moment from 'moment';
 import {isUndefined} from "lodash";
 import {Router} from "@angular/router";
-import {AlertController, ModalController, ToastController} from "@ionic/angular";
+import {AlertController, LoadingController, ModalController, ToastController} from "@ionic/angular";
 import {ProductosComponent} from "../productos/productos.component";
 import {SoatVigenteComponent} from "../soat-vigente/soat-vigente.component";
 import {SoatVencidoComponent} from "../soat-vencido/soat-vencido.component";
+import Chart from 'chart.js/auto'
+import {Storage} from "@ionic/storage-angular";
 //import {NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels} from "@techiediaries/ngx-qrcode";
 
 @Injectable()
@@ -62,6 +64,7 @@ export class Mrn {
     formVentasApuestas: FormGroup;
     formVentasSoat: FormGroup;
     formVentasPines: FormGroup;
+    formVentasRecargasDirectv: FormGroup;
     nodoSeleccionado;
     red:[];
     tipoAliado = [
@@ -281,20 +284,28 @@ export class Mrn {
     activeState: boolean[] = [false, false];
     messageSell:[];
     USUARIO_MSV = '00087482'
-    PWD_MVS = '85Yp3E8c'
+    PWD_MVS = 'h73P71Zi'
     datos_soat = [];
     listaFiltradaProductos= [];
     listaFiltradaVentas = [];
     VALOR_CERTIFICADOS = 21000;
     obj_venta;
-  teclado_show = true;
+    teclado_show = true;
+    ventas_by_fecha = [];
+    tipo_reporte: string;
+    total_consulta_ventas = 0;
+    total_sol_contado = 0;
+    total_sol_credito = 0;
+    total_sol_credito_pend = 0;
+    pagos_by_fecha =[];
+    cartera = [];
 
     constructor(public api: ApiService, private fb: FormBuilder,private router:Router,
                 public modalController: ModalController,public alertController: AlertController
-                ,public toastController: ToastController
+                ,public toastController: ToastController,public loadingController: LoadingController
+                 ,private storage: Storage,
               ) {
     }
-
 
     crearControles() {
         this.formNodo = this.fb.group({
@@ -471,7 +482,7 @@ export class Mrn {
             abono: ['', Validators.required],
             saldo: [''],
             numero_recibo: ['', Validators.required],
-            soporte: [''],
+            soporte: ['', Validators.required],
             entidad: [''],
         })
         this.formRecoveryPwd = this.fb.group({
@@ -479,13 +490,23 @@ export class Mrn {
             username: ['',Validators.required],
         })
         this.formVentasRecargas = this.fb.group({
-          telefono:['',Validators.required],
+          telefono:['',[Validators.required,Validators.max(9999999999),Validators.min(999999999)]],
+          tarjeta:['',],
           cedula: [''],
           valor: ['',Validators.required],
           matricula:[''],
           email:[''],
           oficina:[''],
         })
+      this.formVentasRecargasDirectv = this.fb.group({
+        telefono:['',Validators.required],
+        tarjeta:['',],
+        cedula: [''],
+        valor: ['',Validators.required],
+        matricula:[''],
+        email:[''],
+        oficina:[''],
+      })
         this.formVentasPines = this.fb.group({
           telefono:[Validators.required],
           valor: ['',Validators.required],
@@ -493,12 +514,12 @@ export class Mrn {
         })
         this.formVentasCertificados = this.fb.group({
           telefono:['',Validators.required],
-          valor: ['',Validators.required],
+          valor: [''],
           matricula:['',Validators.required],
           email:['',Validators.required],
-          oficina:['',Validators.required],
-          direccion:['',Validators.required],
-          noDocumento: ['',Validators.required],
+          oficina:[''],
+          direccion:[''],
+          noDocumento: [''],
           producto: [''],
         })
         this.formVentasApuestas = this.fb.group({
@@ -1254,13 +1275,15 @@ export class Mrn {
     getComisiones(nodo) {
         this.comisiones = [];
         this.lista_comisiones_venta = [];
-        this.api.get('comision/?nodo=' + nodo.id)
+        this.presentLoading()
+        this.api.get('comision_list/?nodo=' + nodo.id)
             .subscribe(
                 data => {
                     if (data.length || !isUndefined(data)) {
-                        this.comisiones = data.filter(item => item.proveedorEmpresa.activo == true);
+                        this.comisiones = data
                         if(nodo.tipoComision == 'CA'){
-                            this.lista_comisiones_venta = this.crearArbolComisiones(this.comisiones.filter(item=>item.proveedorEmpresa.empresa.catServicio.nombre=='Recargas y Paquetes'))
+                            let comiAux = this.comisiones.filter(item=>item.proveedorEmpresa.empresa.catServicio.nombre=='Recargas y Paquetes')
+                            this.lista_comisiones_venta = this.crearArbolComisiones(comiAux)
                             this.categoriaSeleccionada =  this.lista_comisiones_venta[0]
                             this.togleVentas(1,true)
                         }else {
@@ -1272,6 +1295,7 @@ export class Mrn {
                         this.comisiones = [];
                         this.lista_comisiones_venta = [];
                     }
+                    this.loadingController.dismiss()
                 }
             )
     }
@@ -1322,6 +1346,7 @@ export class Mrn {
     }
 
     getNodoPadre() {
+
         this.api.get('nodo/?id=' + this.api.nodoActual['nodoPadre'])
             .subscribe(
                 data => {
@@ -1329,6 +1354,7 @@ export class Mrn {
                         this.distribuidor = data[0];
                         this.getAdminNodoPadre();
                     }
+
                 }
             )
     }
@@ -1622,7 +1648,7 @@ export class Mrn {
     }
 
     getCatServicio() {
-        this.loading = true;
+
         this.loadingText = 'Cargando categorias de servicio registradas'
         this.api.get('categoriadeservicio/')
             .subscribe(
@@ -1632,7 +1658,7 @@ export class Mrn {
                     } else {
                         this.catServicios = []
                     }
-                    this.loading = false;
+
                 }
             )
     }
@@ -1690,11 +1716,10 @@ export class Mrn {
       this.api.get('productos_codificados/?proveedor=' + proveedor_id+'&empresa='+empresa_id)
         .subscribe(
           data => {
-            console.log(data)
             if (data.length) {
               this.productosByProveedor = data
-              this.productosByProveedorSinTiempoAlAire = data
-              this.listaFiltradaProductos = data
+              this.productosByProveedorSinTiempoAlAire = data.filter(item=>item.producto.nom_producto != 'Tiempo al aire')
+              this.listaFiltradaProductos = this.productosByProveedorSinTiempoAlAire
             }
             this.loading = false;
           }
@@ -1860,6 +1885,7 @@ export class Mrn {
     }
 
     getMiCredito() {
+
         this.api.get('creditos/?nodo=' + this.api.nodoActual['id'])
             .subscribe(
                 data => {
@@ -1868,6 +1894,7 @@ export class Mrn {
                     } else {
                         this.Micredito = '';
                     }
+
                 });
     }
 
@@ -1934,7 +1961,7 @@ export class Mrn {
     }
 
     getMisBolsasDinero() {
-        this.loading = true;
+
         this.loadingText = 'Cargando saldos'
         this.api.get('bolsa_dinero/?nodo=' + this.api.nodoActual['id'])
             .subscribe(
@@ -1948,7 +1975,6 @@ export class Mrn {
                     } else {
                         this.misBoslsasDinero = [];
                     }
-                    this.loading = false;
                 }
             )
     }
@@ -2060,7 +2086,6 @@ export class Mrn {
         this.api.get('mis_solicitudes_saldo/?nodo=' + this.api.nodoActual['id'])
             .subscribe(
                 data => {
-                  console.log(data)
                     if (!isUndefined(data)) {
                         if (data.length) {
                             this.misSolicitudesSaldo = data
@@ -2526,6 +2551,7 @@ export class Mrn {
 
     getFacturasMora(nodo, showAuthorization?) {
         this.facturasMora = [];
+
         this.api.get('facturas_mora/?nodo=' + nodo.id)
             .subscribe(
                 data => {
@@ -2549,6 +2575,22 @@ export class Mrn {
 
                 }
             )
+    }
+
+    getCartera(nodo) {
+      this.cartera = [];
+      this.api.get('caretra/?nodo=' + nodo.id)
+        .subscribe(
+          data => {
+            if(data != undefined){
+              if (data.length) {
+                this.cartera = data;
+              }else {this.mensajes('No se encontraron facruras pendientes, Usted esta al dia!')}
+            }else{
+              this.mensajes('No se encontraron facruras pendientes, Usted esta al dia!')
+            }
+          }
+        )
     }
 
     getFacturasPendientes(nodo, showAuthorization?) {
@@ -2600,6 +2642,9 @@ export class Mrn {
     }
 
     get_abonos_factura(transaccion) {
+      this.abonos = [];
+      this.totalAbonos = 0
+      this.presentLoading();
         this.api.get('pago_transaccion/?transaccion=' + transaccion.id)
             .subscribe(
                 data => {
@@ -2616,9 +2661,11 @@ export class Mrn {
                                 this.llenarFormTransaccion(transaccion);
                                 this.updateTransaccion();
                             }
+                            this.loadingController.dismiss()
                         }
                     } else {
                         this.abonos = []
+                        this.loadingController.dismiss()
                     }
                 }
             )
@@ -2726,7 +2773,16 @@ export class Mrn {
             if(data.length){
               this.api.nodoActual = data[0];
               this.nodoSeleccionado = data[0];
-              this.router.navigate(['inicio'])
+              this.storage.get('usuario').then((val) => {
+                if(val!= undefined){
+                  let usuario_aux = JSON.parse(val)
+                  usuario_aux.nodo = this.api.nodoActual
+                  this.storage.set('usuario', JSON.stringify(usuario_aux));
+                }
+              })
+              if(!this.api.nodoActual['mora']){
+                this.router.navigate(['inicio'])
+              }
             }
           }
         }
@@ -2862,26 +2918,25 @@ export class Mrn {
 
     venderRecarga(venta_ganancias) {
 
-      let valor_venta = this.formVentasRecargas.value['valor']
-      let num_celular = this.formVentasRecargas.value['telefono']
-
-      if(valor_venta < this.misBoslsasDinero.saldo_disponible){
+      if(this.obj_venta.valor <= this.misBoslsasDinero.saldo_disponible){
         let producto;
         if(this.productoCodificadoSeleccionado){
+          producto = null;
           producto = this.productoCodificadoSeleccionado
         }else{
-          producto = this.productosByProveedor.filter(item => item.producto.nom_producto = 'Tiempo al aire')[0]
+          producto = null;
+          producto = this.productosByProveedor.filter(item => item.producto.nom_producto == 'Tiempo al aire')[0]
         }
-        let mensaje = (parseInt(valor_venta) >= 40000)?('Esta a punto de realizar una venta de un valor alto, recuerde que usted puede ser victima de ESTAFA. ' +
-            'Si ud confia en este cliente y cree que este no es su caso puede continuar vendiendo recarga de: $' + valor_venta + ' al numero ' + num_celular):
-          'Desea realizar la recarga de: $' + valor_venta + ' al numero ' + num_celular + (venta_ganancias?' desde sus ganancias':'')+ ' ?'
+        let mensaje = (parseInt(this.obj_venta.valor) >= 40000)?('Esta a punto de realizar una venta de un valor alto, recuerde que usted puede ser victima de ESTAFA. ' +
+            'Si ud confia en este cliente y cree que este no es su caso puede continuar vendiendo recarga de: $' + this.obj_venta.valor + ' al numero ' + this.obj_venta.telefono):
+          'Desea realizar la recarga de: $' + this.obj_venta.valor + ' al numero ' + this.obj_venta.telefono + (venta_ganancias?' desde sus ganancias':'')+ ' ?'
         this.RECARGASWS = {
           nodo: this.api.nodoActual['id'],
           usuario_mrn: this.api.usuario['id'],
           producto_venta: producto.id,
           producto: producto.codigo_producto,
-          valor: parseInt(valor_venta),
-          celular: num_celular,
+          valor: parseInt(this.obj_venta.valor),
+          celular: this.obj_venta.telefono,
           usuario: this.USUARIO_MSV,
           password: this.PWD_MVS,
           canal_transaccion: 2,
@@ -2909,6 +2964,7 @@ export class Mrn {
       this.api.post_soap('recargas_ms', datos)
         .subscribe(
           data => {
+
             if (!isUndefined(data)) {
               let respuesta = data
               this.getMisBolsasDinero();
@@ -2916,23 +2972,29 @@ export class Mrn {
                 alert( 'Transaccion exitosa!')
                 this.activeState = [true,false];
                 this.formVentasRecargas.reset();
+                this.formVentasRecargasDirectv.reset();
                 this.formVentasPines.reset();
                 this.formVentasCertificados.reset();
                 this.empresaSeleccionada = '';
                 this.categoriaSeleccionada = '';
                 this.productoCodificadoSeleccionado = '';
                 this.messageSell = [];
+                this.loadingController.dismiss()
+                this.obj_venta = '';
               } else {
                 alert( respuesta)
+                this.loadingController.dismiss()
               }
               this.getLastVentasByNodo()
               this.router.navigate(['inicio']);
             }else {
               alert( 'La transaccion fallo debido a un error interno, comuniquese con MRN Colombia.')
+              this.loadingController.dismiss()
             }
             this.modalController.dismiss({
               'dismissed': true
             });
+
           }
         )
     }
@@ -2954,6 +3016,7 @@ export class Mrn {
       this.api.post_soap('consulta_certificado_ms', datos)
         .subscribe(
           data => {
+
             if (!isUndefined(data)) {
               this.formVentasCertificados.patchValue({
                 direccion:data,
@@ -2965,22 +3028,44 @@ export class Mrn {
         )
     }
 
+    consulta_certificado_runt_ms(datos: Consulta_Certificado_runt_MS) {
+    this.loading = true
+    this.api.post_soap('consulta_certificado_runt_ms', datos)
+      .subscribe(
+        data => {
+          console.log(data)
+          /*if (!isUndefined(data)) {
+            this.formVentasCertificados.patchValue({
+              direccion:data,
+              valor:this.VALOR_CERTIFICADOS
+            });
+          }*/
+          this.loading = false
+        }
+      )
+  }
+
     venderCertificado(venta_ganancias) {
-    let valor_venta = this.VALOR_CERTIFICADOS
+    let valor_venta = (this.empresaSeleccionada.nom_empresa == 'RUNT')?this.formVentasCertificados.value['valor']:this.VALOR_CERTIFICADOS
     let oficina = this.formVentasCertificados.value['oficina']
     let matricula =  this.formVentasCertificados.value['matricula']
     let telefono =  this.formVentasCertificados.value['telefono']
     let noDocumento =  this.formVentasCertificados.value['noDocumento']
     let email =  this.formVentasCertificados.value['email']
 
-    if(valor_venta < this.misBoslsasDinero.saldo_disponible){
-      let producto = this.productosByProveedorSinTiempoAlAire.filter(item=>item.codigo_producto == this.formVentasCertificados.value['oficina'])[0]
-      if(confirm('Desea realizar la venta del certificado con matricula N°: ' + matricula + ' por valor de: ' + producto.producto.valor_producto + ' ?')){
+    if(valor_venta <= this.misBoslsasDinero.saldo_disponible){
+      let producto;
+      if(this.empresaSeleccionada.nom_empresa == 'RUNT'){
+          producto = this.productosByProveedorSinTiempoAlAire[0]
+        }else {
+          producto = this.productosByProveedorSinTiempoAlAire.filter(item=>item.codigo_producto == this.formVentasCertificados.value['oficina'])[0]
+      }
+      if(confirm('Desea realizar la venta del certificado con matricula N°: ' + matricula + ' por valor de: ' + (this.empresaSeleccionada.nom_empresa == 'RUNT')?this.formVentasCertificados.value['valor']:producto.producto.valor_producto + ' ?')){
         this.RECARGASWS = {
           nodo: this.api.nodoActual['id'],
           usuario_mrn: this.api.usuario['id'],
           producto_venta: producto.id,
-          producto: 1290,
+          producto: (this.empresaSeleccionada.nom_empresa == 'RUNT')?producto.codigo_producto:1290,
           valor: valor_venta,
           celular: telefono,
           usuario: this.USUARIO_MSV,
@@ -3012,7 +3097,7 @@ export class Mrn {
     let telefono =  this.formVentasApuestas.value['celular']
     let noDocumento =  this.formVentasApuestas.value['documento']
 
-    if(valor_venta < this.misBoslsasDinero.saldo_disponible){
+    if(valor_venta <= this.misBoslsasDinero.saldo_disponible){
       let producto = this.productosByProveedorSinTiempoAlAire[0]
       if(confirm('Desea realizar la recarga de apuesta al numero N°: ' + telefono + ' ' +
         'por valor de: ' + valor_venta + ' ?')){
@@ -3051,7 +3136,7 @@ export class Mrn {
     let valor_venta = this.formVentasPines.value['valor']
     let num_celular = this.formVentasPines.value['telefono']
     let email = this.formVentasPines.value['email']
-    if(valor_venta < this.misBoslsasDinero.saldo_disponible){
+    if(valor_venta <= this.misBoslsasDinero.saldo_disponible){
       if(confirm('Desea vender '+this.productoCodificadoSeleccionado.producto.nom_producto+' ?')){
         this.RECARGASWS = {
           nodo: this.api.nodoActual['id'],
@@ -3170,6 +3255,43 @@ export class Mrn {
         )
     }
 
+    venderSoat(venta_ganancias) {
+    let valor_venta = this.formVentasPines.value['valor']
+    let num_celular = this.formVentasPines.value['telefono']
+    let email = this.formVentasPines.value['email']
+    if(valor_venta <= this.misBoslsasDinero.saldo_disponible){
+      if(confirm('Desea vender '+this.productoCodificadoSeleccionado.producto.nom_producto+' ?')){
+        this.RECARGASWS = {
+          nodo: this.api.nodoActual['id'],
+          usuario_mrn: this.api.usuario['id'],
+          producto_venta: this.productoCodificadoSeleccionado.id,
+          producto: this.productoCodificadoSeleccionado.codigo_producto,
+          valor: parseInt(valor_venta),
+          celular: num_celular,
+          usuario: this.USUARIO_MSV,
+          password: this.PWD_MVS,
+          canal_transaccion: 2,
+          transaccion_externa: 0,
+          documento: '',
+          oficina: '',
+          matricula: '',
+          email: email,
+          recargas_multiproducto: 1,
+          token: '',
+          nombre: '',
+          cod_municipio: '',
+          cant_sorteos: 0,
+          cant_cartones: 0,
+          bolsa_ganancia: '',
+          venta_ganancias:venta_ganancias
+        }
+        this.recargas_ms(this.RECARGASWS)
+      }
+    }else{
+      this.mensajes('Su saldo es insufuciente para realizar esta venta, por favor solicite saldo.')
+    }
+  }
+
     descarga_soat_ms() {
     this.loading = true
     let obj = new Object();
@@ -3181,7 +3303,6 @@ export class Mrn {
       .subscribe(
         data => {
           if (!isUndefined(data)) {
-            console.log(data)
             if(data[0]=='001'){
             }else {
               alert(data[1])
@@ -3277,7 +3398,6 @@ export class Mrn {
     }
 
     getLastVentasByNodo(state?) {
-        this.loading = true
         this.ventas_by_nodo = [];
         this.api.get('ultimas_ventas/?nodo='+this.api.nodoActual['id'])
             .subscribe(data => {
@@ -3288,7 +3408,6 @@ export class Mrn {
                       this.listaFiltradaVentas = data;
                     }
                 }
-                this.loading = false
             })
     }
 
@@ -3365,7 +3484,8 @@ export class Mrn {
   async mensajes(mensaje) {
     const toast = await this.toastController.create({
       message: mensaje,
-      duration: 2000
+      duration: 2000,
+      position: 'middle'
     });
     toast.present();
   }
@@ -3376,5 +3496,167 @@ export class Mrn {
           valor:20000
         })
       }
+  }
+
+  get_ventas_by_fecha(value: string) {
+    this.loading = true
+    this.total_consulta_ventas = 0;
+    this.ventas_by_fecha = [];
+    this.api.get('ventas_by_fecha/?fecha='+ value+'&nodo='+this.api.nodoActual['id'])
+      .subscribe(
+        data=>{
+          if(!isUndefined(data)){
+            if(data.length){
+              this.ventas_by_fecha = this.crearArbolVentas(data);
+              for(let venta of data){
+                this.total_consulta_ventas += venta.valor
+              }
+            }else {
+              this.ventas_by_fecha = [];
+              this.mensajes('No se han encontrado registros para esta fecha')
+            }
+          }
+          this.loading = false
+        }
+      )
+  }
+
+  get_solicitudes_by_fecha(fecha) {
+    this.loading = true
+    this.total_consulta_ventas = 0;
+    this.misSolicitudesSaldo = [];
+    this.total_sol_contado = 0;
+    this.total_sol_credito = 0;
+    this.total_sol_credito_pend = 0;
+    this.api.get('solicitudes_by_fecha/?fecha='+ fecha+'&nodo='+this.api.nodoActual['id'])
+      .subscribe(
+        data=>{
+          if(!isUndefined(data)){
+            if(data.length){
+              this.misSolicitudesSaldo = this.crearArbolSolicitudesSaldo(data);
+              for(let transaccion of this.misSolicitudesSaldo){
+                for(let solicitud of transaccion.items){
+                  if(transaccion.label == 'SSC'){
+                    this.total_sol_contado +=  solicitud.valor
+                  }else {
+                    if(solicitud.estado == 'Pagado' && solicitud.estadoPago == 'Pago aceptado'){
+                      this.total_sol_credito +=  solicitud.valor
+                    }
+                    if(solicitud.estado == 'Aprobado' && solicitud.estadoPago == 'Pago en revision'){
+                      this.total_sol_credito_pend +=  solicitud.valor
+                    }
+                  }
+                }
+              }
+            }else {
+              this.mensajes('No se han encontrado registros para esta fecha')
+              this.misSolicitudesSaldo = [];
+            }
+          }
+          this.loading = false
+        }
+      )
+  }
+
+  get_pagos_by_fecha(fecha) {
+    this.loading = true
+    this.pagos_by_fecha = [];
+    this.api.get('pagos_by_fecha/?fecha='+ fecha+'&nodo='+this.api.nodoActual['id'])
+      .subscribe(
+        data=>{
+          if(!isUndefined(data)){
+            if(data.length){
+              this.pagos_by_fecha = this.crearArbolPagos(data);
+              console.log(this.pagos_by_fecha);
+            }else {
+              this.mensajes('No se han encontrado registros para esta fecha')
+              this.pagos_by_fecha = [];
+            }
+          }
+          this.loading = false
+        }
+      )
+  }
+
+  crearArbolPagos(data) {
+    let lista = [];
+    for (let item of data) {
+      if (!lista.length) {
+        lista.push({transaccion: item.transaccion, items: []})
+      } else {
+        if (!lista.filter(l => l.transaccion.id == item.transaccion.id).length) {
+          lista.push({transaccion: item.transaccion, items: []})
+        }
+      }
+    }
+
+    for (let item of data) {
+      lista.filter(l => l.transaccion.id == item.transaccion.id)[0]['items']
+        .push(item)
+    }
+    return lista
+  }
+
+  crearArbolVentas(data) {
+    let lista = [];
+    for (let item of data) {
+      if (!lista.length) {
+        lista.push({data: item, label: item.producto_venta.producto.empresa.nom_empresa, items: []})
+      } else {
+        if (!lista.filter(l => l.label == item.producto_venta.producto.empresa.nom_empresa).length) {
+          lista.push({data: item, label: item.producto_venta.producto.empresa.nom_empresa, items: []})
+        }
+      }
+    }
+
+    for (let item of data) {
+      lista.filter(l => l.label == item.producto_venta.producto.empresa.nom_empresa)[0]['items']
+        .push({
+          label: item.producto_venta.producto.empresa.nom_empresa,
+          info: item
+        })
+
+    }
+    return lista
+  }
+
+  crearArbolSolicitudesSaldo(data) {
+    let lista = [];
+    for (let item of data) {
+      if (!lista.length) {
+        lista.push({label: item.tipo_transaccion, items: []})
+      } else {
+        if (!lista.filter(l => l.label == item.tipo_transaccion).length) {
+          lista.push({label: item.tipo_transaccion, items: []})
+        }
+      }
+    }
+
+    for (let item of data) {
+      lista.filter(l => l.label == item.tipo_transaccion)[0]['items']
+        .push(item)
+    }
+    return lista
+  }
+
+  calcular_totales(items) {
+      let total = 0;
+      for(let item of items) {
+        total += item.info.valor
+      }
+      return total
+  }
+
+  async presentLoading() {
+    const loading = await this.loadingController.create({
+      spinner:'lines-sharp',
+      message: 'Un momento por favor...',
+      duration: 60000
+    });
+    await loading.present();
+  }
+
+  getDiasVencimiento(fecha_pago: any) {
+
   }
 }

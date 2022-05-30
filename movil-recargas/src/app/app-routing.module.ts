@@ -9,6 +9,14 @@ const routes: Routes = [
     loadChildren: () => import('./inicio/inicio.module').then( m => m.InicioPageModule) ,canActivate: [AuthGuard]
   },
   {
+    path: 'cartera',
+    loadChildren: () => import('./cartera/cartera.module').then( m => m.CarteraPageModule),canActivate: [AuthGuard]
+  },
+  {
+    path: 'reportes',
+    loadChildren: () => import('./reportes/reportes.module').then( m => m.ReportesPageModule),canActivate: [AuthGuard]
+  },
+  {
     path: 'mora',
     loadChildren: () => import('./mora/mora.module').then( m => m.MoraPageModule) ,canActivate: [AuthGuard]
   },

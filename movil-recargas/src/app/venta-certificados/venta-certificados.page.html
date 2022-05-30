@@ -8,7 +8,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <form [formGroup]="mrn.formVentasCertificados">
+  <form [formGroup]="mrn.formVentasCertificados" *ngIf="mrn.empresaSeleccionada.nom_empresa == 'SNR'">
     <ion-list lines="full" class="ion-no-margin">
       <ion-item detail (click)="presentModal()">
         <ion-avatar slot="start">
@@ -65,6 +65,26 @@
     <div style="margin-top: 35px" *ngIf="mrn.formVentasCertificados.value['direccion']">
       <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasCertificados.valid"
       (click)="present_resumen_ventas();">Vender</ion-button>
+    </div>
+  </form>
+  <form [formGroup]="mrn.formVentasCertificados" *ngIf="mrn.empresaSeleccionada.nom_empresa == 'RUNT'">
+    <ion-list lines="full" class="ion-no-margin">
+      <ion-item>
+        <ion-label position="stacked">Matricula</ion-label>
+        <ion-input formControlName="matricula" style="font-size: 1.5em" type="text"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">E-mail</ion-label>
+        <ion-input formControlName="email" style="font-size: 1.5em" type="text"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Celular</ion-label>
+        <ion-input formControlName="telefono" style="font-size: 1.5em" type="text"></ion-input>
+      </ion-item>
+    </ion-list>
+    <div style="margin-top: 35px">
+      <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasCertificados.valid"
+                  (click)="present_resumen_ventas();">Vender</ion-button>
     </div>
   </form>
 </ion-content>

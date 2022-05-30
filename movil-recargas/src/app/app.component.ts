@@ -115,7 +115,6 @@ export class AppComponent {
             break;
           }
           case 'ACTCOM': {
-            console.log('actualizando datos...')
             this.mrn.getCatServicio();
             this.mrn.getComisiones(this.api.nodoActual)
             break;

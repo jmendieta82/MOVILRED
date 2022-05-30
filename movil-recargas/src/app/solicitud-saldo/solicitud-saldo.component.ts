@@ -3,6 +3,7 @@ import {AlertController, ModalController} from "@ionic/angular";
 import {Mrn} from "../providers/mrn";
 import {Router} from "@angular/router";
 import {ApiService} from "../providers/api";
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 
 @Component({
   selector: 'app-solicitud-saldo',
@@ -10,7 +11,16 @@ import {ApiService} from "../providers/api";
   styleUrls: ['./solicitud-saldo.component.scss'],
 })
 export class SolicitudSaldoComponent implements OnInit {
-  constructor(public modalController: ModalController,public mrn:Mrn,private router:Router,public api:ApiService,public alertController: AlertController) { }
+
+  options: CameraOptions = {
+    quality: 30,
+    destinationType: this.camera.DestinationType.DATA_URL,
+    encodingType: this.camera.EncodingType.JPEG,
+    mediaType: this.camera.MediaType.PICTURE
+  }
+  foto: string;
+  constructor(public modalController: ModalController,public mrn:Mrn,private router:Router,public api:ApiService,
+              public alertController: AlertController,private camera: Camera) { }
 
   ngOnInit() {
   }
@@ -53,7 +63,6 @@ export class SolicitudSaldoComponent implements OnInit {
               fecha_aprobacion: null,
               fecha_pago: null,
             });
-            console.log(this.mrn.formTransaccion.value)
             if (this.mrn.formTransaccion.value['tipo_transaccion'] == 'SSCR') {
               if(this.mrn.Micredito.montoDisponible >= this.mrn.formTransaccion.value['valor']){
                 this.api.post_soap('verificar_numero_sol_cred_dia', this.mrn.formTransaccion.value)
@@ -76,5 +85,19 @@ export class SolicitudSaldoComponent implements OnInit {
       ]
     });
     await alert.present();
+  }
+
+  tomar_foto(){
+    this.camera.getPicture(this.options).then((imageData) => {
+      // imageData is either a base64 encoded string or a file URI
+      // If it's base64 (DATA_URL):
+      let base64Image = 'data:image/jpeg;base64,' + imageData;
+      this.foto = base64Image;
+      this.mrn.formTransaccion.patchValue({
+        soporte:this.foto
+      })
+    }, (err) => {
+      // Handle error
+    });
   }
 }

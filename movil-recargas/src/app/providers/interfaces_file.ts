@@ -38,9 +38,16 @@ interface ProductosMS {
 
 interface Consulta_Certificado_MS {
     oficina:string,
+    placa?:string,
     matricula:string,
     usuario:string,
     password:string,
+}
+
+interface Consulta_Certificado_runt_MS {
+  placa?:string,
+  usuario:string,
+  password:string,
 }
 
 interface Recargar_Recaudo_MS {

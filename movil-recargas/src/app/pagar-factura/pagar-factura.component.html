@@ -9,6 +9,9 @@
 </ion-header>
 
 <ion-content fullscreen>
+  <div style="width:100%;text-align: center;padding: 2px">
+    <img  width="100%" [src]="foto" alt="">
+  </div>
   <div *ngIf="!mrn.abonos.length">
     <form [formGroup]="mrn.formPagos">
       <ion-list>
@@ -29,13 +32,18 @@
       </ion-list>
     </form>
     <div style="text-align: center;width: 100%;margin-top: 30px">
+      <ion-button [disabled]="foto" shape="round" (click)="tomar_foto()"
+                  expand="block">Subir foto comprobante</ion-button>
       <ion-button [disabled]="!mrn.formPagos.valid" shape="round" (click)="guardarPago()"
-                  size="small" expand="block">Enviar pago</ion-button>
+                  expand="block">Enviar pago</ion-button>
     </div>
   </div>
   <div *ngIf="mrn.abonos.length">
     <ion-card *ngFor="let pago of mrn.abonos">
       <ion-card-content>
+        <div style="width:100%;text-align: center;padding: 10px">
+          <img  width="80%" [src]="pago.soporte" alt="">
+        </div>
         <table class="table_transact">
           <tr>
             <th>Entidad recaudo</th>
@@ -51,7 +59,7 @@
           </tr>
           <tr>
             <th>Fecha</th>
-            <td>{{pago.created_at|date}}</td>
+            <td>{{pago.created_at|date:"dd-MM-yyyy" }}</td>
           </tr>
           <tr>
             <th>Estado de pago</th>

@@ -73,6 +73,8 @@
     </ion-list>
   </form>
   <div style="padding_top: 15px">
+    <ion-button *ngIf="mrn.formTransaccion.value['tipo_transaccion'] == 'SSC'" [disabled]="foto" shape="round" (click)="tomar_foto()"
+                expand="block">Subir foto comprobante</ion-button>
     <ion-button expand="full" shape="round" color="primary" [disabled]="!mrn.formTransaccion.valid"
                 (click)="solicitarSaldo()">Solicitar saldo</ion-button>
   </div>

@@ -11,10 +11,10 @@
     <ion-label position="stacked">Contraseña</ion-label>
     <ion-input formControlName="password" type="password"></ion-input>
   </ion-item>
-    <!--<ion-item class="login_form" lines="none">
+    <ion-item class="login_form" lines="none">
       <ion-label style="font-size: 0.8em;color: gray">Mantener mi sesion abierta</ion-label>
-      <ion-checkbox checked="false" slot="end" ></ion-checkbox>
-    </ion-item>-->
+      <ion-checkbox checked="false" formControlName="loggedIn" slot="end" ></ion-checkbox>
+    </ion-item>
     <div style="margin-top: 10%">
         <ion-button [disabled]="!loginForm.valid" shape="round" expand="full" (click)="login()">Ingresar</ion-button>
       </div>
@@ -22,6 +22,6 @@
   <div  *ngIf="mrn.teclado_show" style="font-size: 0.8em;color: gray;text-align: center;margin-top: 10%">
     <p><i class="far fa-copyright"></i> MRN Colombia 2022</p>
     <p>www.mrncolombia.com</p>
-    <p>ver:2.2</p>
+    <p>Ver: 2.1.21</p>
   </div>
 </ion-content>

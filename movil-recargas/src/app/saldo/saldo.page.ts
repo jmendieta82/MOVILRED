@@ -17,6 +17,7 @@ export class SaldoPage implements OnInit {
               public mrn:Mrn,public api:ApiService,public modalController: ModalController,) { }
 
   ngOnInit() {
+    this.mrn.getMisSolicitudesSaldo();
   }
   async presentModal() {
     const modal = await this.modalController.create({

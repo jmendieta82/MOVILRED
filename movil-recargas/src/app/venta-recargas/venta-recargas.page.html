@@ -8,7 +8,7 @@
 </ion-header>
 <ion-content>
   <div *ngIf="mrn.empresaSeleccionada.nom_empresa == 'Directv'">
-    <form [formGroup]="mrn.formVentasRecargas">
+    <form [formGroup]="mrn.formVentasRecargasDirectv">
       <ion-list lines="full" class="ion-no-margin">
         <ion-item detail (click)="presentModal()">
           <ion-avatar slot="start">
@@ -23,48 +23,39 @@
           <ion-row>
             <ion-col size="6">
               <ion-button shape="round" expand="full"
-                          [disabled]="!mrn.formVentasRecargas.value['telefono']"
-                          (click)="cambiarValor(1000)" size="small" >$ 1.000</ion-button>
-            </ion-col>
-            <ion-col size="6">
-              <ion-button shape="round" expand="full"  [disabled]="!mrn.formVentasRecargas.value['telefono']"
-                          (click)="cambiarValor(2000)" size="small" >$ 2.000</ion-button>
-            </ion-col>
-            <ion-col size="6">
-              <ion-button shape="round" expand="full"  [disabled]="!mrn.formVentasRecargas.value['telefono']"
-                          (click)="cambiarValor(5000)" size="small" >$ 5.000</ion-button>
-            </ion-col>
-            <ion-col size="6">
-              <ion-button shape="round" expand="full"  [disabled]="!mrn.formVentasRecargas.value['telefono']"
+                          [disabled]="!mrn.formVentasRecargasDirectv.value['telefono']"
                           (click)="cambiarValor(10000)" size="small" >$ 10.000</ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button shape="round" expand="full"  [disabled]="!mrn.formVentasRecargasDirectv.value['telefono']"
+                          (click)="cambiarValor(15000)" size="small" >$ 15.000</ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button shape="round" expand="full"  [disabled]="!mrn.formVentasRecargasDirectv.value['telefono']"
+                          (click)="cambiarValor(20000)" size="small" >$ 20.000</ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button shape="round" expand="full"  [disabled]="!mrn.formVentasRecargasDirectv.value['telefono']"
+                          (click)="cambiarValor(25000)" size="small" >$ 25.000</ion-button>
             </ion-col>
           </ion-row>
         </ion-grid>
         <ion-item>
-          <ion-label position="stacked">Numero celular</ion-label>
-          <ion-input style="font-size: 1.5em" formControlName="telefono" type="number"></ion-input>
+          <ion-label position="stacked">Numero de tarjeta</ion-label>
+          <ion-input style="font-size: 1.5em" formControlName="telefono" #numero (input)="inseratar_num_tarjeta(numero.value)" type="number"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Valor de la venta</ion-label>
-          <input class="input_number" mask="separator.0" thousandSeparator="," (input)="valorPersonalizado()"
+          <input style="font-size: 1.5em" class="input_number" mask="separator.0" thousandSeparator="," (input)="valorPersonalizado()"
                  inputmode="decimal" formControlName="valor">
-        </ion-item>
-        <ion-item>
-          <ion-avatar slot="start">
-            <i style="font-size: 2.4em;color: gray" class="fas fa-dollar-sign"></i>
-          </ion-avatar>
-          <ion-label>
-            <h1>{{mrn.productoCodificadoSeleccionado?(mrn.productoCodificadoSeleccionado.producto.valor_producto|number):(mrn.formVentasRecargas.value['valor']|number)}}</h1>
-            <h3>{{mrn.productoCodificadoSeleccionado?'Paquete en venta':'Tiempo al aire en venta'}}</h3>
-          </ion-label>
         </ion-item>
       </ion-list>
       <div style="margin-top: 35px">
         <ion-grid>
           <ion-row style="font-size: 0.8em">
             <ion-col>
-              <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasRecargas.valid "
-                          (click)="present_resumen_ventas()">Vender</ion-button>
+              <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasRecargasDirectv.valid "
+                          (click)="present_resumen_ventas(mrn.formVentasRecargasDirectv.value)">Vender</ion-button>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -73,13 +64,13 @@
   </div>
   <div *ngIf="mrn.empresaSeleccionada.nom_empresa != 'Directv'">
     <ion-segment value="tiempo_al_aire" (ionChange)="segmentChanged($event)">
-      <ion-segment-button value="tiempo_al_aire">
+      <ion-segment-button value="tiempo_al_aire" (click)="limpiarFormTAire()">
         <ion-label style="font-size: 0.8em">
           <i class="fas fa-mobile-alt"></i>
           Tiempo al aire
         </ion-label>
       </ion-segment-button>
-      <ion-segment-button value="paquetes">
+      <ion-segment-button value="paquetes" (click)="limpiarFormPaquetes()">
         <ion-label style="font-size: 0.8em">
           <i class="fas fa-cubes"></i>
           Paquetes
@@ -116,25 +107,16 @@
           </ion-item>
           <ion-item>
             <ion-label position="stacked">Valor de la venta</ion-label>
-            <input class="input_number" mask="separator.0" thousandSeparator="," (input)="valorPersonalizado()"
+            <input style="font-size: 1.5em" class="input_number" mask="separator.0" thousandSeparator="," (input)="valorPersonalizado()"
                    inputmode="decimal" formControlName="valor">
-          </ion-item>
-          <ion-item>
-            <ion-avatar slot="start">
-              <i style="font-size: 2.4em;color: gray" class="fas fa-dollar-sign"></i>
-            </ion-avatar>
-            <ion-label>
-              <h1>{{mrn.productoCodificadoSeleccionado?(mrn.productoCodificadoSeleccionado.producto.valor_producto|number):(mrn.formVentasRecargas.value['valor']|number)}}</h1>
-              <h3>{{mrn.productoCodificadoSeleccionado?'Paquete en venta':'Tiempo al aire en venta'}}</h3>
-            </ion-label>
           </ion-item>
         </ion-list>
         <div style="margin-top: 35px">
           <ion-grid>
             <ion-row style="font-size: 0.8em">
               <ion-col>
-                <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasRecargas.valid "
-                            (click)="present_resumen_ventas()">Vender</ion-button>
+                <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasRecargas.valid"
+                            (click)="present_resumen_ventas(mrn.formVentasRecargas.value)">Vender</ion-button>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -144,23 +126,24 @@
     <div *ngIf="segmento == 'paquetes'">
       <form [formGroup]="mrn.formVentasRecargas">
         <ion-list lines="full" class="ion-no-margin">
-          <ion-item detail (click)="presentModal()">
-            <ion-avatar slot="start">
-              <img  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
-            </ion-avatar>
-            <ion-label>
-              <h2>Paquete seleccionado</h2>
-              <p class="wrap">{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Seleccione un paquete.'}}</p>
-            </ion-label>
-          </ion-item>
+          <ion-card>
+            <ion-card-header>
+              <ion-item detail (click)="presentModal()">
+                <ion-avatar slot="start">
+                  <img  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
+                </ion-avatar>
+                <ion-label>
+                  Paquetes {{mrn.empresaSeleccionada.nom_empresa}}
+                </ion-label>
+              </ion-item>
+            </ion-card-header>
+            <ion-card-content>
+              <p style="text-align: justify">{{mrn.productoCodificadoSeleccionado?mrn.productoCodificadoSeleccionado.producto.nom_producto:'Seleccione un paquete.'}}</p>
+            </ion-card-content>
+          </ion-card>
           <ion-item>
             <ion-label position="stacked">Numero celular</ion-label>
             <ion-input style="font-size: 1.5em" formControlName="telefono" type="number"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">Valor de la venta</ion-label>
-            <input class="input_number" mask="separator.0" thousandSeparator="," (input)="valorPersonalizado()"
-                   inputmode="decimal" formControlName="valor">
           </ion-item>
           <ion-item>
             <ion-avatar slot="start">
@@ -177,7 +160,7 @@
             <ion-row style="font-size: 0.8em">
               <ion-col>
                 <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasRecargas.valid "
-                            (click)="present_resumen_ventas()">Vender</ion-button>
+                            (click)="present_resumen_ventas(mrn.formVentasRecargas.value)">Vender</ion-button>
               </ion-col>
             </ion-row>
           </ion-grid>

@@ -19,13 +19,20 @@ import {PagarFacturaComponent} from "./pagar-factura/pagar-factura.component";
 import {IConfig, NgxMaskModule} from "ngx-mask";
 import {UltimasVentasComponent} from "./ultimas-ventas/ultimas-ventas.component";
 import {ResumenVentaComponent} from "./resumen-venta/resumen-venta.component";
+import {ReportesDetalleComponent} from "./reportes-detalle/reportes-detalle.component";
+import {ReporteVentasComponent} from "./reporte-ventas/reporte-ventas.component";
+import {ReporteSolicitudesComponent} from "./reporte-solicitudes/reporte-solicitudes.component";
+import {ReportePagosComponent} from "./reporte-pagos/reporte-pagos.component";
+import { Camera} from '@ionic-native/camera/ngx';
+import {IonicStorageModule} from "@ionic/storage-angular";
 const maskConfig: Partial<IConfig> = {
   validation: false,
 };
 
 @NgModule({
   declarations: [AppComponent,ProductosComponent,SoatVigenteComponent,
-    SoatVencidoComponent,SolicitudSaldoComponent,PagarFacturaComponent,UltimasVentasComponent,ResumenVentaComponent],
+    SoatVencidoComponent,SolicitudSaldoComponent,PagarFacturaComponent,ReportesDetalleComponent,ReporteVentasComponent,
+    ReporteSolicitudesComponent,UltimasVentasComponent,ResumenVentaComponent,ReportePagosComponent],
   entryComponents: [],
   imports: [
     BrowserModule,
@@ -36,8 +43,9 @@ const maskConfig: Partial<IConfig> = {
     HttpClientModule,
     CommonModule,
     NgxMaskModule.forRoot(maskConfig),
+    IonicStorageModule.forRoot()
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },AuthGuard,NonAuthGuard,ApiService,Mrn],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },AuthGuard,NonAuthGuard,ApiService,Mrn,Camera],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

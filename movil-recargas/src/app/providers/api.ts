@@ -4,6 +4,7 @@ import { catchError, map } from 'rxjs/operators';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {AlertController} from "@ionic/angular";
+import {Storage} from "@ionic/storage-angular";
 
 @Injectable()
 export class ApiService {
@@ -19,7 +20,7 @@ export class ApiService {
   public usuario;
   public nodoActual = '';
 
-  constructor(private http: HttpClient,private router:Router,public alertController: AlertController) {}
+  constructor(private http: HttpClient,private router:Router,public alertController: AlertController,private storage: Storage,) {}
 
   login(finisher:string,data){
     let url = `${this.baseURL+'/'+finisher}`;
@@ -83,6 +84,7 @@ export class ApiService {
           handler: () => {
             this.usuario = '';
             this.router.navigate(['/login']);
+            this.storage.remove('usuario');
           }
         }
       ]

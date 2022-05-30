@@ -1,5 +1,8 @@
 <ion-header>
   <ion-toolbar class="background-image header_page">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>Cliente en mora</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -21,7 +24,7 @@
           <td>{{transaccion.fecha_pago|date:"dd-MM-yyyy"}}</td>
         </tr>
         <tr>
-          <th>Fecha de pago</th>
+          <th>Dias de mora</th>
           <td>{{transaccion.dias_mora}}</td>
         </tr>
         <tr>
@@ -46,7 +49,7 @@
         </tr>
       </table>
       <div style="text-align: center;width: 100%;margin-top: 30px">
-        <ion-button (click)="presentModal(transaccion)" shape="round" size="small" expand="block">Pagar factura</ion-button>
+        <ion-button (click)="presentModal(transaccion)" shape="round" size="small" expand="block">{{transaccion.estadoPago=='Pago en revision'?'Ver factura':'Pagar factura'}}</ion-button>
       </div>
     </ion-card-content>
   </ion-card>

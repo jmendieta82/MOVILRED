@@ -31,9 +31,16 @@ export class ProductosComponent implements OnInit {
         break;
       }
       case 'Recargas y Paquetes': {
-        this.mrn.formVentasRecargas.patchValue({
-          valor:producto.producto.valor_producto
-        })
+        if(this.mrn.empresaSeleccionada.nom_empresa == 'Directv'){
+          this.mrn.formVentasRecargasDirectv.patchValue({
+            valor:producto.producto.valor_producto
+          })
+        }else{
+          this.mrn.formVentasRecargas.patchValue({
+            valor:producto.producto.valor_producto
+          })
+        }
+
         break;
       }
       case 'Certificados': {

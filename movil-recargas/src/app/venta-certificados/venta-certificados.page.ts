@@ -25,7 +25,11 @@ export class VentaCertificadosPage implements OnInit {
 
   async present_resumen_ventas() {
     this.mrn.obj_venta = '';
+    this.mrn.formVentasCertificados.patchValue(
+      {valor:35000}
+    )
     this.mrn.obj_venta = this.mrn.formVentasCertificados.value
+
     const modal = await this.modalController.create({
       component: ResumenVentaComponent,
     });
