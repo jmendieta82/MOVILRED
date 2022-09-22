@@ -25,6 +25,9 @@ import {ReporteSolicitudesComponent} from "./reporte-solicitudes/reporte-solicit
 import {ReportePagosComponent} from "./reporte-pagos/reporte-pagos.component";
 import { Camera} from '@ionic-native/camera/ngx';
 import {IonicStorageModule} from "@ionic/storage-angular";
+import {Device} from "@awesome-cordova-plugins/device/ngx";
+import {NetworkService} from "./providers/network";
+import {Network} from "@ionic-native/network/ngx";
 const maskConfig: Partial<IConfig> = {
   validation: false,
 };
@@ -45,7 +48,7 @@ const maskConfig: Partial<IConfig> = {
     NgxMaskModule.forRoot(maskConfig),
     IonicStorageModule.forRoot()
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },AuthGuard,NonAuthGuard,ApiService,Mrn,Camera],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },AuthGuard,NonAuthGuard,ApiService,Mrn,Camera,Device,NetworkService,Network],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

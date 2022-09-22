@@ -13,7 +13,7 @@ import {SolicitudSaldoComponent} from "../solicitud-saldo/solicitud-saldo.compon
 })
 export class SaldoPage implements OnInit {
 
-  constructor(private router:Router,private activatedRoute: ActivatedRoute,
+  constructor(public router:Router,private activatedRoute: ActivatedRoute,
               public mrn:Mrn,public api:ApiService,public modalController: ModalController,) { }
 
   ngOnInit() {

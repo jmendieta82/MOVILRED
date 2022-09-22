@@ -8,6 +8,7 @@ import {
 } from '@capacitor/push-notifications';
 import {ApiService} from "./providers/api";
 import {Router} from "@angular/router";
+import {Device} from "@awesome-cordova-plugins/device/ngx";
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -24,7 +25,7 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    console.log('Initializing HomePage');
+
     // Request permission to use push notifications
     // iOS will prompt user and return if they granted permission or not
     // Android will just grant without prompting

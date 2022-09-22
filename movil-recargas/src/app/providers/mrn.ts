@@ -288,7 +288,7 @@ export class Mrn {
     datos_soat = [];
     listaFiltradaProductos= [];
     listaFiltradaVentas = [];
-    VALOR_CERTIFICADOS = 21000;
+    VALOR_CERTIFICADOS = 22000;
     obj_venta;
     teclado_show = true;
     ventas_by_fecha = [];
@@ -299,6 +299,8 @@ export class Mrn {
     total_sol_credito_pend = 0;
     pagos_by_fecha =[];
     cartera = [];
+    totalFacturasAPagar = 0;
+    facturasSeleccionadas =[]
 
     constructor(public api: ApiService, private fb: FormBuilder,private router:Router,
                 public modalController: ModalController,public alertController: AlertController
@@ -463,6 +465,8 @@ export class Mrn {
             fecha_pago: [''],
             dias_mora: [''],
             observacion: [''],
+            saldo_pendiente_pago: [''],
+
         })
         this.formZona = this.fb.group({
             id: [''],
@@ -483,6 +487,7 @@ export class Mrn {
             saldo: [''],
             numero_recibo: ['', Validators.required],
             soporte: ['', Validators.required],
+            facturas: [''],
             entidad: [''],
         })
         this.formRecoveryPwd = this.fb.group({
@@ -527,60 +532,61 @@ export class Mrn {
           documento: ['',Validators.required],
           valor: ['',Validators.required],
         })
-        this.formVentasSoat = this.fb.group({
-          venta_ganancias:[''],
-          nodo:[''],
-          usuario_mrn:[''],
-          producto_venta:[''],
-          documento:['',Validators.required],
-          producto:['',Validators.required],
-          valor:['',Validators.required],
-          celular:['',Validators.required],
-          clave:[''],
-          usuario:[''],
-          nombres:[''],
-          apellidos:[''],
-          direccion:[''],
-          municipio:[''],
-          departamento:[''],
-          tipo_documento:['',Validators.required],
-          email_soat:['',Validators.required],
-          tipo_persona:[''],
-          tarifa:[''],
-          ValorPrima:[''],
-          valor_contribucion:[''],
-          valor_runt:[''],
-          porcentaje_descuento_electrica:[''],
-          id_marca:[''],
-          cc:[''],
-          chasis:[''],
-          cilindraje:[''],
-          toneladas:[''],
-          motor:[''],
-          marca:[''],
-          lineaVehiculo:[''],
-          placa:['',Validators.required],
-          ocupantes:[''],
-          tipo_servicio:[''],
-          vin:[''],
-          clase_vehiculo_id:[''],
-          codVehMinTrans:[''],
-          vehiculo:[''],
-          linea_vehiculo:[''],
-          departamentoMatricula:[''],
-          aaaa_modelo:[''],
-          tipo_carroceria:[''],
-          inicio_vigencia:[''],
-          finVigencia:[''],
-          tipo_regimen:[''],
-          valor_descuento_intermediario :[''],
-          responsable_rut:[''],
-          valor_descuento_electricos:[''],
-          dtoLey2161:[''],
-          bolsa_ganancia:[''],
-          transaccion_externa:[''],
-          canal_transaccion:[''],
-        })
+      this.formVentasSoat = this.fb.group({
+        venta_ganancias:[''],
+        nodo:[''],
+        usuario_mrn:[''],
+        producto_venta:[''],
+        documento:['',Validators.required],
+        producto:['',Validators.required],
+        valor:['',Validators.required],
+        celular:['',Validators.required],
+        clave:[''],
+        usuario:[''],
+        nombres:[''],
+        apellidos:[''],
+        direccion:['',Validators.required],
+        municipio:['',Validators.required],
+        departamento:['',Validators.required],
+        tipo_documento:['',Validators.required],
+        email_soat:['',Validators.required],
+        tipo_persona:[''],
+        tarifa:[''],
+        ValorPrima:[''],
+        valor_contribucion:[''],
+        valor_runt:[''],
+        porcentaje_descuento_electrica:[''],
+        id_marca:[''],
+        cc:[''],
+        chasis:[''],
+        cilindraje:[''],
+        toneladas:[''],
+        motor:[''],
+        marca:[''],
+        lineaVehiculo:[''],
+        placa:['',Validators.required],
+        ocupantes:[''],
+        tipo_servicio:[''],
+        vin:[''],
+        clase_vehiculo_id:[''],
+        codVehMinTrans:[''],
+        vehiculo:[''],
+        linea_vehiculo:[''],
+        departamentoMatricula:[''],
+        aaaa_modelo:[''],
+        tipo_carroceria:[''],
+        inicio_vigencia:[''],
+        finVigencia:[''],
+        tipo_regimen:[''],
+        valor_descuento_intermediario :[''],
+        responsable_rut:[''],
+        valor_descuento_electricos:[''],
+        dtoLey2161:[''],
+        bolsa_ganancia:[''],
+        transaccion_externa:[''],
+        canal_transaccion:[''],
+        medioVenta:[''],
+      })
     }
 
     llenarFormNodo(nodo: any) {
@@ -1109,15 +1115,20 @@ export class Mrn {
             .subscribe(
                 data => {
                     if (data) {
-                        this.getUsuarioByNodo(data.nodo)
-                        this.verFormUsuario = false;
-                        this.formUsuario.reset();
+                      this.api.usuario = data
+                      this.llenarformUsuario(data)
+                      this.mensajeSistema('Su contraseña ha cambiado correctamente')
                     }
                 }
             )
-
     }
-
+    async mensajeSistema(mensaje) {
+      const toast = await this.toastController.create({
+        message: mensaje,
+        duration: 2000
+      });
+      toast.present();
+    }
     updatePwdUsuarioRec(usuario: any) {
         this.api.update('updatepwd', usuario.id, usuario)
             .subscribe(
@@ -1129,7 +1140,6 @@ export class Mrn {
                     }
                 }
             )
-
     }
 
     updateUsuario(usuario: any) {
@@ -1137,13 +1147,18 @@ export class Mrn {
             .subscribe(
                 data => {
                     if (data) {
-                        this.getUsuarioByNodo(data.nodo)
-                        this.verFormUsuario = false;
-                        this.formUsuario.reset();
+                      this.storage.get('usuario').then((val) => {
+                        if(val!= undefined){
+                          this.storage.set('usuario', JSON.stringify(data));
+                        }
+                      })
+                      this.api.usuario = data
+                      this.llenarformUsuario(data)
+                      this.mensajeSistema('Datos actualizados correctamente')
+
                     }
                 }
             )
-
     }
 
     registrarPuntoDeAcceso(usuario) {
@@ -2140,6 +2155,7 @@ export class Mrn {
     }
 
     addTransaccionTercero() {
+      this.presentLoading()
         this.api.add('transaccion', this.formTransaccion.value)
             .subscribe(
                 data => {
@@ -2148,6 +2164,7 @@ export class Mrn {
                     this.formTransaccion.reset();
                     this.verSubirArchivo = data.tipo_transaccion == 'SSC' ? true : false;
                     this.verFormTransaccionTercero = false;
+                    this.loadingController.dismiss()
                 }
             )
     }
@@ -2557,6 +2574,7 @@ export class Mrn {
                 data => {
                     if (data.length) {
                         this.facturasMora = data;
+                        console.log(data)
                     } else {
                         if(nodo.mora){
                             nodo.mora = false
@@ -2918,7 +2936,9 @@ export class Mrn {
 
     venderRecarga(venta_ganancias) {
 
-      if(this.obj_venta.valor <= this.misBoslsasDinero.saldo_disponible){
+      let bolsa = venta_ganancias?this.misBoslsasDinero.utilidad:this.misBoslsasDinero.saldo_disponible
+
+      if(this.obj_venta.valor <= bolsa){
         let producto;
         if(this.productoCodificadoSeleccionado){
           producto = null;
@@ -2952,7 +2972,8 @@ export class Mrn {
           cant_sorteos: 0,
           cant_cartones: 0,
           bolsa_ganancia: '',
-          venta_ganancias:venta_ganancias
+          venta_ganancias:venta_ganancias,
+          medioVenta:'Movil'
         }
         this.recargas_ms(this.RECARGASWS)
       }else{
@@ -3020,7 +3041,7 @@ export class Mrn {
             if (!isUndefined(data)) {
               this.formVentasCertificados.patchValue({
                 direccion:data,
-                valor:this.VALOR_CERTIFICADOS
+                valor:this.productoCodificadoSeleccionado.producto.valor_producto
               });
             }
             this.loading = false
@@ -3046,14 +3067,14 @@ export class Mrn {
   }
 
     venderCertificado(venta_ganancias) {
-    let valor_venta = (this.empresaSeleccionada.nom_empresa == 'RUNT')?this.formVentasCertificados.value['valor']:this.VALOR_CERTIFICADOS
+    let valor_venta = this.formVentasCertificados.value['valor']
     let oficina = this.formVentasCertificados.value['oficina']
     let matricula =  this.formVentasCertificados.value['matricula']
     let telefono =  this.formVentasCertificados.value['telefono']
     let noDocumento =  this.formVentasCertificados.value['noDocumento']
     let email =  this.formVentasCertificados.value['email']
-
-    if(valor_venta <= this.misBoslsasDinero.saldo_disponible){
+    let bolsa = venta_ganancias?this.misBoslsasDinero.utilidad:this.misBoslsasDinero.saldo_disponible
+    if(valor_venta <= bolsa){
       let producto;
       if(this.empresaSeleccionada.nom_empresa == 'RUNT'){
           producto = this.productosByProveedorSinTiempoAlAire[0]
@@ -3083,7 +3104,8 @@ export class Mrn {
           cant_sorteos: 0,
           cant_cartones: 0,
           bolsa_ganancia: '',
-          venta_ganancias:venta_ganancias
+          venta_ganancias:venta_ganancias,
+          medioVenta:'Movil'
         }
         this.recargas_ms(this.RECARGASWS)
       }
@@ -3096,8 +3118,8 @@ export class Mrn {
     let valor_venta = this.formVentasApuestas.value['valor']
     let telefono =  this.formVentasApuestas.value['celular']
     let noDocumento =  this.formVentasApuestas.value['documento']
-
-    if(valor_venta <= this.misBoslsasDinero.saldo_disponible){
+    let bolsa = venta_ganancias?this.misBoslsasDinero.utilidad:this.misBoslsasDinero.saldo_disponible
+    if(valor_venta <= bolsa){
       let producto = this.productosByProveedorSinTiempoAlAire[0]
       if(confirm('Desea realizar la recarga de apuesta al numero N°: ' + telefono + ' ' +
         'por valor de: ' + valor_venta + ' ?')){
@@ -3123,7 +3145,8 @@ export class Mrn {
           cant_sorteos: 0,
           cant_cartones: 0,
           bolsa_ganancia: '',
-          venta_ganancias:venta_ganancias
+          venta_ganancias:venta_ganancias,
+          medioVenta:'Movil'
         }
         this.recargas_ms(this.RECARGASWS)
       }
@@ -3136,7 +3159,8 @@ export class Mrn {
     let valor_venta = this.formVentasPines.value['valor']
     let num_celular = this.formVentasPines.value['telefono']
     let email = this.formVentasPines.value['email']
-    if(valor_venta <= this.misBoslsasDinero.saldo_disponible){
+    let bolsa = venta_ganancias?this.misBoslsasDinero.utilidad:this.misBoslsasDinero.saldo_disponible
+    if(valor_venta <= bolsa){
       if(confirm('Desea vender '+this.productoCodificadoSeleccionado.producto.nom_producto+' ?')){
         this.RECARGASWS = {
           nodo: this.api.nodoActual['id'],
@@ -3160,7 +3184,8 @@ export class Mrn {
           cant_sorteos: 0,
           cant_cartones: 0,
           bolsa_ganancia: '',
-          venta_ganancias:venta_ganancias
+          venta_ganancias:venta_ganancias,
+          medioVenta:'Movil'
         }
         this.recargas_ms(this.RECARGASWS)
       }
@@ -3235,17 +3260,61 @@ export class Mrn {
                 })
                 if(this.datos_soat['tomador']){
                   this.formVentasSoat.patchValue({
-                    nombres:this.datos_soat['tomador']['nombres'],
-                    apellidos:this.datos_soat['tomador']['apellidos'],
-                    direccion:this.datos_soat['tomador']['direccion'],
-                    municipio:this.datos_soat['tomador']['idMunicipio'],
-                    tipo_persona:(this.datos_soat['tomador']['idTipoDocumento']!=3)?0:this.datos_soat['tomador']['idTipoDocumento'],
-                    departamento:this.datos_soat['tomador']['idDepartamento'],
-                    tipo_regimen:this.datos_soat['tomador']['idResponsabilidadIVA'],
-                    responsable_rut:this.datos_soat['tomador']['idResponsabilidadRUT'],
+                    venta_ganancias:venta_ganancias,
+                    nodo: this.api.nodoActual['id'],
+                    usuario_mrn: this.api.usuario['id'],
+                    producto_venta: producto.id,
+                    producto:producto.codigo_producto,
+                    valor:this.datos_soat['tarifa']['total'],
+                    celular:this.formVentasSoat.value['celular'],
+                    usuario:this.USUARIO_MSV,
+                    clave:this.PWD_MVS,
+                    nombres:this.datos_soat['tomador']?this.datos_soat['tomador']['nombres']:'',
+                    apellidos:this.datos_soat['tomador']?this.datos_soat['tomador']['apellidos']:'',
+                    direccion:this.datos_soat['tomador']?this.formatear_direccion(this.datos_soat['tomador']['direccion']):'',
+                    municipio:this.datos_soat['tomador']?this.datos_soat['tomador']['idMunicipio']:'',
+                    departamento:this.datos_soat['tomador']?this.datos_soat['tomador']['idDepartamento']:'',
+                    tipo_regimen:this.datos_soat['tomador']?this.datos_soat['tomador']['idResponsabilidadIVA']:'',
+                    responsable_rut:this.datos_soat['tomador']?this.datos_soat['tomador']['idResponsabilidadRUT']:'',
+                    tipo_documento:this.formVentasSoat.value['tipo_documento'],
+                    email_soat:this.formVentasSoat.value['email_soat'],
+                    tipo_persona:this.datos_soat['tomador']?((this.datos_soat['tomador']['idTipoDocumento']!=3)?0:this.datos_soat['tomador']['idTipoDocumento']):'',
+                    tarifa:this.datos_soat['tarifa']['idTarifa'],
+                    ValorPrima:this.datos_soat['tarifa']['prima'],
+                    valor_contribucion:this.datos_soat['tarifa']['contribucion'],
+                    valor_runt:this.datos_soat['tarifa']['runt'],
+                    porcentaje_descuento_electrica:this.datos_soat['tarifa']['porcentajeDescuentoElectricos'],
+                    id_marca:this.datos_soat['vehiculo']['idMarca'],
+                    cc:this.datos_soat['vehiculo']['chasis'],
+                    chasis:this.datos_soat['vehiculo']['chasis'],
+                    cilindraje:this.datos_soat['vehiculo']['cilindraje'].toString(),
+                    toneladas:this.datos_soat['vehiculo']['capacidadCarga'],
+                    motor:this.datos_soat['vehiculo']['motor'],
+                    marca:this.datos_soat['vehiculo']['marca'],
+                    lineaVehiculo:this.datos_soat['vehiculo']['lineaVehiculo'],
+                    placa:this.formVentasSoat.value['placa'],
+                    ocupantes:this.datos_soat['vehiculo']['pasajeros'],
+                    tipo_servicio:this.datos_soat['vehiculo']['idServicio'],
+                    vin:this.datos_soat['vehiculo']['vin'],
+                    clase_vehiculo_id:this.datos_soat['vehiculo']['idClaseVehiculo'],
+                    codVehMinTrans:this.datos_soat['vehiculo']['idClaseVehiculoMinisterio'],
+                    vehiculo:this.datos_soat['vehiculo']['claseVehiculoMinisterio'],
+                    linea_vehiculo:this.datos_soat['vehiculo']['idLineaVehiculo'],
+                    departamentoMatricula:this.datos_soat['vehiculo']['departamentoMatricula'],
+                    aaaa_modelo:this.datos_soat['vehiculo']['modelo'],
+                    tipo_carroceria:this.datos_soat['vehiculo']['tipoCarroceria'],
+                    inicio_vigencia:this.datos_soat['inicioVigencia'],
+                    finVigencia:this.datos_soat['finVigencia'],
+                    valor_descuento_intermediario :this.datos_soat['tarifa']['descuentoIntermediario'],
+                    valor_descuento_electricos:this.datos_soat['tarifa']['porcentajeDescuentoElectricos'],
+                    dtoLey2161:this.datos_soat['tarifa']['dtoLey2161'],
+                    bolsa_ganancia:0,
+                    transaccion_externa:0,
+                    canal_transaccion:2,
+                    medioVenta:'Web',
                   })
                 }
-                this.present_modal_Soat_vencido()
+                //this.present_modal_Soat_vencido()
               }else {
                 alert(data[1])
               }
@@ -3255,37 +3324,40 @@ export class Mrn {
         )
     }
 
+    formatear_direccion(dir){
+      return dir.replace(/[^a-zA-Z0-9]/g, ' ');
+    }
+
     venderSoat(venta_ganancias) {
     let valor_venta = this.formVentasPines.value['valor']
     let num_celular = this.formVentasPines.value['telefono']
     let email = this.formVentasPines.value['email']
     if(valor_venta <= this.misBoslsasDinero.saldo_disponible){
       if(confirm('Desea vender '+this.productoCodificadoSeleccionado.producto.nom_producto+' ?')){
-        this.RECARGASWS = {
-          nodo: this.api.nodoActual['id'],
-          usuario_mrn: this.api.usuario['id'],
-          producto_venta: this.productoCodificadoSeleccionado.id,
-          producto: this.productoCodificadoSeleccionado.codigo_producto,
-          valor: parseInt(valor_venta),
-          celular: num_celular,
-          usuario: this.USUARIO_MSV,
-          password: this.PWD_MVS,
-          canal_transaccion: 2,
-          transaccion_externa: 0,
-          documento: '',
-          oficina: '',
-          matricula: '',
-          email: email,
-          recargas_multiproducto: 1,
-          token: '',
-          nombre: '',
-          cod_municipio: '',
-          cant_sorteos: 0,
-          cant_cartones: 0,
-          bolsa_ganancia: '',
-          venta_ganancias:venta_ganancias
-        }
-        this.recargas_ms(this.RECARGASWS)
+        this.formVentasSoat.patchValue({
+          direccion:this.formatear_direccion(this.formVentasSoat.value['direccion'])
+        })
+        this.api.post_soap('recargar_soat_ms', this.formVentasSoat.value)
+          .subscribe(
+            data => {
+              if (!isUndefined(data)) {
+                if (data == '001') {
+                  this.mensajes('El Soat se vendio exitosamente')
+                  this.activeState = [true,false];
+                  this.formVentasSoat.reset();
+                  this.formVentasPines.reset();
+                  this.formVentasCertificados.reset();
+                  this.empresaSeleccionada = '';
+                  this.categoriaSeleccionada = '';
+                  this.productoCodificadoSeleccionado = '';
+                  this.messageSell = [];
+                } else {
+                  this.mensajes(data)
+                }
+              }
+
+            }
+          )
       }
     }else{
       this.mensajes('Su saldo es insufuciente para realizar esta venta, por favor solicite saldo.')
@@ -3485,7 +3557,7 @@ export class Mrn {
     const toast = await this.toastController.create({
       message: mensaje,
       duration: 2000,
-      position: 'middle'
+      position: 'bottom'
     });
     toast.present();
   }
@@ -3498,18 +3570,18 @@ export class Mrn {
       }
   }
 
-  get_ventas_by_fecha(value: string) {
+  get_ventas_by_fecha(fi: any,ff: any) {
     this.loading = true
     this.total_consulta_ventas = 0;
     this.ventas_by_fecha = [];
-    this.api.get('ventas_by_fecha/?fecha='+ value+'&nodo='+this.api.nodoActual['id'])
+    this.api.get('ventas_by_fecha/?fechaInicial='+fi+'&fechaFinal='+ff+'&nodo='+this.api.nodoActual['id'])
       .subscribe(
         data=>{
           if(!isUndefined(data)){
             if(data.length){
               this.ventas_by_fecha = this.crearArbolVentas(data);
               for(let venta of data){
-                this.total_consulta_ventas += venta.valor
+                if(venta.codigo_resultado == '001')this.total_consulta_ventas += venta.valor
               }
             }else {
               this.ventas_by_fecha = [];
@@ -3642,7 +3714,10 @@ export class Mrn {
   calcular_totales(items) {
       let total = 0;
       for(let item of items) {
-        total += item.info.valor
+        if(item.info.codigo_resultado == '001'){
+          total += item.info.valor
+        }
+
       }
       return total
   }
@@ -3658,5 +3733,57 @@ export class Mrn {
 
   getDiasVencimiento(fecha_pago: any) {
 
+  }
+
+  pagarFacturasPendientesRed(facturas) {
+
+   if(this.formPagos.value['abono'] > this.totalFacturasAPagar){
+      this.formTransaccion.patchValue({
+        nodo_id: this.api.nodoActual['id'],
+        usuario_id: this.api.usuario['id'],
+        tipo: 'Solicitud de saldo',
+        tipoServicio: this.api.nodoActual['comisionAnticipada'] ? 'CA' : 'CV',
+        estado: 'Pendiente',
+        ultimoSaldo: 0,
+        dias_mora: 0,
+        fecha_aprobacion: null,
+        fecha_pago: null,
+        valor: this.formPagos.value['abono'] - this.totalFacturasAPagar,
+        tipo_transaccion: 'SSC',
+        medioSolicitud: 'Telefono',
+        soporte: this.formPagos.value['soporte'],
+        saldo_pendiente_pago: 0,
+      });
+      this.addTransaccionTercero();
+      this.formPagos.patchValue({
+        facturas : JSON.stringify(facturas),
+        abono:this.totalFacturasAPagar
+      })
+    }else {
+      this.formPagos.patchValue({
+        facturas : JSON.stringify(facturas)
+      })
+    }
+   this.presentLoading()
+   this.api.post_soap('pagar_facturas',this.formPagos.value)
+      .subscribe(
+        data=>{
+          if(data != undefined){
+            this.formPagos.reset()
+
+            this.facturasSeleccionadas = []
+            this.totalFacturasAPagar = 0
+            this.modalController.dismiss();
+            if(this.api.nodoActual['mora']){
+              this.getFacturasMora(this.api.nodoActual,false)
+              this.router.navigate(['/mora'])
+            }else{
+              this.getCartera(this.api.nodoActual)
+              this.router.navigate(['/cartera'])
+            }
+          }
+          this.loadingController.dismiss()
+        }
+     )
   }
 }

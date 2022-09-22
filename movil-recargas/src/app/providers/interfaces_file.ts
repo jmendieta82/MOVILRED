@@ -21,6 +21,7 @@ interface RecargasWS {
     cant_cartones:number,
     bolsa_ganancia:string,
     venta_ganancias:boolean,
+    medioVenta:string,
 }
 
 interface SaldoWS {

@@ -6,6 +6,8 @@ import {Mrn} from "../providers/mrn";
 import {AlertController, LoadingController, Platform} from "@ionic/angular";
 import {HttpHeaders} from "@angular/common/http";
 import { Storage } from '@ionic/storage-angular';
+import {NetworkService} from "../providers/network";
+
 
 @Component({
   selector: 'app-login',
@@ -16,7 +18,7 @@ export class LoginPage implements OnInit {
 
   constructor(private router:Router,public api:ApiService,private fb:FormBuilder,private storage: Storage,
               public mrn:Mrn,public alertController: AlertController,public loadingController: LoadingController,
-              private platform: Platform) {
+              private platform: Platform,private networkService: NetworkService) {
     this.platform.keyboardDidShow.subscribe(ev => {
       const { keyboardHeight } = ev;
       if(ev['keyboardHeight']){
@@ -54,7 +56,7 @@ export class LoginPage implements OnInit {
         username: this.loginForm.value['username'].toLowerCase(),
         password: this.loginForm.value['password'].toLowerCase(),
       })
-      this.mrn.presentLoading()
+      //this.mrn.presentLoading()
       this.mrn.bad_login =  ''
       this.mrn.loadingText = 'Verificando usuario'
       this.api.login('api-token-auth', this.loginForm.value)
@@ -78,9 +80,6 @@ export class LoginPage implements OnInit {
       this.storage.set('usuario', JSON.stringify(usuario));
     }
     this.api.nodoActual = usuario['nodo'];
-    this.api.headersAll = new HttpHeaders().set('Content-Type','application/json')
-      .set('Authorization','Token '+usuario['token']);
-    this.api.optionsAll = { headers: this.api.headersAll};
     this.api.usuario['puntoAcceso'] = this.mrn.tokenMessage
     this.mrn.registrarPuntoDeAcceso(this.api.usuario)
     if (!this.api.nodoActual['mora']) {

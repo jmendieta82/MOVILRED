@@ -48,9 +48,19 @@ const routes: Routes = [
     path: 'venta-apuestas',
     loadChildren: () => import('./venta-apuestas/venta-apuestas.module').then( m => m.VentaApuestasPageModule),canActivate: [AuthGuard]
   },
+  {
+    path: 'mi-distribuidor',
+    loadChildren: () => import('./mi-distribuidor/mi-distribuidor.module').then( m => m.MiDistribuidorPageModule),canActivate: [AuthGuard]
+  },
+  {
+    path: 'perfil',
+    loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule),canActivate: [AuthGuard]
+  },
   {path: 'login',
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule),canActivate: [NonAuthGuard]},
   { path: '**', redirectTo: '/login' },
+
+
 ];
 
 @NgModule({

@@ -62,6 +62,7 @@ export class SolicitudSaldoComponent implements OnInit {
               dias_mora: 0,
               fecha_aprobacion: null,
               fecha_pago: null,
+              saldo_pendiente_pago: (this.mrn.formTransaccion.value['tipo_transaccion'] == 'SSCR')?this.mrn.formTransaccion.value['valor']:0,
             });
             if (this.mrn.formTransaccion.value['tipo_transaccion'] == 'SSCR') {
               if(this.mrn.Micredito.montoDisponible >= this.mrn.formTransaccion.value['valor']){

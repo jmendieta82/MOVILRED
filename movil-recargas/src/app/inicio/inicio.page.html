@@ -11,7 +11,7 @@
   <ion-refresher slot="fixed" (ionRefresh)="actualizarVentasInicio($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-circle-outline"
-      pullingText="Pull to refresh"
+      pullingText="Deslice para refrescar"
       refreshingSpinner="circles"
       refreshingText="Cargando...">
 
@@ -77,6 +77,10 @@
             <tr>
               <th>Venta id</th>
               <td>{{venta.id}}</td>
+            </tr>
+            <tr>
+              <th>Codigo aprobacion</th>
+              <td>{{venta.codigo_transaccion_externa}}</td>
             </tr>
             <tr>
               <th>Venta desde</th>

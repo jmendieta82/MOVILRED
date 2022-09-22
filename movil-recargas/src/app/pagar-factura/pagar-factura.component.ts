@@ -21,6 +21,7 @@ export class PagarFacturaComponent implements OnInit {
   foto: string;
 
   ngOnInit() {
+
   }
   dismissModal() {
     this.modalController.dismiss({

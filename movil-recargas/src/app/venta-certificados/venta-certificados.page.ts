@@ -26,7 +26,7 @@ export class VentaCertificadosPage implements OnInit {
   async present_resumen_ventas() {
     this.mrn.obj_venta = '';
     this.mrn.formVentasCertificados.patchValue(
-      {valor:35000}
+      {valor:22000}
     )
     this.mrn.obj_venta = this.mrn.formVentasCertificados.value
 

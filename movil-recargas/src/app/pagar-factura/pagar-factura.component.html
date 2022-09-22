@@ -16,7 +16,7 @@
     <form [formGroup]="mrn.formPagos">
       <ion-list>
         <ion-item>
-          <ion-label position="stacked">Valor de abono a la factura</ion-label>
+          <ion-label position="stacked">Total Abono</ion-label>
           <input class="input_number" mask="separator.0" thousandSeparator="," inputmode="decimal" formControlName="abono">
         </ion-item>
         <ion-item>
@@ -31,54 +31,54 @@
         </ion-item>
       </ion-list>
     </form>
-    <div style="text-align: center;width: 100%;margin-top: 30px">
-      <ion-button [disabled]="foto" shape="round" (click)="tomar_foto()"
-                  expand="block">Subir foto comprobante</ion-button>
-      <ion-button [disabled]="!mrn.formPagos.valid" shape="round" (click)="guardarPago()"
-                  expand="block">Enviar pago</ion-button>
-    </div>
   </div>
-  <div *ngIf="mrn.abonos.length">
-    <ion-card *ngFor="let pago of mrn.abonos">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resumen de pago</ion-card-title>
+    </ion-card-header>
+  </ion-card>
+  <div *ngIf="mrn.facturasSeleccionadas.length">
+    <ion-card *ngFor="let factura of mrn.facturasSeleccionadas">
       <ion-card-content>
-        <div style="width:100%;text-align: center;padding: 10px">
-          <img  width="80%" [src]="pago.soporte" alt="">
-        </div>
         <table class="table_transact">
           <tr>
-            <th>Entidad recaudo</th>
-            <td>{{pago.entidad}}</td>
+            <th>Transaccion</th>
+            <td>{{factura.id}}</td>
           </tr>
           <tr>
-            <th>Numero de comprobante</th>
-            <td>{{pago.numero_recibo}}</td>
+            <th>Valor transaccion</th>
+            <td>$ {{factura.valor|number}}</td>
           </tr>
           <tr>
-            <th>Valor de abono</th>
-            <td>${{pago.abono|number}}</td>
-          </tr>
-          <tr>
-            <th>Fecha</th>
-            <td>{{pago.created_at|date:"dd-MM-yyyy" }}</td>
-          </tr>
-          <tr>
-            <th>Estado de pago</th>
-            <td>{{'Pendiente aprobacion'}}</td>
+            <th>Saldo pendiente</th>
+            <td>$ {{factura.saldo_pendiente_pago|number}}</td>
           </tr>
         </table>
       </ion-card-content>
     </ion-card>
+  </div>
+  <div style="text-align: center;width: 100%;margin-top: 30px">
+    <ion-button [disabled]="foto" shape="round" (click)="tomar_foto()"
+                expand="block">Subir foto comprobante</ion-button>
+    <ion-button [disabled]="!mrn.formPagos.valid" shape="round" (click)="mrn.pagarFacturasPendientesRed(mrn.facturasSeleccionadas)"
+                expand="block">Enviar pago</ion-button>
   </div>
 </ion-content>
 <ion-footer>
   <ion-toolbar class="header_page">
     <ion-grid>
       <ion-row>
-        <ion-col style="text-align: center">
-          <span style="font-size: 1.3em;font-weight: bold">{{mrn.transaccionSeleccionada.valor|number}}</span>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.totalFacturasAPagar|number}}</span>
           <p style="font-size: 0.8em">
             <i class="fas fa-dollar-sign" style="margin-right: 2px"></i>
-            Pago minimo</p>
+            Total a pagar</p>
+        </ion-col>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.facturasSeleccionadas.length|number}}</span>
+          <p style="font-size: 0.8em">
+            <i class="fas fa-list"  style="margin-right: 2px"></i>
+            Seleccionadas</p>
         </ion-col>
       </ion-row>
     </ion-grid>

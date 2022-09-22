@@ -79,6 +79,7 @@ export class InicioPage implements OnInit {
 
   actualizarVentasInicio(event: any) {
     this.mrn.getComisiones(this.api.nodoActual)
+    this.mrn.getMisBolsasDinero();
     setTimeout(() => {
       event.target.complete();
     }, 2000);

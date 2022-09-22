@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MRN Colombia</string>
+    <string name="title_activity_main">MRN Colombia</string>
+    <string name="package_name">com.recargas_movil</string>
+    <string name="custom_url_scheme">com.recargas_movil</string>
+</resources>
