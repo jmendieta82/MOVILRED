@@ -1,8 +1,8 @@
 <ion-content no-scroll padding class="background-image">
   <div class="logo" *ngIf="mrn.teclado_show">
-    <img style="margin-top: 25%;width: 100px" src="assets/logo-mirage@2x.svg" alt="mirage-layout"/>
+    <img style="margin-top: 25%;width: 100px" src="assets/nuevo_logo.png" alt="mirage-layout"/>
   </div>
-  <form [formGroup]="this.loginForm" style="margin-top:{{!mrn.teclado_show?'15%':'50%'}};padding: 15px">
+  <form [formGroup]="this.mrn.loginForm" style="margin-top:{{!mrn.teclado_show?'15%':'50%'}};padding: 15px">
     <ion-item class="login_form">
       <ion-label position="stacked">Nombre de usuario</ion-label>
       <ion-input formControlName="username"></ion-input>
@@ -16,12 +16,12 @@
       <ion-checkbox checked="false" formControlName="loggedIn" slot="end" ></ion-checkbox>
     </ion-item>
     <div style="margin-top: 10%">
-        <ion-button [disabled]="!loginForm.valid" shape="round" expand="full" (click)="login()">Ingresar</ion-button>
+        <ion-button [disabled]="!mrn.loginForm.valid" shape="round" expand="full" (click)="login()">Ingresar</ion-button>
       </div>
   </form>
-  <div  *ngIf="mrn.teclado_show" style="font-size: 0.8em;color: gray;text-align: center;margin-top: 10%">
-    <p><i class="far fa-copyright"></i> MRN Colombia 2022</p>
+  <!--<div  *ngIf="mrn.teclado_show" style="font-size: 0.8em;text-align: center;margin-top: 10%">
+    <p><i class="far fa-copyright"></i> MRN Colombia 2023</p>
     <p>www.mrncolombia.com</p>
-    <p>Ver: 2.1.26 Beta</p>
-  </div>
+    <p>Ver: {{mrn.APP_VERSION}}</p>
+  </div>-->
 </ion-content>

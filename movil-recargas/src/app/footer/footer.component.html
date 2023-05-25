@@ -1,0 +1,18 @@
+<ion-footer>
+  <ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" style="text-align: center" [routerLink]="'/saldo'">
+          <span style="font-size: 1.3em;font-weight: bold">$ {{mrn.misBoslsasDinero.saldo_disponible|number}}</span>
+          <p style="font-size: 0.6em">
+            Saldo disponible</p>
+        </ion-col>
+        <ion-col size="6" style="text-align: center" (click)="mrn.getBolsasDinero(api.nodoActual)">
+          <span style="font-size: 1.3em;font-weight: bold">$ {{mrn.misBoslsasDinero.utilidad|number}}</span>
+          <p style="font-size: 0.6em">
+            Mis ganancias</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

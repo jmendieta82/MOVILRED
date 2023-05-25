@@ -12,7 +12,8 @@ import {SoatVigenteComponent} from "../soat-vigente/soat-vigente.component";
 import {SoatVencidoComponent} from "../soat-vencido/soat-vencido.component";
 import Chart from 'chart.js/auto'
 import {Storage} from "@ionic/storage-angular";
-//import {NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels} from "@techiediaries/ngx-qrcode";
+import {InfoFacturaPagadaComponent} from "../info-factura-pagada/info-factura-pagada.component";
+import {ResultadoVentaRecargaComponent} from "../resultado-venta-recarga/resultado-venta-recarga.component";
 
 @Injectable()
 export class Mrn {
@@ -39,6 +40,7 @@ export class Mrn {
     */
 
     public nombreArchivo = '';
+    APP_VERSION = '2.1.44'
     verFormNodo = false;
     formNodo: FormGroup;
     formUsuario: FormGroup;
@@ -60,11 +62,13 @@ export class Mrn {
     formPagos: FormGroup;
     formRecoveryPwd: FormGroup;
     formVentasRecargas: FormGroup;
+    formVentasRecaudo: FormGroup;
     formVentasCertificados: FormGroup;
     formVentasApuestas: FormGroup;
     formVentasSoat: FormGroup;
     formVentasPines: FormGroup;
     formVentasRecargasDirectv: FormGroup;
+    loginForm:FormGroup;
     nodoSeleccionado;
     red:[];
     tipoAliado = [
@@ -301,11 +305,18 @@ export class Mrn {
     cartera = [];
     totalFacturasAPagar = 0;
     facturasSeleccionadas =[]
+    convenios_filtrados: any[];
+    convenios = []
+    convenio_seleccionado:any;
+    factura_consultada: any;
+    factura_pagada: any;
+    trans_resultado_venta: any;
+
 
     constructor(public api: ApiService, private fb: FormBuilder,private router:Router,
                 public modalController: ModalController,public alertController: AlertController
                 ,public toastController: ToastController,public loadingController: LoadingController
-                 ,private storage: Storage,
+                 ,private storage: Storage
               ) {
     }
 
@@ -486,8 +497,11 @@ export class Mrn {
             abono: ['', Validators.required],
             saldo: [''],
             numero_recibo: ['', Validators.required],
-            soporte: ['', Validators.required],
+            soporte: [''],
+            //soporte: ['', Validators.required],
             facturas: [''],
+            pagador : [''],
+            usuario_id : [''],
             entidad: [''],
         })
         this.formRecoveryPwd = this.fb.group({
@@ -503,7 +517,7 @@ export class Mrn {
           email:[''],
           oficina:[''],
         })
-      this.formVentasRecargasDirectv = this.fb.group({
+        this.formVentasRecargasDirectv = this.fb.group({
         telefono:['',Validators.required],
         tarjeta:['',],
         cedula: [''],
@@ -532,7 +546,7 @@ export class Mrn {
           documento: ['',Validators.required],
           valor: ['',Validators.required],
         })
-      this.formVentasSoat = this.fb.group({
+        this.formVentasSoat = this.fb.group({
         venta_ganancias:[''],
         nodo:[''],
         usuario_mrn:[''],
@@ -587,6 +601,18 @@ export class Mrn {
         canal_transaccion:[''],
         medioVenta:[''],
       })
+        this.formVentasRecaudo = this.fb.group({
+        convenio:[''],
+        telefono:[''],
+        referencia:[''],
+        valor:[''],
+      })
+        this.loginForm = this.fb.group({
+          id : [''],
+          username : ['',Validators.required],
+          password : ['',Validators.required],
+          loggedIn : [''],
+        });
     }
 
     llenarFormNodo(nodo: any) {
@@ -1165,7 +1191,7 @@ export class Mrn {
         this.api.update('usuario', usuario.id, usuario)
             .subscribe(
                 data => {
-                    if (data) {
+                    if (!isUndefined(data)) {
                         this.api.usuario = data;
                     }
                 }
@@ -1287,18 +1313,19 @@ export class Mrn {
         return parents
     }
 
-    getComisiones(nodo) {
+    async getComisiones(nodo) {
         this.comisiones = [];
         this.lista_comisiones_venta = [];
-        this.presentLoading()
+        await this.presentLoading()
         this.api.get('comision_list/?nodo=' + nodo.id)
             .subscribe(
                 data => {
-                    if (data.length || !isUndefined(data)) {
+                    if (!isUndefined(data)) {
                         this.comisiones = data
                         if(nodo.tipoComision == 'CA'){
                             let comiAux = this.comisiones.filter(item=>item.proveedorEmpresa.empresa.catServicio.nombre=='Recargas y Paquetes')
-                            this.lista_comisiones_venta = this.crearArbolComisiones(comiAux)
+                            this.lista_comisiones_venta = this.crearArbolComisiones(comiAux.filter(item=>item.proveedorEmpresa.empresa.nom_empresa.toUpperCase()!='Directv'.toUpperCase()))
+                            //this.lista_comisiones_venta = this.crearArbolComisiones(comiAux)
                             this.categoriaSeleccionada =  this.lista_comisiones_venta[0]
                             this.togleVentas(1,true)
                         }else {
@@ -1316,18 +1343,18 @@ export class Mrn {
     }
 
     getMisComisiones(nodo?) {
-        this.misComisiones = [];
-        this.api.get('comision/?nodo=' + nodo.id)
-            .subscribe(
-                data => {
-                    if (data.length) {
-                        this.misComisiones = data.filter(item => item.proveedorEmpresa.activo == true);
-                        this.comisionesNoFilter = data;
-                    } else {
-                        this.misComisiones = [];
-                    }
-                }
-            )
+      this.misComisiones = [];
+      this.api.get('comision/?nodo=' + nodo.id)
+        .subscribe(
+          data => {
+            if (data.length) {
+              this.misComisiones = data.filter(item => item.proveedorEmpresa.activo == true);
+              this.comisionesNoFilter = data;
+            } else {
+              this.misComisiones = [];
+            }
+          }
+        )
     }
 
     addMisComisiones() {
@@ -1668,7 +1695,7 @@ export class Mrn {
         this.api.get('categoriadeservicio/')
             .subscribe(
                 data => {
-                    if (data.length) {
+                    if (!isUndefined(data)) {
                         this.catServicios = data
                     } else {
                         this.catServicios = []
@@ -1728,7 +1755,7 @@ export class Mrn {
       this.productosByProveedorSinTiempoAlAire = []
       this.productosByProveedor = []
       this.listaFiltradaProductos = []
-      this.api.get('productos_codificados/?proveedor=' + proveedor_id+'&empresa='+empresa_id)
+      this.api.get('productos_codificados_movil/?proveedor=' + proveedor_id+'&empresa='+empresa_id)
         .subscribe(
           data => {
             if (data.length) {
@@ -1904,7 +1931,7 @@ export class Mrn {
         this.api.get('creditos/?nodo=' + this.api.nodoActual['id'])
             .subscribe(
                 data => {
-                    if (data.length) {
+                    if (!isUndefined(data)) {
                         this.Micredito = data[0];
                     } else {
                         this.Micredito = '';
@@ -1963,6 +1990,7 @@ export class Mrn {
     }
 
     getBolsasDinero(nodo) {
+      this.presentLoading()
         this.api.get('bolsa_dinero/?nodo=' + nodo.id)
             .subscribe(
                 data => {
@@ -1971,13 +1999,12 @@ export class Mrn {
                     } else {
                         this.bolsasDinero = [];
                     }
+                    this.loadingController.dismiss()
                 }
             )
     }
 
     getMisBolsasDinero() {
-
-        this.loadingText = 'Cargando saldos'
         this.api.get('bolsa_dinero/?nodo=' + this.api.nodoActual['id'])
             .subscribe(
                 data => {
@@ -2098,28 +2125,31 @@ export class Mrn {
     }
 
     getMisSolicitudesSaldo() {
-        this.api.get('mis_solicitudes_saldo/?nodo=' + this.api.nodoActual['id'])
+      this.loading = true;
+        this.api.get('mis_solicitudes_saldo_movil/?nodo=' + this.api.nodoActual['id'])
             .subscribe(
                 data => {
                     if (!isUndefined(data)) {
                         if (data.length) {
                             this.misSolicitudesSaldo = data
-
                             this.getMisBolsasDinero();
                         } else {
                             this.misSolicitudesSaldo = [];
                         }
                     }
+                    this.loading = false;
                 }
             )
     }
 
     addTransaccion() {
+      this.presentLoading()
         this.api.add('transaccion', this.formTransaccion.value)
             .subscribe(
                 data => {
+                  if(data!=undefined){
                     if (this.api.nodoActual['aprobacion_credito_automatico'] && data.tipo_transaccion == 'SSCR') {
-                        this.autorizar_transaccion_credito(data)
+                      this.autorizar_transaccion_credito(data)
                     }
                     this.transaccionSeleccionada = data;
                     this.getMisSolicitudesSaldo();
@@ -2129,10 +2159,14 @@ export class Mrn {
                       'dismissed': true
                     });
                     this.api.get('usuario/?nodo=' +data.nodo.nodoPadre)
-                        .subscribe(
-                            usuario => {
-                                this.enviar_mensaje(usuario[0].id, (data.nodo.razonSocial + ' ha realizado una solicitud de saldo por valor: $' + data.valor), 'SS');
-                            });
+                      .subscribe(
+                        usuario => {
+                          this.enviar_mensaje(usuario[0].id, (data.nodo.razonSocial + ' ha realizado una solicitud de saldo por valor: $' + data.valor), 'SS');
+                        });
+                  }else {
+                    this.mensajes('Algo salio mal, por favor intente mas tarde.')
+                  }
+                  this.loadingController.dismiss()
                 }
             )
     }
@@ -2800,6 +2834,9 @@ export class Mrn {
               })
               if(!this.api.nodoActual['mora']){
                 this.router.navigate(['inicio'])
+              }else {
+                this.getFacturasMora(this.api.nodoActual,false)
+                this.router.navigate(['/mora'])
               }
             }
           }
@@ -2981,16 +3018,108 @@ export class Mrn {
       }
     }
 
+    venderRecargaVer2(venta_ganancias) {
+
+      let bolsa = venta_ganancias?this.misBoslsasDinero.utilidad:this.misBoslsasDinero.saldo_disponible
+
+      if(this.obj_venta.valor <= bolsa){
+        let producto;
+        if(this.productoCodificadoSeleccionado){
+          producto = null;
+          producto = this.productoCodificadoSeleccionado
+        }else{
+          producto = null;
+          producto = this.productosByProveedor.filter(item => item.producto.nom_producto == 'Tiempo al aire')[0]
+        }
+        let mensaje = (parseInt(this.obj_venta.valor) >= 40000)?('Esta a punto de realizar una venta de un valor alto, ' +
+            'recuerde que usted puede ser victima de ESTAFA. ' +
+            'Si ud confia en este cliente y cree que este no es su caso puede ' +
+            'continuar vendiendo recarga de: $' + this.obj_venta.valor + ' al numero ' + this.obj_venta.telefono):
+          'Desea realizar la recarga de: $' + this.obj_venta.valor + ' al numero ' + this.obj_venta.telefono + (venta_ganancias?' desde sus ganancias':'')+ ' ?'
+        this.RECARGASWS = {
+          nodo: this.api.nodoActual['id'],
+          usuario_mrn: this.api.usuario['id'],
+          producto_venta: producto.id,
+          //producto: producto.codigo_producto,
+          producto: 16080,
+          valor: parseInt(this.obj_venta.valor),
+          usuario: '00053026',
+          password: '4Tqa300M',
+          celular: this.obj_venta.telefono,
+          //usuario: this.USUARIO_MSV,
+          //password: this.PWD_MVS,
+          canal_transaccion: 2,
+          transaccion_externa: 0,
+          documento: '1088310088',
+          //documento: '',
+          oficina: '',
+          matricula: '',
+          email: '',
+          recargas_multiproducto: 1,
+          token: '',
+          nombre: '',
+          cod_municipio: '',
+          cant_sorteos: 0,
+          cant_cartones: 0,
+          bolsa_ganancia: '',
+          venta_ganancias:venta_ganancias,
+          medioVenta:'Movil',
+          tipo_datos:this.api.tipo_datos,
+          tipo_red:this.api.tipo_red,
+          app_ver:this.APP_VERSION
+        }
+        this.recargas_ver2_ms(this.RECARGASWS)
+      }else{
+        alert('Su saldo es insufuciente para realizar esta recarga, por favor solicite saldo.')
+      }
+    }
+
     recargas_ms(datos: RecargasWS) {
       this.api.post_soap('recargas_ms', datos)
         .subscribe(
           data => {
-
             if (!isUndefined(data)) {
               let respuesta = data
               this.getMisBolsasDinero();
               if (respuesta == '001') {
                 alert( 'Transaccion exitosa!')
+              } else {
+                alert( respuesta)
+              }
+              this.activeState = [true,false];
+              this.formVentasRecargas.reset();
+              this.formVentasRecargasDirectv.reset();
+              this.formVentasPines.reset();
+              this.formVentasCertificados.reset();
+              this.empresaSeleccionada = '';
+              this.categoriaSeleccionada = '';
+              this.productoCodificadoSeleccionado = '';
+              this.messageSell = [];
+              this.loadingController.dismiss()
+              this.obj_venta = '';
+              this.getLastVentasByNodo()
+              this.router.navigate(['inicio']);
+            }else {
+              alert( 'No se ha podido realizar la transacción, por favor intente mas tarde.')
+              this.loadingController.dismiss()
+            }
+            this.modalController.dismiss({
+              'dismissed': true
+            });
+
+          }
+        )
+    }
+
+    recargas_ver2_ms(datos: RecargasWS) {
+      this.api.post_soap('recargas_ver2_ms', datos)
+        .subscribe(
+          data => {
+            if (!isUndefined(data)) {
+              let respuesta = JSON.parse(data)
+              if(respuesta.codigo == '001'){
+                this.trans_resultado_venta = respuesta.data
+                this.present_resumen_ventas()
                 this.activeState = [true,false];
                 this.formVentasRecargas.reset();
                 this.formVentasRecargasDirectv.reset();
@@ -3002,16 +3131,16 @@ export class Mrn {
                 this.messageSell = [];
                 this.loadingController.dismiss()
                 this.obj_venta = '';
-              } else {
-                alert( respuesta)
-                this.loadingController.dismiss()
+                this.getMisBolsasDinero();
+                //this.getLastVentasByNodo()
+                this.router.navigate(['inicio']);
+              }else{
+                alert(respuesta.mensaje)
               }
-              this.getLastVentasByNodo()
-              this.router.navigate(['inicio']);
             }else {
-              alert( 'La transaccion fallo debido a un error interno, comuniquese con MRN Colombia.')
-              this.loadingController.dismiss()
+              alert( 'No se ha podido realizar la transacción, por favor intente mas tarde.')
             }
+            this.loadingController.dismiss()
             this.modalController.dismiss({
               'dismissed': true
             });
@@ -3019,6 +3148,49 @@ export class Mrn {
           }
         )
     }
+
+  async present_resumen_ventas() {
+    const modal = await this.modalController.create({
+      component: ResultadoVentaRecargaComponent,
+    });
+    return await modal.present();
+  }
+    recargas_certificado_ms(datos: RecargasWS) {
+    this.api.post_soap('recargas_certificado_ms', datos)
+      .subscribe(
+        data => {
+          if (!isUndefined(data)) {
+            let respuesta = JSON.parse(data)
+            this.getMisBolsasDinero();
+            if (respuesta.codigo == '001') {
+              alert( 'Transaccion exitosa!')
+            } else {
+              alert( respuesta.descripcion)
+            }
+            this.activeState = [true,false];
+            this.formVentasRecargas.reset();
+            this.formVentasRecargasDirectv.reset();
+            this.formVentasPines.reset();
+            this.formVentasCertificados.reset();
+            this.empresaSeleccionada = '';
+            this.categoriaSeleccionada = '';
+            this.productoCodificadoSeleccionado = '';
+            this.messageSell = [];
+            this.loadingController.dismiss()
+            this.obj_venta = '';
+            this.getLastVentasByNodo()
+            this.router.navigate(['inicio']);
+          }else {
+            alert( 'La transaccion fallo debido a un error interno, comuniquese con MRN Colombia.')
+            this.loadingController.dismiss()
+          }
+          this.modalController.dismiss({
+            'dismissed': true
+          });
+
+        }
+      )
+  }
 
     consultarCertificado() {
         if(confirm('Desea realizar la consulta de el predio N°: ' + this.formVentasCertificados.value['matricula'] + ' ?')){
@@ -3067,21 +3239,25 @@ export class Mrn {
   }
 
     venderCertificado(venta_ganancias) {
-    let valor_venta = this.formVentasCertificados.value['valor']
+    //let valor_venta = this.formVentasCertificados.value['valor']
     let oficina = this.formVentasCertificados.value['oficina']
     let matricula =  this.formVentasCertificados.value['matricula']
     let telefono =  this.formVentasCertificados.value['telefono']
     let noDocumento =  this.formVentasCertificados.value['noDocumento']
     let email =  this.formVentasCertificados.value['email']
     let bolsa = venta_ganancias?this.misBoslsasDinero.utilidad:this.misBoslsasDinero.saldo_disponible
-    if(valor_venta <= bolsa){
       let producto;
       if(this.empresaSeleccionada.nom_empresa == 'RUNT'){
-          producto = this.productosByProveedorSinTiempoAlAire[0]
-        }else {
-          producto = this.productosByProveedorSinTiempoAlAire.filter(item=>item.codigo_producto == this.formVentasCertificados.value['oficina'])[0]
+        producto = this.productosByProveedorSinTiempoAlAire.filter(item=>item.codigo_producto == 1382)[0]
+      }else {
+        producto = this.productosByProveedorSinTiempoAlAire.filter(item=>item.codigo_producto == this.formVentasCertificados.value['oficina'])[0]
       }
-      if(confirm('Desea realizar la venta del certificado con matricula N°: ' + matricula + ' por valor de: ' + (this.empresaSeleccionada.nom_empresa == 'RUNT')?this.formVentasCertificados.value['valor']:producto.producto.valor_producto + ' ?')){
+      let valor_venta = producto.producto.valor_producto
+
+    if(valor_venta <= bolsa){
+
+      if(confirm('Desea realizar la venta del certificado con matricula N°: ' + matricula + ' por valor de: ' +
+      (this.empresaSeleccionada.nom_empresa == 'RUNT')?this.formVentasCertificados.value['valor']:producto.producto.valor_producto + ' ?')){
         this.RECARGASWS = {
           nodo: this.api.nodoActual['id'],
           usuario_mrn: this.api.usuario['id'],
@@ -3107,7 +3283,7 @@ export class Mrn {
           venta_ganancias:venta_ganancias,
           medioVenta:'Movil'
         }
-        this.recargas_ms(this.RECARGASWS)
+        this.recargas_certificado_ms(this.RECARGASWS)
       }
     }else{
       this.mensajes('Su saldo es insufuciente para realizar esta recarga, por favor solicite saldo.')
@@ -3148,7 +3324,7 @@ export class Mrn {
           venta_ganancias:venta_ganancias,
           medioVenta:'Movil'
         }
-        this.recargas_ms(this.RECARGASWS)
+        this.recargas_ver2_ms(this.RECARGASWS)
       }
     }else{
       alert('Su saldo es insufuciente para realizar esta recarga, por favor solicite saldo.')
@@ -3470,6 +3646,7 @@ export class Mrn {
     }
 
     getLastVentasByNodo(state?) {
+      this.presentLoading()
         this.ventas_by_nodo = [];
         this.api.get('ultimas_ventas/?nodo='+this.api.nodoActual['id'])
             .subscribe(data => {
@@ -3480,6 +3657,7 @@ export class Mrn {
                       this.listaFiltradaVentas = data;
                     }
                 }
+                this.loadingController.dismiss()
             })
     }
 
@@ -3581,7 +3759,7 @@ export class Mrn {
             if(data.length){
               this.ventas_by_fecha = this.crearArbolVentas(data);
               for(let venta of data){
-                if(venta.codigo_resultado == '001')this.total_consulta_ventas += venta.valor
+                if(venta.codigo_resultado == '001'||venta.codigo_resultado == '00')this.total_consulta_ventas += venta.valor
               }
             }else {
               this.ventas_by_fecha = [];
@@ -3593,14 +3771,14 @@ export class Mrn {
       )
   }
 
-  get_solicitudes_by_fecha(fecha) {
+  get_solicitudes_by_fecha(fechai,fechaf) {
     this.loading = true
     this.total_consulta_ventas = 0;
     this.misSolicitudesSaldo = [];
     this.total_sol_contado = 0;
     this.total_sol_credito = 0;
     this.total_sol_credito_pend = 0;
-    this.api.get('solicitudes_by_fecha/?fecha='+ fecha+'&nodo='+this.api.nodoActual['id'])
+    this.api.get('solicitudes_by_fecha/?fechai='+fechai+'&fechaf='+fechaf+'&nodo='+this.api.nodoActual['id'])
       .subscribe(
         data=>{
           if(!isUndefined(data)){
@@ -3614,7 +3792,7 @@ export class Mrn {
                     if(solicitud.estado == 'Pagado' && solicitud.estadoPago == 'Pago aceptado'){
                       this.total_sol_credito +=  solicitud.valor
                     }
-                    if(solicitud.estado == 'Aprobado' && solicitud.estadoPago == 'Pago en revision'){
+                    if(solicitud.estado == 'Aprobado' && solicitud.estadoPago == 'Pendiente'){
                       this.total_sol_credito_pend +=  solicitud.valor
                     }
                   }
@@ -3630,16 +3808,15 @@ export class Mrn {
       )
   }
 
-  get_pagos_by_fecha(fecha) {
+  get_pagos_by_fecha(fecha,fecha2) {
     this.loading = true
     this.pagos_by_fecha = [];
-    this.api.get('pagos_by_fecha/?fecha='+ fecha+'&nodo='+this.api.nodoActual['id'])
+    this.api.get('pagos_by_fecha/?fecha='+ fecha+'&fecha2='+fecha2+'&nodo='+this.api.nodoActual['id'])
       .subscribe(
         data=>{
           if(!isUndefined(data)){
             if(data.length){
               this.pagos_by_fecha = this.crearArbolPagos(data);
-              console.log(this.pagos_by_fecha);
             }else {
               this.mensajes('No se han encontrado registros para esta fecha')
               this.pagos_by_fecha = [];
@@ -3689,6 +3866,7 @@ export class Mrn {
         })
 
     }
+
     return lista
   }
 
@@ -3714,7 +3892,7 @@ export class Mrn {
   calcular_totales(items) {
       let total = 0;
       for(let item of items) {
-        if(item.info.codigo_resultado == '001'){
+        if(item.info.codigo_resultado == '001'||item.info.codigo_resultado == '00'){
           total += item.info.valor
         }
 
@@ -3726,11 +3904,18 @@ export class Mrn {
     const loading = await this.loadingController.create({
       spinner:'lines-sharp',
       message: 'Un momento por favor...',
-      duration: 60000
+      //duration: 60000
     });
     await loading.present();
   }
-
+  async presentLoadingVentas() {
+    const loading = await this.loadingController.create({
+      spinner:'lines-sharp',
+      message: 'Esperando respuesta del proveedor...',
+      //duration: 60000
+    });
+    await loading.present();
+  }
   getDiasVencimiento(fecha_pago: any) {
 
   }
@@ -3757,20 +3942,23 @@ export class Mrn {
       this.addTransaccionTercero();
       this.formPagos.patchValue({
         facturas : JSON.stringify(facturas),
-        abono:this.totalFacturasAPagar
+        abono:this.totalFacturasAPagar,
+        pagador:this.api.nodoActual['id'],
+        usuario_id:this.api.usuario['id']
       })
     }else {
       this.formPagos.patchValue({
-        facturas : JSON.stringify(facturas)
+        facturas : JSON.stringify(facturas),
+        pagador:this.api.nodoActual['id'],
+        usuario_id:this.api.usuario['id']
       })
     }
    this.presentLoading()
-   this.api.post_soap('pagar_facturas',this.formPagos.value)
+   this.api.post_soap('pagar_facturas_revision',this.formPagos.value)
       .subscribe(
         data=>{
           if(data != undefined){
             this.formPagos.reset()
-
             this.facturasSeleccionadas = []
             this.totalFacturasAPagar = 0
             this.modalController.dismiss();
@@ -3786,4 +3974,159 @@ export class Mrn {
         }
      )
   }
+
+  get_convenios_practisistemas(parametro_busqueda) {
+    //this.presentLoading()
+    if(parametro_busqueda.length >=3){
+      let parametros = {
+        /*"idcomercio":"1425",
+        "claveventa":"1234",*/
+        "idcomercio": "113935",
+        "claveventa": "1379",
+        "tipoConsulta":"convenios_consulta",
+        "data" : {"tipo": "0","key": parametro_busqueda},
+        "idTrx":"1",
+        "end_point":"preConsulta"
+      }
+      this.api.post_soap('consulta_convenios_practi',parametros)
+        .subscribe(
+          datos =>{
+            this.convenios = []
+            let object = JSON.parse(datos['data']['convenios'])
+            for (const property in object) {
+              this.convenios.push(object[property])
+            }
+            //this.loadingController.dismiss()
+          }
+        )
+    }else{
+      this.convenios = []
+    }
+  }
+
+  consultar_referencia(){
+    this.presentLoading()
+    let parametros = {}
+    if (this.formVentasRecaudo.value['referencia'].toString().length < 12){
+      parametros = {
+        /*"idcomercio": "113935",
+        "claveventa": "1379",*/
+        "idcomercio": "1425",
+        "claveventa": "1234",
+        "tipoConsulta":"consultaValorConvRef",
+        "data":{
+          "idConv":this.convenio_seleccionado.id,
+          "extConvenio":this.formVentasRecaudo.value['referencia']
+        },
+        "idTrx":"1",
+        "end_point":"preConsulta"
+      }
+    }else {
+      parametros = {
+        "idcomercio": "113935",
+        "claveventa": "1379",
+        "tipoConsulta":"verifyBillEan",
+        "data":{
+          "eanbill":this.formVentasRecaudo.value['referencia'].toString()
+        },
+        "idTrx":"1",
+        "end_point":"preConsulta"
+      }
+    }
+    this.api.post_soap('consulta_referencia_practi',parametros)
+      .subscribe(
+        datos =>{
+          let respuesta = JSON.parse(datos)
+          if(respuesta['codigo']!='00'){
+            alert(respuesta['data']['data']['reply'])
+          }else {
+            this.factura_consultada = respuesta['data']['data']
+          }
+          this.loadingController.dismiss()
+        }
+      )
+  }
+  async present_resumen_pago() {
+    const modal = await this.modalController.create({
+      component: InfoFacturaPagadaComponent,
+    });
+    return await modal.present();
+  }
+  pagar_factura(venta_ganancias){
+    let producto = this.productosByProveedorSinTiempoAlAire[0]
+    let parametros = {
+      /*"idcomercio": "113935",
+      "claveventa": "1379",*/
+      "idcomercio": "1425",
+      "claveventa": "1234",
+      "celular":this.formVentasRecaudo.value['telefono'],
+      "operador":"fc",
+      "valor":this.factura_consultada.valorPago,
+      "jsonAdicional":{"idPre":this.factura_consultada.idPre},
+      "idtrans":"1",
+      "end_point":"pracRec",
+      "venta_ganancias":venta_ganancias,
+      "nodo":this.api.nodoActual['id'],
+      "usuario_mrn":this.api.usuario['id'],
+      "producto_venta":producto.id,
+      "medioVenta":'Movil',
+      "tipo_datos":this.api.tipo_datos,
+      "tipo_red":this.api.tipo_red,
+      "app_ver":this.APP_VERSION
+
+    }
+    this.api.post_soap('pago_factura_practi',parametros)
+      .subscribe(
+        datos =>{
+          let respuesta = JSON.parse(datos)
+          if(respuesta.codigo == '00'){
+            this.trans_resultado_venta = respuesta.data
+            this.factura_pagada = datos
+            this.present_resumen_ventas()
+            this.loadingController.dismiss()
+            this.modalController.dismiss({
+              'dismissed': true
+            });
+            //this.present_resumen_pago()
+          }else{
+            alert(respuesta.mensaje)
+          }
+        }
+      )
+  }
+
+  cancelartVenta() {
+    this.router.navigate(['/inicio'])
+  }
+
+  login_actions(usuario){
+    this.teclado_show = true;
+    this.api.usuario = usuario;
+    if(this.loginForm.value['loggedIn']){
+      this.storage.set('usuario', JSON.stringify(usuario));
+    }
+    this.api.nodoActual = usuario['nodo'];
+    this.api.usuario['puntoAcceso'] = this.tokenMessage
+    if (!this.api.nodoActual['mora']) {
+      if(this.api.nodoActual['tipo']=='Comercio'){
+        this.getComisiones(this.api.nodoActual)
+        this.getCatServicio();
+        this.getMisBolsasDinero();
+        this.router.navigate(['inicio']);
+      }else {
+        this.mensajes('El usuario que esta intentando ingresar es de tipo distribuidor, ' +
+          'en MRN Colombia tenemos otra aplicacion especializada para usted.')
+      }
+    } else {
+      this.getNodoPadre()
+      this.getFacturasMora(this.api.nodoActual,false)
+      this.router.navigate(['/mora'])
+    }
+    this.registrarPuntoDeAcceso(this.api.usuario)
+  }
+
+  imprimir(){
+
+  }
+
 }

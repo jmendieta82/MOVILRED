@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar class="header_page">
+    <ion-buttons slot="end">
+      <ion-button (click)="router.navigate(['inicio'])"><i class="fas fa-times" style="font-size: 1.0em"></i></ion-button>
+    </ion-buttons>
+    <ion-title>Estado de cartera</ion-title>
+    <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div *ngIf="mrn.cartera.length">
+    <ion-card *ngIf="!mrn.facturasSeleccionadas.length">
+      <ion-card-content>
+        Seleccione una o más transacciones y presione el boton "Pagar factura"
+      </ion-card-content>
+    </ion-card>
+    <ion-list>
+      <ion-item  *ngFor="let transaccion of mrn.cartera">
+        <ion-label>
+          <h2>Transaccion {{transaccion.id}}</h2>
+          <h3>Pagado: $ {{transaccion.valor - transaccion.saldo_pendiente_pago|number}}</h3>
+          <h3>Saldo:  $ {{transaccion.saldo_pendiente_pago|number}}</h3>
+          <p>Vence : {{transaccion.fecha_pago|date:"dd-MM-yyyy"}} </p>
+          <p>Estado : {{transaccion.estadoPago}} </p>
+        </ion-label>
+        <ion-checkbox *ngIf="transaccion.saldo_pendiente_pago" slot="end" (ionChange)="seleccionarFactura(transaccion)" ></ion-checkbox>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="mrn.facturasSeleccionadas.length" style="text-align: center;width: 100%;margin-top: 30px">
+      <ion-button (click)="presentModal()" shape="round" size="small" expand="block">Pagar factura</ion-button>
+    </div>
+  </div>
+  <ion-card *ngIf="!mrn.cartera.length">
+    <ion-card-content>
+      No tiene transacciones pendientes por pagar, para consultar el estado de sus transacciones diríjase a la opción "Solicitud de saldo" del menú principal.
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="header_page">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.totalFacturasAPagar|number}}</span>
+          <p style="font-size: 0.8em">
+            <i class="fas fa-dollar-sign" style="margin-right: 2px"></i>
+            Total a pagar</p>
+        </ion-col>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">{{mrn.facturasSeleccionadas.length|number}}</span>
+          <p style="font-size: 0.8em">
+            <i class="fas fa-list"  style="margin-right: 2px"></i>
+            Seleccionadas</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

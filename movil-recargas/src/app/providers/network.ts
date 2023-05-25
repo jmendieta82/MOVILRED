@@ -24,11 +24,13 @@ export class NetworkService {
     if (this.platform.is('cordova')) {
       // on Device
       this.network.onConnect().subscribe(() => {
+        this.getNetworkType()
         console.log('network was connected :-)');
         this.hasConnection.next(true);
         return;
       });
       this.network.onDisconnect().subscribe(() => {
+        this.getNetworkType()
         console.log('network was disconnected :-(');
         this.hasConnection.next(false);
         return;
@@ -44,20 +46,23 @@ export class NetworkService {
       this.online.subscribe((isOnline) =>{
         if (isOnline) {
           this.hasConnection.next(true);
-          console.log('network was connected :-)');
+          console.log('network was online :-)');
+          this.getNetworkType()
+
         } else {
-          console.log('network was disconnected :-(');
+          console.log('network was offline :-(');
+          this.getNetworkType()
           this.hasConnection.next(false);
-          console.log(isOnline);
         }
       });
     }
-    this.getNetworkType()
     this.testNetworkConnection();
+
   }
 
   public getNetworkType(){
     this.network_type = this.network.type;
+
   }
 
   public getNetworkStatus(): Observable<boolean> {
@@ -72,11 +77,11 @@ export class NetworkService {
     try {
       this.getNetworkTestRequest().subscribe(
         success => {
-          // console.log('Request to Google Test  success', success);
+          console.log('Request to Google Test  success', success);
           this.hasConnection.next(true);
           return;
         }, error => {
-          // console.log('Request to Google Test fails', error);
+          console.log('Request to Google Test fails', error);
           this.hasConnection.next(false);
           return;
         });

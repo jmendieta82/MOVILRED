@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar class="header_page">
+    <ion-buttons slot="end">
+      <ion-button (click)="api.nodoActual['mora']?router.navigate(['mora']):router.navigate(['inicio'])"><i class="fas fa-times" style="font-size: 1.0em"></i></ion-button>
+    </ion-buttons>
+    <ion-title>Consultas</ion-title>
+    <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item detail (click)="presentModal('Comisiones')">
+      <ion-label>Mis comisiones</ion-label>
+    </ion-item>
+    <ion-item detail (click)="presentModalReporteVentas('Ventas')">
+      <ion-label>Ventas</ion-label>
+    </ion-item>
+    <ion-item detail (click)="presentModalReporteSolicitudes('Solicitudes de saldo')">
+      <ion-label>Solicitudes de saldo</ion-label>
+    </ion-item>
+    <ion-item detail (click)="presentModalReportePagos('Pagos de saldos')">
+      <ion-label>Pago de saldos</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

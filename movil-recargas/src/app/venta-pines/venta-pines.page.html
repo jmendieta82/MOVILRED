@@ -37,8 +37,9 @@
       </ion-item>
     </ion-list>
     <div style="margin-top: 35px">
-      <ion-button size="small" expand="block" [disabled]="!mrn.formVentasPines.valid"
+      <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasPines.valid"
       (click)="present_resumen_ventas()">Vender</ion-button>
+      <ion-button shape="round" color="light" expand="block" (click)="mrn.cancelartVenta()">Cancelar</ion-button>
     </div>
   </form>
 </ion-content>

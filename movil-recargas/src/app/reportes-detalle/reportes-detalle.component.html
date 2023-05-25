@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar class="header_page">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{mrn.tipo_reporte}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+    <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+<ion-content style="padding: 10px">
+  <ion-card>
+    <ion-card-content>
+      Por favor seleccione una categoria para realizar su consulta.
+      <ion-item>
+        <ion-label>Categorias</ion-label>
+        <ion-select (ionChange)="seleccionarCategoria($event)">
+          <ion-select-option *ngFor="let categoria of mrn.lista_comisiones_venta"  value="{{categoria['data'].proveedorEmpresa.empresa.catServicio.id}}">
+            {{categoria['data'].proveedorEmpresa.empresa.catServicio.nombre}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+<!--    <div style="padding: 5px;width: 100%">-->
+<!--      <canvas #doughnutCanvas style="height:50vh!important"></canvas>-->
+<!--    </div>-->
+    <ion-list *ngIf="api.nodoActual['tipoComision']=='CV'">
+      <ion-item  *ngFor="let item of convencion">
+        <ion-avatar style="margin-right: 15px">
+          <img src="{{item.proveedorEmpresa.empresa['imagen']}}" alt="">
+        </ion-avatar>
+        <ion-label>
+          <h3>{{item.proveedorEmpresa.empresa.nom_empresa}}</h3>
+        </ion-label>
+        <ion-label slot="end">
+          <h3>{{item.micomision}}%</h3>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  <ion-list *ngIf="api.nodoActual['tipoComision']=='CA'">
+    <ion-item  *ngFor="let item of convencion">
+      <ion-avatar style="margin-right: 15px">
+        <img src="{{item.proveedorEmpresa.empresa['imagen']}}" alt="">
+      </ion-avatar>
+      <ion-label>
+        <h3>{{item.proveedorEmpresa.empresa.nom_empresa}}</h3>
+      </ion-label>
+      <ion-label slot="end">
+        <h3>{{api.nodoActual['comisionAnticipada']}}%</h3>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

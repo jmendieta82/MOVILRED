@@ -1,0 +1,130 @@
+<ion-header translucent>
+  <ion-toolbar class="background-image header_page">
+    <ion-title>Resultado de la venta</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+</ion-header>
+
+<ion-content fullscreen>
+  <div style="padding: 10px 10px 20px 20px">
+    <table style="font-size: 0.87em">
+      <tr>
+        <th style="text-align: left;padding: 5px">Transacción N°</th>
+        <td style="text-align: right">{{mrn.trans_resultado_venta.id}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left;padding: 5px">Saldo antes de la venta</th>
+        <td style="text-align: right">$ {{mrn.trans_resultado_venta.ultimoSaldo|number}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left;padding: 5px">Valor venta</th>
+        <td style="text-align: right">$ {{mrn.trans_resultado_venta.valor|number}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left;padding: 5px">Saldo despues de la venta</th>
+        <td style="text-align: right">$ {{mrn.trans_resultado_venta.saldo_actual|number}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left;padding: 5px">Número celular</th>
+        <td style="text-align: right">{{mrn.trans_resultado_venta.numeroDestino}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left;padding: 5px">Empresa</th>
+        <td style="text-align: right">{{mrn.trans_resultado_venta.nombre_empresa}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left;padding: 5px">Fecha</th>
+        <td style="text-align: right;font-size: 0.8em">{{mrn.trans_resultado_venta.hour_at| date:'short'}}</td>
+      </tr>
+      <tr *ngIf="this.mrn.factura_consultada">
+        <th style="text-align: left;padding: 5px">Convenio</th>
+      </tr>
+      <tr *ngIf="this.mrn.factura_consultada">
+        <td colspan="2" style="text-align: right;font-size: 0.8em">{{this.mrn.factura_consultada.nconvenio?this.mrn.factura_consultada.nconvenio:this.mrn.factura_consultada.nombre}}</td>
+      </tr>
+      <tr *ngIf="!this.mrn.factura_consultada">
+        <th style="text-align: left;padding: 5px">Producto en venta</th>
+      </tr>
+      <tr *ngIf="!this.mrn.factura_consultada">
+        <td colspan="2" style="text-align: right;padding: 5px">{{mrn.trans_resultado_venta.nom_producto}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left;padding: 5px">Resultado</th>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: right;padding: 5px">{{mrn.trans_resultado_venta.resultado}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left;padding: 5px">Codigo resultado</th>
+        <td style="text-align: right">{{mrn.trans_resultado_venta.codigo_resultado}}</td>
+      </tr>
+    </table>
+  </div>
+  <!--<ion-list *ngIf="mrn.trans_resultado_venta ">
+    <ion-item>
+      <ion-label>
+        <p>Transacción N° </p>
+        <h2><i [style]="{'color':mrn.trans_resultado_venta.codigo_resultado == '001'?'darkgreen':'darkred','margin-right':'10px'}"
+               [class]="mrn.trans_resultado_venta.codigo_resultado == '001'?'fas fa-check-circle':'fas fa-times-circle'"></i>{{mrn.trans_resultado_venta.id}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Saldo antes de la venta</p>
+        <h2>$ {{mrn.trans_resultado_venta.ultimoSaldo|number}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Valor venta</p>
+        <h2>$ {{mrn.trans_resultado_venta.valor|number}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Saldo despues de la venta</p>
+        <h2>$ {{mrn.trans_resultado_venta.saldo_actual|number}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Empresa</p>
+        <h2>{{mrn.trans_resultado_venta.nombre_empresa}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Número celular</p>
+        <h2>{{mrn.trans_resultado_venta.numeroDestino}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Fecha de venta</p>
+        <h2>{{mrn.trans_resultado_venta.hour_at| date:'short'}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Producto en venta</p>
+        <h2>{{mrn.trans_resultado_venta.nom_producto}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Resultado</p>
+        <h2>{{mrn.trans_resultado_venta.resultado}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Codigo resultado</p>
+        <h2>{{mrn.trans_resultado_venta.codigo_resultado}}</h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>-->
+  <ion-button style="margin-top: 30px" shape="round" expand="block" (click)="mrn.trans_resultado_venta = '';dismissModal()">Aceptar</ion-button>
+</ion-content>

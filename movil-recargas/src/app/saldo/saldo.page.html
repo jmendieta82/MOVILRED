@@ -11,72 +11,105 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <div style="margin: 20px 0 20px 0">
-    <ion-button expand="full" shape="round" color="primary" (click)="presentModal()">Solicitar saldo</ion-button>
-  </div>
-  <ion-accordion-group>
-    <ion-accordion *ngFor="let transaccion of mrn.misSolicitudesSaldo" value="{{transaccion.id}}">
-      <ion-item slot="header">
+  <ion-refresher slot="fixed" (ionRefresh)="actualizarSolicitudes($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Deslice para refrescar"
+      refreshingSpinner="circles"
+      refreshingText="Cargando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-segment color="medium" value="solicitud" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="solicitud">
+      <ion-label style="font-size: 0.8em">
+        Solicitar
+      </ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="ultimas" (click)="mrn.getMisSolicitudesSaldo()">
+      <ion-label style="font-size: 0.8em">
+        Ultimas
+      </ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  <div *ngIf="segmento == 'solicitud'" style="margin-top: 25px">
+    <ion-list *ngIf="mrn.Micredito">
+      <ion-item>
         <ion-label>
-          <h3>Transaccion n°. {{transaccion.id}}</h3>
-          <p>{{transaccion.created_at|date:"dd-MM-yyyy"}} {{transaccion.hour_at|date:'shortTime'}} </p>
-          <p>Valor solicitado: $ {{transaccion.valor|number}}</p>
+          <h2>Mi cupo de crédito</h2>
+          <p style="font-size: 0.8em">Disponible $ {{mrn.Micredito.montoDisponible|number}}</p>
+          <ion-progress-bar color="warning" value="{{(mrn.Micredito.montoDisponible*1)/mrn.Micredito.montoAutorizado}}"></ion-progress-bar>
         </ion-label>
       </ion-item>
-      <div style="padding: 10px" slot="content">
-        <table class="table_transact">
-          <tr>
-            <th>Transaccion id</th>
-            <td>{{transaccion.id}}</td>
-          </tr>
-          <tr>
-            <th>Fecha solicitud</th>
-            <td>{{transaccion.created_at|date:"dd-MM-yyyy"}} {{transaccion.hour_at|date:'shortTime'}}</td>
-          </tr>
-          <tr>
-            <th>Usuario</th>
-            <td>{{transaccion.usuario.first_name}}</td>
-          </tr>
-          <tr>
-            <th>Forma de pago</th>
-            <td>{{(transaccion.tipo_transaccion == 'SSC')?'Contado':'Credito'}}</td>
-          </tr>
-          <tr>
-            <th>Tipo de comision</th>
-            <td>{{(transaccion.tipoServicio=='CV')?'Comision venta':'Comision anticipada'}}</td>
-          </tr>
-          <tr>
-            <th>Valor solicitado</th>
-            <td>$ {{transaccion.valor|number}}</td>
-          </tr>
-          <tr>
-            <th>Estado de solicitud</th>
-            <td style="color: {{transaccion.estado=='Rechazado'?'darkred':''}}">{{transaccion.estado}}</td>
-          </tr>
-          <tr>
-            <th>Estado de pago</th>
-            <td>{{transaccion.estadoPago}}</td>
-          </tr>
-        </table>
-      </div>
-    </ion-accordion>
-  </ion-accordion-group>
+    </ion-list>
+    <div style="margin: 20px 0 20px 0">
+      <ion-button expand="full" shape="round" color="primary" (click)="presentModal()">Solicitar saldo</ion-button>
+    </div>
+  </div>
+  <div *ngIf="segmento == 'ultimas'" >
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let transaccion of mrn.misSolicitudesSaldo" value="{{transaccion.id}}">
+        <ion-item slot="header">
+          <ion-label>
+            <h3>Transaccion n°. {{transaccion.id}}</h3>
+            <p>{{transaccion.created_at|date:"dd-MM-yyyy"}} {{transaccion.hour_at|date:'shortTime'}} </p>
+            <p>Valor solicitado: $ {{transaccion.valor|number}}</p>
+          </ion-label>
+        </ion-item>
+        <div style="padding: 10px" slot="content">
+          <table class="table_transact">
+            <tr>
+              <th>Transaccion id</th>
+              <td>{{transaccion.id}}</td>
+            </tr>
+            <tr>
+              <th>Fecha solicitud</th>
+              <td>{{transaccion.created_at|date:"dd-MM-yyyy"}} {{transaccion.hour_at|date:'shortTime'}}</td>
+            </tr>
+            <tr>
+              <th>Forma de pago</th>
+              <td>{{(transaccion.tipo_transaccion == 'SSC')?'Contado':'Credito'}}</td>
+            </tr>
+            <tr>
+              <th>Tipo de comision</th>
+              <td>{{(transaccion.tipoServicio=='CV')?'Comision venta':'Comision anticipada'}}</td>
+            </tr>
+            <tr>
+              <th>Valor solicitado</th>
+              <td>$ {{transaccion.valor|number}}</td>
+            </tr>
+            <tr>
+              <th>Estado de solicitud</th>
+              <td style="color: {{transaccion.estado=='Rechazado'?'darkred':''}}">{{transaccion.estado}}</td>
+            </tr>
+            <tr>
+              <th>Estado de pago</th>
+              <td>{{transaccion.estadoPago}}</td>
+            </tr>
+          </table>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </div>
+
 </ion-content>
-<ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">
-  <ion-grid>
-    <ion-row>
-      <ion-col size="6" style="text-align: center">
-        <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.saldo_disponible|number}}</span>
-        <p style="font-size: 0.6em">
-          <i class="fas fa-dollar-sign" style="margin-right: 2px"></i>
-          Saldo disponible</p>
-      </ion-col>
-      <ion-col size="6" style="text-align: center">
-        <span style="font-size: 1.3em;font-weight: bold">{{mrn.misBoslsasDinero.utilidad|number}}</span>
-        <p style="font-size: 0.6em">
-          <i class="fas fa-wallet"  style="margin-right: 2px"></i>
-          Mis ganancias</p>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-toolbar>
+<ion-footer>
+  <ion-toolbar class="header_page" *ngIf="mrn.misBoslsasDinero">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" style="text-align: center" [routerLink]="'/saldo'">
+          <span style="font-size: 1.3em;font-weight: bold">$ {{mrn.misBoslsasDinero.saldo_disponible|number}}</span>
+          <p style="font-size: 0.8em">
+            <!--<i class="fas fa-dollar-sign" style="margin-right: 2px"></i>-->
+            Saldo disponible</p>
+        </ion-col>
+        <ion-col size="6" style="text-align: center">
+          <span style="font-size: 1.3em;font-weight: bold">$ {{mrn.misBoslsasDinero.utilidad|number}}</span>
+          <p style="font-size: 0.8em">
+            <!-- <i class="fas fa-wallet"  style="margin-right: 2px"></i>-->
+            Mis ganancias</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

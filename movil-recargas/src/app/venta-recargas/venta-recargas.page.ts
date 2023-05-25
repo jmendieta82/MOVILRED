@@ -3,6 +3,7 @@ import {Mrn} from "../providers/mrn";
 import {AlertController, ModalController} from "@ionic/angular";
 import {ProductosComponent} from "../productos/productos.component";
 import {ResumenVentaComponent} from "../resumen-venta/resumen-venta.component";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-venta-recargas',
@@ -12,7 +13,7 @@ import {ResumenVentaComponent} from "../resumen-venta/resumen-venta.component";
 export class VentaRecargasPage implements OnInit {
   valorVenta;
   segmento='tiempo_al_aire';
-  constructor(public mrn:Mrn,public modalController: ModalController,public alertController: AlertController) {
+  constructor(public mrn:Mrn,public modalController: ModalController,public alertController: AlertController,private router:Router) {
   }
 
   ngOnInit() {
@@ -88,4 +89,6 @@ export class VentaRecargasPage implements OnInit {
       })
     }
   }
+
+
 }

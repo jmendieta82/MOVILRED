@@ -2,9 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Mrn} from "../providers/mrn";
 import {ApiService} from "../providers/api";
-import {ProductosComponent} from "../productos/productos.component";
 import {ModalController, Platform} from "@ionic/angular";
 import {UltimasVentasComponent} from "../ultimas-ventas/ultimas-ventas.component";
+import {InfoRecaudosComponent} from "../info-recaudos/info-recaudos.component";
+import {PrintService} from "../providers/print.service";
+
+declare const Buffer
+
 
 @Component({
   selector: 'app-inicio',
@@ -14,16 +18,19 @@ import {UltimasVentasComponent} from "../ultimas-ventas/ultimas-ventas.component
 export class InicioPage implements OnInit {
   public folder: string;
   segmento='ventas';
+  bluetoothList:any=[];
+  selectedPrinter:any;
   constructor(private router:Router,private activatedRoute: ActivatedRoute,public mrn:Mrn,public api:ApiService
-  ,public modalController: ModalController,private platform: Platform) {
-    this.platform.backButton.subscribeWithPriority(9999, () => {
+  ,public modalController: ModalController,private platform: Platform,private impresionService:PrintService) {
+    /*this.platform.backButton.subscribeWithPriority(9999, () => {
       this.api.logOut()
-    });
+    });*/
 
   }
 
   ngOnInit() {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id');
+    this.listPrinter()
   }
 
   seleccionarCategoria(categoria) {
@@ -44,6 +51,7 @@ export class InicioPage implements OnInit {
     this.mrn.empresaSeleccionada = empresa['info'].proveedorEmpresa.empresa;
     this.mrn.proveedorSeleccionado = empresa['info'].proveedorEmpresa.proveedor;
     this.mrn.getProductosProveedor(empresa['info'].proveedorEmpresa.proveedor.id,this.mrn.empresaSeleccionada.id)
+    this.mrn.getMisBolsasDinero();
     switch(this.mrn.empresaSeleccionada.catServicio.nombre) {
       case 'Pines': {
         this.router.navigate(['venta-pines']);
@@ -66,6 +74,11 @@ export class InicioPage implements OnInit {
         this.router.navigate(['venta-apuestas']);
         break;
       }
+      case 'Recaudos': {
+        this.ver_recomendacion_recaudo()
+        //this.router.navigate(['venta-recaudo']);
+        break;
+      }
       default: {
         this.router.navigate(['venta-recargas']);
         break;
@@ -79,9 +92,34 @@ export class InicioPage implements OnInit {
 
   actualizarVentasInicio(event: any) {
     this.mrn.getComisiones(this.api.nodoActual)
+    this.mrn.getMiCredito()
     this.mrn.getMisBolsasDinero();
     setTimeout(() => {
       event.target.complete();
     }, 2000);
   }
+
+  async ver_recomendacion_recaudo(){
+      const modal = await this.modalController.create({
+        component: InfoRecaudosComponent,
+      });
+      return await modal.present();
+  }
+
+  //This will list all of your bluetooth devices
+  listPrinter() {
+
+  }
+//This will store selected bluetooth device mac address
+  selectPrinter(macAddress)
+  {
+    //Selected printer macAddress stored here
+    this.selectedPrinter=macAddress;
+  }
+
+//This will print
+  printStuff(){
+    this.impresionService.imprimirTexto('Hola Mundo');
+  }
+
 }

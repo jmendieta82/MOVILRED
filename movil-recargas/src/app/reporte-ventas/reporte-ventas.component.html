@@ -1,0 +1,105 @@
+<ion-header>
+  <ion-toolbar class="header_page">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{mrn.tipo_reporte}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+    <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+<ion-content style="padding: 10px">
+  <ion-card>
+    <ion-card-content>
+      Por favor seleccione una fecha para realizar su consulta.
+      <ion-item>
+        <ion_label>Desde: </ion_label>
+        <ion-input [(ngModel)]="fechai" type="date"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion_label>Hasta: </ion_label>
+        <ion-input [(ngModel)]="fechaf" type="date"></ion-input>
+      </ion-item>
+      <div style="margin-top: 35px" >
+        <ion-button shape="round" expand="block" [disabled]="!fechai&&!fechaf"
+                    (click)="consultar()">Consultar</ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-accordion-group *ngIf="mrn.ventas_by_fecha.length">
+    <ion-accordion *ngFor="let transaccion of mrn.ventas_by_fecha" value="{{transaccion['data'].producto_venta.producto.id}}">
+      <ion-item slot="header">
+        <ion-avatar style="margin-right: 15px">
+          <img src="{{transaccion.data.producto_venta.producto.empresa.imagen}}" alt="">
+        </ion-avatar>
+        <ion-label>
+          <h2>$ {{mrn.calcular_totales(transaccion.items)|number}}</h2>
+          <p>{{transaccion.data.producto_venta.producto.empresa.nom_empresa}}</p>
+        </ion-label>
+      </ion-item>
+      <div style="padding: 10px" slot="content">
+        <ion-accordion-group>
+          <ion-accordion *ngFor="let venta of transaccion.items" value="{{venta.info.id}}">
+            <ion-item slot="header">
+              <ion-label style="color:{{(venta.info.codigo_resultado=='001'||venta.info.codigo_resultado=='00')?'':'darkred'}}">
+                <h3>{{venta.info.numeroDestino}}</h3>
+                <h5>${{venta.info.valor|number}}</h5>
+                <p>{{venta.info.hour_at|date:'medium'}} </p>
+              </ion-label>
+            </ion-item>
+            <div style="padding: 10px" slot="content">
+              <table class="table_transact">
+                <tr>
+                  <td colspan="2" style="text-align: justify">{{venta.info.producto_venta.producto.nom_producto}}</td>
+                </tr>
+                <tr>
+                  <th>Venta id</th>
+                  <td>{{venta.info.id}}</td>
+                </tr>
+                <tr>
+                  <th>Codigo aprobacion</th>
+                  <td>{{venta.info.codigo_transaccion_externa}}</td>
+                </tr>
+                <tr>
+                  <th>Venta desde</th>
+                  <td>{{venta.info.venta_desde}}</td>
+                </tr>
+                <tr>
+                  <th>Operador</th>
+                  <td>{{venta.info.producto_venta.producto.empresa.nom_empresa}}</td>
+                </tr>
+                <tr>
+                  <th>Saldo anterior</th>
+                  <td>$ {{venta.info.ultimoSaldo|number}}</td>
+                </tr>
+                <tr>
+                  <th>Valor de la venta</th>
+                  <td>$ {{venta.info.valor|number}}</td>
+                </tr>
+                <tr>
+                  <th>Nuevo saldo</th>
+                  <td>$ {{venta.info.saldo_actual|number}}</td>
+                </tr>
+                <tr>
+                  <th>Codigo resultado</th>
+                  <td>{{venta.info.codigo_resultado}}</td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="text-align: justify;color: grey">{{venta.info.resultado}}</td>
+                </tr>
+              </table>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+  <ion-item>
+    <ion-label slot="end">
+      <h1>$ {{mrn.total_consulta_ventas|number}}</h1>
+      <p>Total ventas</p>
+    </ion-label>
+  </ion-item>
+</ion-content>

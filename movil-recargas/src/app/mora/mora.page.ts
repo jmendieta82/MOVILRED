@@ -31,7 +31,7 @@ export class MoraPage implements OnInit {
   async presentModal() {
     this.mrn.formPagos.patchValue({
       abono:this.mrn.totalFacturasAPagar,
-      soporte:'https://s1.significados.com/foto/earth-11015-1920.jpg'
+      soporte:''
     })
     const modal = await this.modalController.create({
       component: PagarFacturaComponent,

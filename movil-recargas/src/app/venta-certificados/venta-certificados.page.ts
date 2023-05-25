@@ -25,11 +25,13 @@ export class VentaCertificadosPage implements OnInit {
 
   async present_resumen_ventas() {
     this.mrn.obj_venta = '';
-    this.mrn.formVentasCertificados.patchValue(
-      {valor:22000}
-    )
+    if(this.mrn.empresaSeleccionada.nom_empresa == 'RUNT'){
+      let producto = this.mrn.productosByProveedorSinTiempoAlAire.filter(item=>item.codigo_producto == 1382)[0]
+      this.mrn.formVentasCertificados.patchValue({
+        valor:producto.producto.valor_producto
+      })
+    }
     this.mrn.obj_venta = this.mrn.formVentasCertificados.value
-
     const modal = await this.modalController.create({
       component: ResumenVentaComponent,
     });

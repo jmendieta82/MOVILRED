@@ -10,56 +10,63 @@ const routes: Routes = [
   },
   {
     path: 'cartera',
-    loadChildren: () => import('./cartera/cartera.module').then( m => m.CarteraPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./cartera/cartera.module').then( m => m.CarteraPageModule)
   },
   {
     path: 'reportes',
-    loadChildren: () => import('./reportes/reportes.module').then( m => m.ReportesPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./reportes/reportes.module').then( m => m.ReportesPageModule)
   },
   {
     path: 'mora',
-    loadChildren: () => import('./mora/mora.module').then( m => m.MoraPageModule) ,canActivate: [AuthGuard]
+    loadChildren: () => import('./mora/mora.module').then( m => m.MoraPageModule)
   },
   {
     path: 'saldo',
-    loadChildren: () => import('./saldo/saldo.module').then( m => m.SaldoPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./saldo/saldo.module').then( m => m.SaldoPageModule)
   },
   {
     path: 'empresas',
-    loadChildren: () => import('./empresas/empresas.module').then( m => m.EmpresasPageModule) ,canActivate: [AuthGuard]
+    loadChildren: () => import('./empresas/empresas.module').then( m => m.EmpresasPageModule)
   },
   {
     path: 'venta-pines',
-    loadChildren: () => import('./venta-pines/venta-pines.module').then( m => m.VentaPinesPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./venta-pines/venta-pines.module').then( m => m.VentaPinesPageModule)
   },
   {
     path: 'venta-recargas',
-    loadChildren: () => import('./venta-recargas/venta-recargas.module').then( m => m.VentaRecargasPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./venta-recargas/venta-recargas.module').then( m => m.VentaRecargasPageModule)
   },
   {
     path: 'venta-certificados',
-    loadChildren: () => import('./venta-certificados/venta-certificados.module').then( m => m.VentaCertificadosPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./venta-certificados/venta-certificados.module').then( m => m.VentaCertificadosPageModule)
   },
   {
     path: 'venta-soat',
-    loadChildren: () => import('./venta-soat/venta-soat.module').then( m => m.VentaSoatPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./venta-soat/venta-soat.module').then( m => m.VentaSoatPageModule)
   },
   {
     path: 'venta-apuestas',
-    loadChildren: () => import('./venta-apuestas/venta-apuestas.module').then( m => m.VentaApuestasPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./venta-apuestas/venta-apuestas.module').then( m => m.VentaApuestasPageModule)
   },
   {
     path: 'mi-distribuidor',
-    loadChildren: () => import('./mi-distribuidor/mi-distribuidor.module').then( m => m.MiDistribuidorPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./mi-distribuidor/mi-distribuidor.module').then( m => m.MiDistribuidorPageModule)
   },
   {
     path: 'perfil',
-    loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule),canActivate: [AuthGuard]
+    loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule)
+  },
+  {
+    path: 'venta-recaudo',
+    loadChildren: () => import('./venta-recaudo/venta-recaudo.module').then( m => m.VentaRecaudoPageModule)
+  },
+  {
+    path: 'cambio-red',
+    loadChildren: () => import('./cambio-red/cambio-red.module').then( m => m.CambioRedPageModule)
   },
   {path: 'login',
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule),canActivate: [NonAuthGuard]},
   { path: '**', redirectTo: '/login' },
-
 
 ];
 

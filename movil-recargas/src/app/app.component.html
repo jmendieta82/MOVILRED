@@ -5,61 +5,66 @@
         <ion-list id="inbox-list">
           <ion-item >
             <div style="text-align: center;width: 100%;padding: 10px 0 25px 0">
-              <img style="width: 50%" src="assets/logo-mirage@2x.svg" alt="mirage-layout"/>
+              <img style="width: 50%" src="assets/nuevo_logo.png" alt="mirage-layout"/>
             </div>
           </ion-item>
 
           <ion-menu-toggle auto-hide="false">
             <ion-item [routerLink]="'/perfil'" routerDirection="root">
               <ion-avatar slot="end" style="text-align: center;padding-top: 10px">
-                <i style="font-size: 1.5em;color:#5e81ac" class="fas fa-user-cog"></i>
+                <i style="font-size: 1.5em;color: lightgray" class="fas fa-user-cog"></i>
               </ion-avatar>
-              <ion-label style="color:#5e81ac">
+              <ion-label>
                 <h2>{{api.usuario['username']}}</h2>
                 <p style="font-size: 0.9em">{{api.usuario['cargo']}}</p>
               </ion-label>
             </ion-item>
             <ion-item *ngIf="!api.nodoActual['mora']" routerDirection="root"
                       [routerLink]="'/inicio'" lines="none" detail="false">
-              <i style="color:#5e81ac" slot="start" class="fas fa-store"></i>
-              <ion-label style="color:#5e81ac">
+              <i style="color:lightgray" slot="start" class="fas fa-store"></i>
+              <ion-label >
                 <h2>Ventas</h2>
               </ion-label>
             </ion-item>
             <ion-item *ngIf="!api.nodoActual['mora']" routerDirection="root"
                       [routerLink]="'/saldo'" lines="none" detail="false">
-              <i style="color:#5e81ac" slot="start" class="fas fa-hand-holding-usd"></i>
-              <ion-label style="color:#5e81ac">
+              <i style="color:lightgray" slot="start" class="fas fa-hand-holding-usd"></i>
+              <ion-label >
                 <h2>Solicitud de saldo</h2>
               </ion-label>
             </ion-item>
             <ion-item *ngIf="!api.nodoActual['mora']" routerDirection="root" (click)="this.mrn.totalFacturasAPagar = 0;this.mrn.getCartera(this.api.nodoActual)"
                       [routerLink]="'/cartera'" lines="none" detail="false">
-              <i style="color:#5e81ac" slot="start" class="fas fa-file-invoice-dollar"></i>
-              <ion-label style="color:#5e81ac">
+              <i style="color:lightgray" slot="start" class="fas fa-file-invoice-dollar"></i>
+              <ion-label >
                 <h2>Estado de cartera</h2>
               </ion-label>
             </ion-item>
             <ion-item routerDirection="root"
                       [routerLink]="'/reportes'" lines="none" detail="false">
-              <i style="color:#5e81ac" slot="start" class="fas fa-chart-bar"></i>
-              <ion-label style="color:#5e81ac">
+              <i style="color:lightgray" slot="start" class="fas fa-chart-bar"></i>
+              <ion-label>
                 <h2>Consultas</h2>
               </ion-label>
             </ion-item>
             <ion-item routerDirection="root"
                       [routerLink]="'/mi-distribuidor'" lines="none" detail="false">
-              <i style="color:#5e81ac" slot="start" class="fas fa-users"></i>
-              <ion-label style="color:#5e81ac">
+              <i style="color:lightgray" slot="start" class="fas fa-users"></i>
+              <ion-label>
                 <h2>Mi distribuidor</h2>
               </ion-label>
             </ion-item>
             <ion-item routerDirection="root" (click)="api.logOut()" lines="none" detail="false">
-              <i style="color:#5e81ac" slot="start" class="fas fa-sign-out-alt"></i>
-              <ion-label style="color:#5e81ac">
+              <i style="color:lightgray" slot="start" class="fas fa-sign-out-alt"></i>
+              <ion-label>
                 <h2>Salir</h2>
               </ion-label>
             </ion-item>
+            <div style="font-size: 0.6em;color: gray;text-align: center;margin-top: 10%">
+              <p><i class="far fa-copyright"></i> MRN Colombia 2023</p>
+              <p>www.mrncolombia.com</p>
+              <p>Ver: {{mrn.APP_VERSION}}</p>
+            </div>
           </ion-menu-toggle>
         </ion-list>
       </ion-content>

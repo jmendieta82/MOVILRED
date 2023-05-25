@@ -56,6 +56,7 @@
             <ion-col>
               <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasRecargasDirectv.valid "
                           (click)="present_resumen_ventas(mrn.formVentasRecargasDirectv.value)">Vender</ion-button>
+
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -117,6 +118,7 @@
               <ion-col>
                 <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasRecargas.valid"
                             (click)="present_resumen_ventas(mrn.formVentasRecargas.value)">Vender</ion-button>
+                <ion-button shape="round" color="light" expand="block" (click)="mrn.cancelartVenta()">Cancelar</ion-button>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -161,7 +163,9 @@
               <ion-col>
                 <ion-button shape="round" expand="block" [disabled]="!mrn.formVentasRecargas.valid "
                             (click)="present_resumen_ventas(mrn.formVentasRecargas.value)">Vender</ion-button>
+                <ion-button shape="round" color="light" expand="block" (click)="mrn.cancelartVenta()">Cancelar</ion-button>
               </ion-col>
+
             </ion-row>
           </ion-grid>
         </div>

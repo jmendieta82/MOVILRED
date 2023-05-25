@@ -1,0 +1,15 @@
+<ion-header translucent>
+  <ion-toolbar class="background-image header_page">
+    <ion-title>Soporte de pago</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+</ion-header>
+<ion-content>
+  <div style="padding: 15px">
+    <img *ngIf="mrn.pagoSeleccionado" style="width: 100%;height: 100%" src="{{mrn.pagoSeleccionado.soporte}}" alt="">
+  </div>
+
+</ion-content>

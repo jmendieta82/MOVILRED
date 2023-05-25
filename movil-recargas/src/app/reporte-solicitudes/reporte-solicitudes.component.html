@@ -1,0 +1,121 @@
+<ion-header>
+  <ion-toolbar class="header_page">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{mrn.tipo_reporte}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+    <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+<ion-content style="padding: 10px">
+  <ion-card>
+    <ion-card-content>
+      Por favor seleccione una fecha para realizar su consulta.
+      <ion-item>
+        <ion_label>Desde: </ion_label>
+        <ion-input [(ngModel)]="fechai" type="date"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion_label>Hasta: </ion_label>
+        <ion-input [(ngModel)]="fechaf" type="date"></ion-input>
+      </ion-item>
+      <div style="margin-top: 35px" >
+        <ion-button shape="round" expand="block" [disabled]="!fechai&&!fechaf"
+                    (click)="this.mrn.get_solicitudes_by_fecha(fechai,fechaf)">Consultar</ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-accordion-group >
+    <ion-accordion *ngFor="let transaccion of mrn.misSolicitudesSaldo" value="{{transaccion.label}}">
+      <ion-item slot="header">
+        <ion-label>
+          <h2>{{transaccion.label=='SSC'?'Transacción Contado':'Transacción Crédito'}}</h2>
+          <p>{{transaccion.items.length}} registros</p>
+        </ion-label>
+      </ion-item>
+      <div style="padding: 10px" slot="content">
+        <ion-accordion-group>
+          <ion-accordion *ngFor="let solicitud of transaccion.items" value="{{solicitud.id}}">
+            <ion-item slot="header">
+              <ion-label>
+                <h3>$ {{solicitud.valor|number}}</h3>
+                <p>Fecha: {{solicitud.created_at|date:"dd-MM-yyyy"}} </p>
+              </ion-label>
+            </ion-item>
+            <div style="padding: 10px" slot="content">
+              <table class="table_transact">
+                <tr>
+                  <th>solicitud id</th>
+                  <td>{{solicitud.id}}</td>
+                </tr>
+                <tr>
+                  <th>Fecha solicitud</th>
+                  <td>{{solicitud.created_at|date:"dd-MM-yyyy"}}</td>
+                </tr>
+                <tr>
+                  <th>Hora solicitud</th>
+                  <td>{{solicitud.hour_at|date:'shortTime'}}</td>
+                </tr>
+                <tr>
+                  <th>Usuario</th>
+                  <td>{{solicitud.usuario.first_name}}</td>
+                </tr>
+                <tr>
+                  <th>Forma de pago</th>
+                  <td>{{(solicitud.tipo_transaccion == 'SSC')?'Contado':'Credito'}}</td>
+                </tr>
+                <tr>
+                  <th>Tipo de comision</th>
+                  <td>{{(solicitud.tipoServicio=='CV')?'Comision venta':'Comision anticipada'}}</td>
+                </tr>
+                <tr>
+                  <th>Valor solicitado</th>
+                  <td>$ {{solicitud.valor|number}}</td>
+                </tr>
+                <tr>
+                  <th>Estado de solicitud</th>
+                  <td>{{solicitud.estado}}</td>
+                </tr>
+                <tr>
+                  <th>Estado de pago</th>
+                  <td>{{solicitud.estadoPago}}</td>
+                </tr>
+              </table>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+  <ion-card>
+    <ion-list *ngIf="mrn.misSolicitudesSaldo.length">
+      <ion-item>
+        <ion-label slot="end">
+          <h3  style="text-align: right">$ {{mrn.total_sol_contado|number}}</h3>
+          <p>Total Solicitudes Contado</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label slot="end">
+          <h3  style="text-align: right">$ {{mrn.total_sol_credito|number}}</h3>
+          <p>Total solicitudes credito pagadas</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label slot="end">
+          <h3 style="text-align: right">$ {{mrn.total_sol_credito_pend|number}}</h3>
+          <p>Total solicitudes credito pago pendiente</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label slot="end">
+          <h3 style="text-align: right">$ {{mrn.total_sol_contado+mrn.total_sol_credito+mrn.total_sol_credito_pend|number}}</h3>
+          <p>Total solicitudes</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+</ion-content>

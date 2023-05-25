@@ -1,0 +1,58 @@
+<ion-header translucent>
+  <ion-toolbar class="background-image header_page">
+    <ion-title>Ultimas ventas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-searchbar showCancelButton="focus" animated placeholder="Buscar" #value (ionInput)="mrn.get_ventas_by_celular(value.value)"></ion-searchbar>
+  <ion-card *ngFor="let venta of mrn.ventas_by_nodo">
+    <ion-card-content>
+      <table class="table_transact">
+        <tr>
+          <th>Venta id</th>
+          <td>{{venta.id}}</td>
+        </tr>
+        <tr>
+          <th>Fecha y hora</th>
+          <td>{{venta.created_at|date:"dd-MM-yyyy"}} {{venta.hour_at|date:'shortTime'}}</td>
+        </tr>
+        <tr>
+          <th>Telefono</th>
+          <td>{{venta.numeroDestino}}</td>
+        </tr>
+        <tr>
+          <th>Venta desde</th>
+          <td>{{venta.venta_desde}}</td>
+        </tr>
+        <tr>
+          <th>Operador</th>
+          <td>{{venta.producto_venta.producto.empresa.nom_empresa}}</td>
+        </tr>
+        <tr>
+          <th>Producto</th>
+        </tr>
+        <tr>
+          <td colspan="2" style="text-align: justify">{{venta.producto_venta.producto.nom_producto}}</td>
+        </tr>
+        <tr>
+          <th>Saldo anterior</th>
+          <td>$ {{venta.ultimoSaldo|number}}</td>
+        </tr>
+        <tr>
+          <th>Valor de la venta</th>
+          <td>{{venta.valor|number}}</td>
+        </tr>
+        <tr>
+          <th>Nuevo saldo</th>
+          <td>{{venta.saldo_actual|number}}</td>
+        </tr>
+      </table>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

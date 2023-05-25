@@ -1,14 +1,10 @@
 import { Component } from '@angular/core';
 import {Mrn} from "./providers/mrn";
-import {
-  ActionPerformed,
-  PushNotificationSchema,
-  PushNotifications,
-  Token,
-} from '@capacitor/push-notifications';
+import {ActionPerformed, PushNotificationSchema, PushNotifications, Token,} from '@capacitor/push-notifications';
 import {ApiService} from "./providers/api";
 import {Router} from "@angular/router";
-import {Device} from "@awesome-cordova-plugins/device/ngx";
+import {ToastController} from "@ionic/angular";
+import {NetworkService} from "./providers/network.service";
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -20,11 +16,14 @@ export class AppComponent {
     { title: 'Solicitudes de Saldo', url: '/saldo', icon: 'fas fa-hand-holding-usd' },
     { title: 'Salir', url: '/login', icon: 'fas fa-times' },
   ];
-  constructor(public mrn:Mrn,public api:ApiService,private router:Router,) {
+  constructor(public mrn:Mrn,public api:ApiService, private router:Router,private networkService:NetworkService,
+              ) {
     this.mrn.crearControles();
   }
 
   ngOnInit() {
+
+    this.networkService.getNetworkType()
 
     // Request permission to use push notifications
     // iOS will prompt user and return if they granted permission or not
@@ -111,8 +110,8 @@ export class AppComponent {
           }
           case 'USM': {
             //usuario en mora
-            this.api.usuario = '';
-            this.router.navigate(['/login']);
+            this.mrn.getFacturasMora(this.api.nodoActual,false)
+            this.router.navigate(['/mora'])
             break;
           }
           case 'ACTCOM': {
@@ -136,5 +135,7 @@ export class AppComponent {
       },
     );
   }
+
+
 
 }

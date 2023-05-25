@@ -23,7 +23,7 @@ export class ProductosComponent implements OnInit {
 
   seleccionarProducto(producto: any) {
     this.mrn.productoCodificadoSeleccionado = producto;
-    switch(producto.producto.empresa.catServicio.nombre) {
+    switch(this.mrn.empresaSeleccionada.catServicio.nombre) {
       case 'Pines': {
         this.mrn.formVentasPines.patchValue({
           valor:producto.producto.valor_producto

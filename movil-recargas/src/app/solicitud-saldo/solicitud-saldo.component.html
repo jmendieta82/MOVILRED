@@ -8,6 +8,7 @@
 </ion-header>
 
 <ion-content fullscreen>
+
   <form [formGroup]="mrn.formTransaccion">
     <ion-list>
       <ion-grid>
@@ -65,17 +66,21 @@
         <ion-label position="floating">
           Forma de pago
         </ion-label>
-        <ion-select formControlName="tipo_transaccion">
+        <ion-select formControlName="tipo_transaccion" (ionChange)="validarSoporte()">
           <ion-select-option value="SSC">Contado</ion-select-option>
           <ion-select-option value="SSCR">Credito</ion-select-option>
         </ion-select>
       </ion-item>
     </ion-list>
   </form>
+  <div *ngIf="foto" style="padding: 10px">
+    <img style="width: 100%" src="{{foto}}" alt="">
+  </div>
   <div style="padding_top: 15px">
-    <ion-button *ngIf="mrn.formTransaccion.value['tipo_transaccion'] == 'SSC'" [disabled]="foto" shape="round" (click)="tomar_foto()"
-                expand="block">Subir foto comprobante</ion-button>
-    <ion-button expand="full" shape="round" color="primary" [disabled]="!mrn.formTransaccion.valid"
+    <ion-button *ngIf="mrn.formTransaccion.value['tipo_transaccion'] == 'SSC'"  shape="round" (click)="tomar_foto()"
+                expand="block">{{foto?'Volver a tomar foto':'Subir foto comprobante'}}</ion-button>
+    <ion-button expand="full"
+                shape="round" color="primary" [disabled]="!mrn.formTransaccion.valid"
                 (click)="solicitarSaldo()">Solicitar saldo</ion-button>
   </div>
 </ion-content>

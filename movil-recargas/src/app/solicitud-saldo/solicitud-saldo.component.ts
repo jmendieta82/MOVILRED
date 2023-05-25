@@ -4,6 +4,7 @@ import {Mrn} from "../providers/mrn";
 import {Router} from "@angular/router";
 import {ApiService} from "../providers/api";
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+import {Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-solicitud-saldo',
@@ -35,7 +36,8 @@ export class SolicitudSaldoComponent implements OnInit {
     })
   }
   async solicitarSaldo() {
-    const alert = await this.alertController.create({
+
+    const alerta = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'MRN Colombia',
       message: '¿Desea realizar la solicitud de saldo '+ (this.mrn.formTransaccion.value['tipo_transaccion']=='SSCR'?'Credito':'Contado')+' por un valor de $'+ this.mrn.formTransaccion.value['valor']+'?',
@@ -51,41 +53,44 @@ export class SolicitudSaldoComponent implements OnInit {
           text: 'Aceptar',
           id: 'confirm-button',
           handler: () => {
-            this.mrn.formTransaccion.patchValue({
-              nodo_id: this.api.nodoActual['id'],
-              usuario_id: this.api.usuario['id'],
-              tipoServicio:this.api.nodoActual['tipoComision'],
-              estado: 'Pendiente',
-              estadoPago: (this.mrn.formTransaccion.value['tipo_transaccion'] == 'SSCR')?'Pendiente':'Pago en revision',
-              medioSolicitud: 'Otro',
-              ultimoSaldo: 0,
-              dias_mora: 0,
-              fecha_aprobacion: null,
-              fecha_pago: null,
-              saldo_pendiente_pago: (this.mrn.formTransaccion.value['tipo_transaccion'] == 'SSCR')?this.mrn.formTransaccion.value['valor']:0,
-            });
-            if (this.mrn.formTransaccion.value['tipo_transaccion'] == 'SSCR') {
-              if(this.mrn.Micredito.montoDisponible >= this.mrn.formTransaccion.value['valor']){
-                this.api.post_soap('verificar_numero_sol_cred_dia', this.mrn.formTransaccion.value)
-                  .subscribe(
-                    data => {
-                     this.mrn.mensajes(data)
-                      if (data != 'Ha superado el máximo de solicitudes de crédito diarias autorizadas por su distribuidor.') {
-                        this.mrn.addTransaccion();
-                      }
-                    }
-                  )
-              }else {
-                this.mrn.mensajes('El valor solicitado supera el monto de credito disponible.')
-              }
-            } else {
-              this.mrn.addTransaccion();
+            let obj = {
+              nodo : this.api.nodoActual['id'],
+              usuario: this.api.usuario['id'],
+              tipoServicio: this.mrn.formTransaccion.value['tipoServicio'],
+              tipo_transaccion : this.mrn.formTransaccion.value['tipo_transaccion'],
+              medioSolicitud: 'Movil',
+              valor: this.mrn.formTransaccion.value['valor'],
+              saldo_pendiente_pago:this.mrn.formTransaccion.value['valor'],
+              soporte:this.mrn.formTransaccion.value['soporte']?this.mrn.formTransaccion.value['soporte']:'Pendiente'
             }
+            this.mrn.presentLoading()
+            this.api.post_soap('solicitar_saldo',obj).subscribe(
+              data => {
+                let respuesta = JSON.parse(data)
+                if(respuesta.data){
+                  this.mrn.transaccionSeleccionada = respuesta.data;
+                  //this.mrn.getMisSolicitudesSaldo();
+                  this.mrn.getMiCredito()
+                  this.mrn.getMisBolsasDinero();
+                  this.mrn.formTransaccion.reset();
+                  this.mrn.verSubirArchivo = data.tipo_transaccion == 'SSC' ? true : false;
+                  this.modalController.dismiss({
+                    'dismissed': true
+                  });
+                }
+                this.mrn.loadingController.dismiss();
+                alert(respuesta.mensaje[0]);
+                if(respuesta.mensaje[1]){
+                  alert(respuesta.mensaje[1]);
+                }
+
+              }
+            )
           }
         }
       ]
     });
-    await alert.present();
+    await alerta.present();
   }
 
   tomar_foto(){
@@ -100,5 +105,16 @@ export class SolicitudSaldoComponent implements OnInit {
     }, (err) => {
       // Handle error
     });
+  }
+
+
+  validarSoporte() {
+    let soporte = this.mrn.formTransaccion.get('soporte');
+    if(this.mrn.formTransaccion.value['tipo_transaccion'] == 'SSCR'){
+      soporte.removeValidators(Validators.required)
+    }else {
+      soporte.setValidators(Validators.required)
+    }
+    soporte.updateValueAndValidity();
   }
 }

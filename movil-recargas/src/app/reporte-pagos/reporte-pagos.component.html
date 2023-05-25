@@ -1,0 +1,124 @@
+<ion-header>
+  <ion-toolbar class="header_page">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{mrn.tipo_reporte}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"><i class="fas fa-times" style="font-size: 1.5em"></i></ion-button>
+    </ion-buttons>
+    <ion-progress-bar color="secondary" *ngIf="mrn.loading" type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+<ion-content style="padding: 10px">
+  <ion-card>
+    <ion-card-content>
+      Por favor seleccione una fecha para realizar su consulta.
+      <ion-item>
+        <ion-input [value]="fecha_consulta"></ion-input>
+        <ion-button fill="clear" id="open-date-input-1">
+          <ion-icon icon="calendar"></ion-icon>
+        </ion-button>
+        <ion-popover trigger="open-date-input-1" show-backdrop="false">
+          <ng-template>
+            <ion-datetime #fecha (ionChange)="fecha_consulta = this.formatDate(fecha.value); popoverController.dismiss()"
+                          presentation="date"></ion-datetime>
+          </ng-template>
+        </ion-popover>
+      </ion-item>
+      <ion-item>
+        <ion-input [value]="fecha_consulta2"></ion-input>
+        <ion-button fill="clear" id="open-date-input-2">
+          <ion-icon icon="calendar"></ion-icon>
+        </ion-button>
+        <ion-popover trigger="open-date-input-2" show-backdrop="false">
+          <ng-template>
+            <ion-datetime #fecha2 presentation="date" (ionChange)="consultar(fecha_consulta,fecha2)"
+            ></ion-datetime>
+          </ng-template>
+        </ion-popover>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <ion-accordion-group >
+    <ion-accordion *ngFor="let transaccion of mrn.pagos_by_fecha" value="{{transaccion.transaccion.id}}">
+      <ion-item slot="header">
+
+        <ion-label>
+          <h2>Transaccion N°.{{transaccion.transaccion.id}}</h2>
+          <p>$ {{transaccion.transaccion.valor|number}}</p>
+          <p>{{transaccion.transaccion.estadoPago}}</p>
+        </ion-label>
+      </ion-item>
+      <div style="padding: 10px" slot="content">
+        <ion-accordion-group>
+          <ion-accordion *ngFor="let pago of transaccion.items" value="{{pago.id}}">
+            <ion-item slot="header">
+              <ion-label>
+                <h3>$ {{pago.abono|number}}</h3>
+                <p>Fecha: {{pago.created_at|date:"dd-MM-yyyy"}} </p>
+              </ion-label>
+            </ion-item>
+            <div style="padding: 10px" slot="content">
+              <table class="table_transact">
+                <tr>
+                  <th>Pago id</th>
+                  <td>{{pago.id}}</td>
+                </tr>
+                <tr>
+                  <th>Fecha pago</th>
+                  <td>{{pago.created_at|date:"dd-MM-yyyy"}}</td>
+                </tr>
+                <tr>
+                  <th>Entidad recaudo</th>
+                  <td>{{pago.entidad}}</td>
+                </tr>
+                <tr>
+                  <th>N° Comprobante</th>
+                  <td>{{pago.numero_recibo}}</td>
+                </tr>
+                <tr>
+                  <th>Estado</th>
+                  <td>{{pago.estadoPago}}</td>
+                </tr>
+                <tr>
+                  <th>Comprobante</th>
+                  <td *ngIf="pago.soporte!=''&& pago.soporte!= 'Pendiente'">
+                    <span style="color: #5e81ac;font-weight: bold" (click)="presentModal(pago)">Ver soporte</span></td>
+                  <td *ngIf="pago.soporte==''|| pago.soporte== 'Pendiente'">
+                    <span style="color: #5e81ac;font-weight: bold">Sin soporte</span></td>
+                </tr>
+              </table>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+  <ion-list *ngIf="mrn.misSolicitudesSaldo.length">
+    <ion-item>
+      <ion-label slot="end">
+        <h1  style="text-align: right">$ {{mrn.total_sol_contado|number}}</h1>
+        <p>Total Solicitudes Contado</p>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label slot="end">
+        <h1  style="text-align: right">$ {{mrn.total_sol_credito|number}}</h1>
+        <p>Total solicitudes credito pagadas</p>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label slot="end">
+        <h1 style="text-align: right">$ {{mrn.total_sol_credito_pend|number}}</h1>
+        <p>Total solicitudes credito pago pendiente</p>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label slot="end">
+        <h1 style="text-align: right">$ {{mrn.total_sol_contado+mrn.total_sol_credito+mrn.total_sol_credito_pend|number}}</h1>
+        <p>Total solicitudes</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

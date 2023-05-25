@@ -1,0 +1,82 @@
+<ion-content>
+  <div style="text-align: center;margin: 25px 0 25px 0">
+    <img style="width: 20%"  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
+  </div>
+  <ion-list>
+    <ion-item *ngIf="mrn.obj_venta.referencia">
+      <ion-label>
+        <h3>{{mrn.obj_venta.convenio}}</h3>
+        <p>Convenio</p>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="mrn.obj_venta.referencia">
+      <ion-label>
+        <h3>{{mrn.obj_venta.referencia}}</h3>
+        <p>Referencia de pago</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item *ngIf="mrn.obj_venta.direccion">
+      <ion-label>
+        <h3>{{mrn.obj_venta.direccion}}</h3>
+        <p>Direccion</p>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="mrn.obj_venta.documento">
+      <ion-label>
+        <h3>{{mrn.obj_venta.documento}}</h3>
+        <p>Documento</p>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="mrn.obj_venta.celular">
+      <ion-label>
+        <h1>{{mrn.obj_venta.placa?mrn.obj_venta.placa:mrn.obj_venta.celular}}</h1>
+        <p>Destino</p>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="mrn.obj_venta.telefono">
+      <ion-label>
+        <h1>{{mrn.obj_venta.telefono}}</h1>
+        <p>{{mrn.empresaSeleccionada.nom_empresa == 'Directv'?'N°. de tarjeta':'N°. de celular'}}</p>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="mrn.obj_venta.email">
+      <ion-label>
+        <h3>{{mrn.obj_venta.email}}</h3>
+        <p>Correo</p>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="mrn.productoCodificadoSeleccionado">
+      <ion-label>
+        <h3>{{mrn.productoCodificadoSeleccionado.producto.nom_producto}}</h3>
+        <p>Producto</p>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label *ngIf="mrn.obj_venta.valor">
+        <h1>${{mrn.obj_venta.valor|number}}</h1>
+        <p>{{mrn.empresaSeleccionada.nom_empresa}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-grid>
+    <ion-row style="font-size: 0.8em">
+      <ion-col>
+        <ion-button shape="round" expand="block"
+                    [disabled]="!(mrn.obj_venta.valor <= mrn.misBoslsasDinero.saldo_disponible)"
+                    (click)="vender(false)"
+        >Vender con saldo</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button shape="round" expand="block"
+                    [disabled]="!(mrn.obj_venta.valor <= mrn.misBoslsasDinero.utilidad)"
+                    (click)="vender(true)"
+        >Vender con ganancias</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button shape="round" expand="block" color="light" (click)="modalController.dismiss()"
+        >Cancelar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

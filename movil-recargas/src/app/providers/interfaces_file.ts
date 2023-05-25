@@ -22,6 +22,9 @@ interface RecargasWS {
     bolsa_ganancia:string,
     venta_ganancias:boolean,
     medioVenta:string,
+    tipo_datos?:string,
+    tipo_red?:string,
+    app_ver?:string,
 }
 
 interface SaldoWS {
