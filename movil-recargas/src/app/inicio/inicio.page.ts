@@ -6,9 +6,7 @@ import {ModalController, Platform} from "@ionic/angular";
 import {UltimasVentasComponent} from "../ultimas-ventas/ultimas-ventas.component";
 import {InfoRecaudosComponent} from "../info-recaudos/info-recaudos.component";
 import {PrintService} from "../providers/print.service";
-
 declare const Buffer
-
 
 @Component({
   selector: 'app-inicio',

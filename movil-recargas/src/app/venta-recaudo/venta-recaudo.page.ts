@@ -14,7 +14,9 @@ import {BarcodeScanner} from "@awesome-cordova-plugins/barcode-scanner/ngx";
 })
 export class VentaRecaudoPage implements OnInit {
 
-  constructor(public api:ApiService,public mrn:Mrn,public modalController: ModalController,private barcodeScanner: BarcodeScanner) { }
+  constructor(public api:ApiService,public mrn:Mrn,public modalController: ModalController,
+              private barcodeScanner: BarcodeScanner
+  ) { }
 
   ngOnInit() {
     //this.mrn.get_convenios_practisistemas()
@@ -27,9 +29,10 @@ export class VentaRecaudoPage implements OnInit {
   }
 
   async present_resumen_ventas() {
+    console.log(this.mrn.convenio_seleccionado)
     this.mrn.obj_venta = '';
     this.mrn.formVentasRecaudo.patchValue({
-      convenio:this.mrn.convenio_seleccionado.nombre,
+      convenio:this.mrn.convenio_seleccionado?this.mrn.convenio_seleccionado.nombre:this.mrn.factura_consultada.nconvenio,
       valor:this.mrn.factura_consultada.valorPago,
       })
     this.mrn.obj_venta = this.mrn.formVentasRecaudo.value

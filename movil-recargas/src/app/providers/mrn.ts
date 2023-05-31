@@ -4022,9 +4022,12 @@ export class Mrn {
         "end_point":"preConsulta"
       }
     }else {
+      this.convenio_seleccionado = undefined
       parametros = {
-        "idcomercio": "113935",
-        "claveventa": "1379",
+        /*"idcomercio": "113935",
+        "claveventa": "1379",*/
+        "idcomercio": "1425",
+        "claveventa": "1234",
         "tipoConsulta":"verifyBillEan",
         "data":{
           "eanbill":this.formVentasRecaudo.value['referencia'].toString()
@@ -4041,6 +4044,7 @@ export class Mrn {
             alert(respuesta['data']['data']['reply'])
           }else {
             this.factura_consultada = respuesta['data']['data']
+            console.log(this.factura_consultada)
           }
           this.loadingController.dismiss()
         }
@@ -4054,6 +4058,12 @@ export class Mrn {
   }
   pagar_factura(venta_ganancias){
     let producto = this.productosByProveedorSinTiempoAlAire[0]
+    let tipo_convenio = ''
+    if(this.convenio_seleccionado){
+      tipo_convenio =  this.convenio_seleccionado.tipo == '0'?'667':'720'
+    }else {
+      tipo_convenio =  this.factura_consultada.tipo == '0'?'667':'720'
+    }
     let parametros = {
       /*"idcomercio": "113935",
       "claveventa": "1379",*/
@@ -4068,7 +4078,7 @@ export class Mrn {
       "venta_ganancias":venta_ganancias,
       "nodo":this.api.nodoActual['id'],
       "usuario_mrn":this.api.usuario['id'],
-      "producto_venta":producto.id,
+      "producto_venta":tipo_convenio,
       "medioVenta":'Movil',
       "tipo_datos":this.api.tipo_datos,
       "tipo_red":this.api.tipo_red,

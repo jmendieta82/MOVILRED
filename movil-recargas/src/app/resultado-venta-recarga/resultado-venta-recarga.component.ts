@@ -17,6 +17,7 @@ export class ResultadoVentaRecargaComponent implements OnInit {
     this.modalController.dismiss({
       'dismissed': true
     });
+    this.router.navigate(['/inicio'])
   }
 
 }
