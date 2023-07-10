@@ -78,6 +78,9 @@
         </ion-label>
       </ion-segment-button>
     </ion-segment>
+    <div class="lugar_recargas">
+      {{segmento=='tiempo_al_aire'?'Tiempo al aire':'Paquetes'}}
+    </div>
     <div *ngIf="segmento == 'tiempo_al_aire'">
       <form [formGroup]="mrn.formVentasRecargas">
         <ion-list lines="full" class="ion-no-margin">

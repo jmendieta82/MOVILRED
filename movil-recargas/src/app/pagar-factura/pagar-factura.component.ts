@@ -35,7 +35,10 @@ export class PagarFacturaComponent implements OnInit {
     this.mrn.abonar_factura(this.mrn.formPagos.value);
   }
   tomar_foto(){
-    this.camera.getPicture(this.options).then((imageData) => {
+    this.mrn.formPagos.patchValue({
+      soporte:'https://firebasestorage.googleapis.com/v0/b/recargas-326621.appspot.com/o/pago_facturas%2Fsoporte_pago_2555?alt=media&token=b575a806-0c81-4202-bf42-1af85a95b2d8'
+    })
+    /*this.camera.getPicture(this.options).then((imageData) => {
       // imageData is either a base64 encoded string or a file URI
       // If it's base64 (DATA_URL):
       let base64Image = 'data:image/jpeg;base64,' + imageData;
@@ -43,8 +46,6 @@ export class PagarFacturaComponent implements OnInit {
       this.mrn.formPagos.patchValue({
         soporte:this.foto
       })
-    }, (err) => {
-      // Handle error
-    });
+    }, (err) => {});*/
   }
 }

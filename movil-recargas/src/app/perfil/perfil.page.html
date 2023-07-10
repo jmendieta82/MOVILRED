@@ -42,8 +42,9 @@
       <ion-input formControlName="password2"></ion-input>
     </ion-item>
   </form>
-  <div style="text-align:center">
+  <div style="text-align:center;margin-top: 20px">
     <ion-button color="primary" (click)="guardarUsuario()">Guardar</ion-button>
+    <ion-button color="secondary" [routerLink]="'/inicio'">Volver</ion-button>
   </div>
 
 </ion-content>

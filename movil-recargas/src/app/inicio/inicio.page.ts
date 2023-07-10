@@ -117,7 +117,13 @@ export class InicioPage implements OnInit {
 
 //This will print
   printStuff(){
-    this.impresionService.imprimirTexto('Hola Mundo');
+    let obj = {'hola':'hola'}
+   this.api.post_soap('enviar_sms',obj)
+     .subscribe(
+       data =>{
+         console.log(data)
+       }
+     )
   }
 
 }

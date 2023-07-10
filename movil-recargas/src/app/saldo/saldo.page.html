@@ -51,9 +51,9 @@
       <ion-accordion *ngFor="let transaccion of mrn.misSolicitudesSaldo" value="{{transaccion.id}}">
         <ion-item slot="header">
           <ion-label>
-            <h3>Transaccion n°. {{transaccion.id}}</h3>
+            <h2 [style]="{'color':getIcon(transaccion)[1],'font-weight':'bold'}"><ion-icon name="{{getIcon(transaccion)[0]}}"></ion-icon>${{transaccion.valor|number}}</h2>
             <p>{{transaccion.created_at|date:"dd-MM-yyyy"}} {{transaccion.hour_at|date:'shortTime'}} </p>
-            <p>Valor solicitado: $ {{transaccion.valor|number}}</p>
+            <p>Forma de pago: {{(transaccion.tipo_transaccion == 'SSC')?'Contado':'Credito'}}</p>
           </ion-label>
         </ion-item>
         <div style="padding: 10px" slot="content">
@@ -67,16 +67,8 @@
               <td>{{transaccion.created_at|date:"dd-MM-yyyy"}} {{transaccion.hour_at|date:'shortTime'}}</td>
             </tr>
             <tr>
-              <th>Forma de pago</th>
-              <td>{{(transaccion.tipo_transaccion == 'SSC')?'Contado':'Credito'}}</td>
-            </tr>
-            <tr>
               <th>Tipo de comision</th>
               <td>{{(transaccion.tipoServicio=='CV')?'Comision venta':'Comision anticipada'}}</td>
-            </tr>
-            <tr>
-              <th>Valor solicitado</th>
-              <td>$ {{transaccion.valor|number}}</td>
             </tr>
             <tr>
               <th>Estado de solicitud</th>

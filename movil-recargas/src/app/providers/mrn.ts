@@ -1,20 +1,16 @@
 import {ElementRef, Injectable, ViewChild} from "@angular/core";
 import {ApiService} from "./api";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-/*import {RealTimeService} from "./firebase-realtime";
-import {FirebaseStorage} from "./firebase-storage";*/
 import * as moment from 'moment';
 import {isUndefined} from "lodash";
 import {Router} from "@angular/router";
 import {AlertController, LoadingController, ModalController, ToastController} from "@ionic/angular";
-import {ProductosComponent} from "../productos/productos.component";
 import {SoatVigenteComponent} from "../soat-vigente/soat-vigente.component";
 import {SoatVencidoComponent} from "../soat-vencido/soat-vencido.component";
-import Chart from 'chart.js/auto'
 import {Storage} from "@ionic/storage-angular";
 import {InfoFacturaPagadaComponent} from "../info-factura-pagada/info-factura-pagada.component";
 import {ResultadoVentaRecargaComponent} from "../resultado-venta-recarga/resultado-venta-recarga.component";
-
+import Print from "../providers/print-plugin";
 @Injectable()
 export class Mrn {
     /* Diccionario de variables :
@@ -38,9 +34,12 @@ export class Mrn {
          CJG= Canje de ganancia
          ACTCOM= Actualizacion de comisiones
     */
-
     public nombreArchivo = '';
-    APP_VERSION = '2.1.44'
+    USER_PRACTI = "113935"
+    PWD_PRACTI = "1379"
+    // USER_PRACTI = '1425'
+    // PWD_PRACTI = '1234'
+    APP_VERSION = '2.1.45'
     verFormNodo = false;
     formNodo: FormGroup;
     formUsuario: FormGroup;
@@ -249,7 +248,9 @@ export class Mrn {
     ]
     entidad_recaudo = [
         {label: 'Bancolombia', value: 'Bancolombia'},
-        {label: 'BBVA', value: 'BBVA'},
+        {label: 'Banco de Occidente', value: 'Banco de Occidente'},
+        {label: 'Banco agrario', value: 'Banco agrario'},
+        {label: 'Nequi', value: 'Nequi'},
         {label: 'Efecty', value: 'Efecty'},
     ]
     totalAbonos = 0;
@@ -298,6 +299,7 @@ export class Mrn {
     ventas_by_fecha = [];
     tipo_reporte: string;
     total_consulta_ventas = 0;
+    total_consulta_ganancias = 0;
     total_sol_contado = 0;
     total_sol_credito = 0;
     total_sol_credito_pend = 0;
@@ -496,9 +498,8 @@ export class Mrn {
             transaccion_id: [''],
             abono: ['', Validators.required],
             saldo: [''],
-            numero_recibo: ['', Validators.required],
-            soporte: [''],
-            //soporte: ['', Validators.required],
+            numero_recibo: [''],
+            soporte: ['', Validators.required],
             facturas: [''],
             pagador : [''],
             usuario_id : [''],
@@ -3040,14 +3041,14 @@ export class Mrn {
           nodo: this.api.nodoActual['id'],
           usuario_mrn: this.api.usuario['id'],
           producto_venta: producto.id,
-          //producto: producto.codigo_producto,
-          producto: 16080,
+          producto: producto.codigo_producto,
+          // producto: 16080,
           valor: parseInt(this.obj_venta.valor),
-          usuario: '00053026',
-          password: '4Tqa300M',
+          /*usuario: '00053026',
+          password: '4Tqa300M',*/
           celular: this.obj_venta.telefono,
-          //usuario: this.USUARIO_MSV,
-          //password: this.PWD_MVS,
+          usuario: this.USUARIO_MSV,
+          password: this.PWD_MVS,
           canal_transaccion: 2,
           transaccion_externa: 0,
           documento: '1088310088',
@@ -3574,7 +3575,6 @@ export class Mrn {
       });
       return await modal.present();
     }
-
     verificar_user_data(identificacion, username) {
         if (identificacion) {
             let obj = new Object();
@@ -3599,7 +3599,6 @@ export class Mrn {
                 )
         }
     }
-
     verificar_soporte_pago(numero) {
         let obj = {numero_recibo : numero}
         this.api.post_soap('verificar_soporte_pago', obj)
@@ -3608,7 +3607,6 @@ export class Mrn {
                         this.mensajes(data)
                     });
     }
-
     ajustarSaldo(valor, motivo_ajuste) {
         let obj = new Object();
         obj['nodo_ejecutor'] = this.api.nodoActual['id']
@@ -3631,7 +3629,6 @@ export class Mrn {
                 });*/
             })
     }
-
     getVentasByNodo() {
         this.api.get('transaccion/?tipo_transaccion=VEN&nodo='+this.api.nodoActual['id'])
             .subscribe(data => {
@@ -3644,7 +3641,6 @@ export class Mrn {
                 }
             })
     }
-
     getLastVentasByNodo(state?) {
       this.presentLoading()
         this.ventas_by_nodo = [];
@@ -3660,13 +3656,11 @@ export class Mrn {
                 this.loadingController.dismiss()
             })
     }
-
     getType(value) {
         //Devuelve el tipo de una variable dada
         return typeof value
 
     }
-
     validar_usuario() {
         this.api.post_soap('validar_usuario',this.formRecoveryPwd.value)
             .subscribe(data => {
@@ -3679,14 +3673,12 @@ export class Mrn {
                }
             })
     }
-
-    setBarrio(barrio) {
+  setBarrio(barrio) {
         this.formNodo.patchValue({
             barrio_id:barrio.id
         })
     }
-
-    buscarCiudad(event: any) {
+  buscarCiudad(event: any) {
         let palabra = event.query?event.query:event
         if(palabra){
             this.municipiosFiltrados = this.municipios.filter(item=>item.nombre_mpio.toUpperCase().includes(palabra.toUpperCase()))
@@ -3694,8 +3686,7 @@ export class Mrn {
             this.municipiosFiltrados = this.municipios;
         }
     }
-
-    buscarBarrios(event: any) {
+  buscarBarrios(event: any) {
         let palabra = event.query?event.query:event
         if(palabra){
             this.barriosFiltrados = this.barrios.filter(item=>item.barrio_vereda.toUpperCase().includes(palabra.toUpperCase()))
@@ -3703,17 +3694,14 @@ export class Mrn {
             this.barriosFiltrados = this.barrios;
         }
     }
-
-    togleVentas(index: number,state:boolean) {
+  togleVentas(index: number,state:boolean) {
         this.activeState[index] = state;
     }
-
-    verificar_dias_sin_saldo(nodo: any) {
+  verificar_dias_sin_saldo(nodo: any) {
         let hoy = moment()
         return hoy.diff(moment(nodo.created_at),'days')
     }
-
-    get_ventas_by_celular(value: string) {
+  get_ventas_by_celular(value: string) {
         this.loading = true
         this.ventas_by_nodo = [];
         this.api.get('ventas_by_celular/?celular='+value+'&nodo='+this.api.nodoActual['id'])
@@ -3730,7 +3718,6 @@ export class Mrn {
                 }
             )
     }
-
   async mensajes(mensaje) {
     const toast = await this.toastController.create({
       message: mensaje,
@@ -3739,7 +3726,6 @@ export class Mrn {
     });
     toast.present();
   }
-
   set_valor_sol_min(value) {
       if(value<20000){
         this.formTransaccion.patchValue({
@@ -3747,7 +3733,6 @@ export class Mrn {
         })
       }
   }
-
   get_ventas_by_fecha(fi: any,ff: any) {
     this.loading = true
     this.total_consulta_ventas = 0;
@@ -3760,6 +3745,7 @@ export class Mrn {
               this.ventas_by_fecha = this.crearArbolVentas(data);
               for(let venta of data){
                 if(venta.codigo_resultado == '001'||venta.codigo_resultado == '00')this.total_consulta_ventas += venta.valor
+                if(venta.codigo_resultado == '001'||venta.codigo_resultado == '00')this.total_consulta_ganancias += parseInt(venta.ganancia)
               }
             }else {
               this.ventas_by_fecha = [];
@@ -3770,7 +3756,6 @@ export class Mrn {
         }
       )
   }
-
   get_solicitudes_by_fecha(fechai,fechaf) {
     this.loading = true
     this.total_consulta_ventas = 0;
@@ -3807,7 +3792,6 @@ export class Mrn {
         }
       )
   }
-
   get_pagos_by_fecha(fecha,fecha2) {
     this.loading = true
     this.pagos_by_fecha = [];
@@ -3826,7 +3810,6 @@ export class Mrn {
         }
       )
   }
-
   crearArbolPagos(data) {
     let lista = [];
     for (let item of data) {
@@ -3845,7 +3828,6 @@ export class Mrn {
     }
     return lista
   }
-
   crearArbolVentas(data) {
     let lista = [];
     for (let item of data) {
@@ -3869,7 +3851,6 @@ export class Mrn {
 
     return lista
   }
-
   crearArbolSolicitudesSaldo(data) {
     let lista = [];
     for (let item of data) {
@@ -3888,7 +3869,6 @@ export class Mrn {
     }
     return lista
   }
-
   calcular_totales(items) {
       let total = 0;
       for(let item of items) {
@@ -3899,7 +3879,15 @@ export class Mrn {
       }
       return total
   }
-
+  calcular_totales_ganancias(items) {
+    let total = 0;
+    for(let item of items) {
+      if(item.info.codigo_resultado == '001'||item.info.codigo_resultado == '00'){
+        total += parseInt(item.info.ganancia)
+      }
+    }
+    return total
+  }
   async presentLoading() {
     const loading = await this.loadingController.create({
       spinner:'lines-sharp',
@@ -3919,7 +3907,6 @@ export class Mrn {
   getDiasVencimiento(fecha_pago: any) {
 
   }
-
   pagarFacturasPendientesRed(facturas) {
 
    if(this.formPagos.value['abono'] > this.totalFacturasAPagar){
@@ -3974,15 +3961,13 @@ export class Mrn {
         }
      )
   }
-
+  /*****************************************************PARCTISISTEMAS**********************************************/
   get_convenios_practisistemas(parametro_busqueda) {
     //this.presentLoading()
     if(parametro_busqueda.length >=3){
       let parametros = {
-        /*"idcomercio":"1425",
-        "claveventa":"1234",*/
-        "idcomercio": "113935",
-        "claveventa": "1379",
+        "idcomercio": this.USER_PRACTI,
+        "claveventa": this.PWD_PRACTI,
         "tipoConsulta":"convenios_consulta",
         "data" : {"tipo": "0","key": parametro_busqueda},
         "idTrx":"1",
@@ -3993,6 +3978,7 @@ export class Mrn {
           datos =>{
             this.convenios = []
             let object = JSON.parse(datos['data']['convenios'])
+
             for (const property in object) {
               this.convenios.push(object[property])
             }
@@ -4003,72 +3989,67 @@ export class Mrn {
       this.convenios = []
     }
   }
-
-  consultar_referencia(){
-    this.presentLoading()
+  consultar_referencia(ref?){
     let parametros = {}
-    if (this.formVentasRecaudo.value['referencia'].toString().length < 12){
-      parametros = {
-        /*"idcomercio": "113935",
-        "claveventa": "1379",*/
-        "idcomercio": "1425",
-        "claveventa": "1234",
-        "tipoConsulta":"consultaValorConvRef",
-        "data":{
-          "idConv":this.convenio_seleccionado.id,
-          "extConvenio":this.formVentasRecaudo.value['referencia']
-        },
-        "idTrx":"1",
-        "end_point":"preConsulta"
-      }
-    }else {
-      this.convenio_seleccionado = undefined
-      parametros = {
-        /*"idcomercio": "113935",
-        "claveventa": "1379",*/
-        "idcomercio": "1425",
-        "claveventa": "1234",
-        "tipoConsulta":"verifyBillEan",
-        "data":{
-          "eanbill":this.formVentasRecaudo.value['referencia'].toString()
-        },
-        "idTrx":"1",
-        "end_point":"preConsulta"
-      }
-    }
-    this.api.post_soap('consulta_referencia_practi',parametros)
-      .subscribe(
-        datos =>{
-          let respuesta = JSON.parse(datos)
-          if(respuesta['codigo']!='00'){
-            alert(respuesta['data']['data']['reply'])
-          }else {
-            this.factura_consultada = respuesta['data']['data']
-            console.log(this.factura_consultada)
-          }
-          this.loadingController.dismiss()
+    let referencia = ref?ref:this.formVentasRecaudo.value['referencia']
+    if(referencia){
+      this.presentLoading()
+      if (referencia.toString().length < 12 && this.convenio_seleccionado){
+        parametros = {
+          "idcomercio": this.USER_PRACTI,
+          "claveventa": this.PWD_PRACTI,
+          "tipoConsulta":"consultaValorConvRef",
+          "data":{
+            "idConv":this.convenio_seleccionado.id,
+            "extConvenio":referencia
+          },
+          "idTrx":"1",
+          "end_point":"preConsulta"
         }
-      )
-  }
-  async present_resumen_pago() {
-    const modal = await this.modalController.create({
-      component: InfoFacturaPagadaComponent,
-    });
-    return await modal.present();
+      }else {
+        this.convenio_seleccionado = undefined
+        parametros = {
+          "idcomercio": this.USER_PRACTI,
+          "claveventa": this.PWD_PRACTI,
+          "tipoConsulta":"verifyBillEan",
+          "data":{
+            "eanbill":referencia
+          },
+          "idTrx":"1",
+          "end_point":"preConsulta"
+        }
+      }
+      this.api.post_soap('consulta_referencia_practi',parametros)
+        .subscribe(
+          datos =>{
+            let respuesta = JSON.parse(datos)
+            if(respuesta['data']['data']['reply'] == 'ok' && respuesta['codigo']=='00'){
+              this.factura_consultada = respuesta['data']['data']
+              console.log( this.factura_consultada)
+            }else {
+              alert(respuesta['data']['data']['nombre']?respuesta['data']['data']['nombre']:respuesta['data']['data']['reply'])
+              this.convenio_seleccionado = '';
+              this.formVentasRecaudo.reset();
+              this.factura_consultada=''
+            }
+            this.loadingController.dismiss()
+          }
+        )
+    }else {
+      alert('Por favor digite una referencia o escanee el codigo de barras.')
+    }
   }
   pagar_factura(venta_ganancias){
     let producto = this.productosByProveedorSinTiempoAlAire[0]
     let tipo_convenio = ''
     if(this.convenio_seleccionado){
-      tipo_convenio =  this.convenio_seleccionado.tipo == '0'?'667':'720'
+      tipo_convenio =  this.convenio_seleccionado.tipo == '0'?'667':'721'
     }else {
-      tipo_convenio =  this.factura_consultada.tipo == '0'?'667':'720'
+      tipo_convenio =  this.factura_consultada.tipo == '0'?'667':'721'
     }
     let parametros = {
-      /*"idcomercio": "113935",
-      "claveventa": "1379",*/
-      "idcomercio": "1425",
-      "claveventa": "1234",
+      "idcomercio": this.USER_PRACTI,
+      "claveventa": this.PWD_PRACTI,
       "celular":this.formVentasRecaudo.value['telefono'],
       "operador":"fc",
       "valor":this.factura_consultada.valorPago,
@@ -4079,6 +4060,7 @@ export class Mrn {
       "nodo":this.api.nodoActual['id'],
       "usuario_mrn":this.api.usuario['id'],
       "producto_venta":tipo_convenio,
+      "referencia":this.factura_consultada.referencia,
       "medioVenta":'Movil',
       "tipo_datos":this.api.tipo_datos,
       "tipo_red":this.api.tipo_red,
@@ -4097,18 +4079,23 @@ export class Mrn {
             this.modalController.dismiss({
               'dismissed': true
             });
-            //this.present_resumen_pago()
           }else{
             alert(respuesta.mensaje)
+            this.loadingController.dismiss()
           }
         }
       )
   }
-
+/********************************************************************************************************************/
   cancelartVenta() {
     this.router.navigate(['/inicio'])
   }
-
+  async present_resumen_pago() {
+    const modal = await this.modalController.create({
+      component: InfoFacturaPagadaComponent,
+    });
+    return await modal.present();
+  }
   login_actions(usuario){
     this.teclado_show = true;
     this.api.usuario = usuario;
@@ -4135,8 +4122,57 @@ export class Mrn {
     this.registrarPuntoDeAcceso(this.api.usuario)
   }
 
-  imprimir(){
+  separadorDeMiles(numero) {
+      if(numero){
+        // Convierto el número a string.
+        let str = numero.toString();
+        // Aquí almacenaremos los resultados.
+        let resultado = "";
+
+        // Recorremos el string con for "str.length" veces.
+        for (let i = 0; i < str.length; i++) {
+          // Cada número, lo concatenamos a "resultado".
+          resultado += str[i];
+
+          // y luego de concatenar el número, verifico si el iterador es un múltiplo de 3.
+          // ponemos "i < str.length - 1" para evitar que el punto se agregue al final del string.
+          if ((str.length - i - 1) % 3 === 0 && i < str.length - 1) {
+            resultado += ".";
+          }
+        }
+
+        return resultado;
+      }else {
+        return 0
+      }
 
   }
+
+
+  async imprimir_soporte(venta) {
+    let nom_prod = venta.producto_venta?venta.producto_venta.producto.nom_producto:venta.nom_producto
+    let nom_empresa = venta.producto_venta?venta.producto_venta.producto.nom_producto:venta.nombre_empresa
+    let fecha = moment(venta.hour_at).format("DD/MM/YYYY hh:mm:ss")
+    let recibo = `
+:::::::::::::MRN RECARGAS:::::::::::::::
+::::::COMPROBANTE DE TRANSACCION::::::::
+::::::::::TRANSACCION EXITOSA:::::::::::
+
+TRANSACCION ID: ${venta.id}
+
+FECHA:${fecha}
+VALOR: $${this.separadorDeMiles(venta.valor)}
+PRODUCTO: ${nom_prod}
+EMPRESA: ${nom_empresa}
+CONVENIO:
+${venta.convenio_pago?venta.convenio_pago:'n/a'}
+REFERENCIA: ${venta.referencia_pago?venta.referencia_pago:'n/a'}
+CEL: ${venta.numeroDestino}
+:::::::::GRACIAS POR SU COMPRA!:::::::::
+
+`;
+    console.log(recibo)
+    let { value } = await Print.print({ value: recibo });
+}
 
 }

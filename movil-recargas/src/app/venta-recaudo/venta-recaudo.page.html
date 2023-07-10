@@ -15,7 +15,7 @@
           <img  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
         </ion-avatar>
         <ion-label>
-          <h2>Reacudo seleccionado</h2>
+          <h2>Recaudo seleccionado</h2>
           <p class="wrap">{{mrn.convenio_seleccionado?mrn.convenio_seleccionado.nombre:'Seleccione un convenio.'}}</p>
         </ion-label>
       </ion-item>
@@ -24,7 +24,6 @@
         <ion-input style="font-size: 1.5em" formControlName="referencia" type="number"></ion-input>
         <ion-icon name="barcode-outline" slot="end" (click)="obtener_codigo_barras()"></ion-icon>
       </ion-item>
-
       <ion-button shape="round" expand="block" (click)="mrn.consultar_referencia()">Consultar</ion-button>
       <ion-button shape="round" expand="block" (click)="mrn.convenio_seleccionado = '';
       mrn.formVentasRecaudo.reset();mrn.factura_consultada='';" color="light">Limpiar</ion-button>
@@ -34,18 +33,27 @@
           <p>{{'Nombre convenio'}}</p>
         </ion-label>
       </ion-item>
+      <ion-item style="marign-top:35px" *ngIf="mrn.factura_consultada">
+        <ion-label>
+          <h4>{{mrn.factura_consultada.tipo==0?'Facturas normales':'Energia o gas'}}</h4>
+          <p>{{'Tipo convenio'}}</p>
+        </ion-label>
+      </ion-item>
       <ion-item style="marign-top:5px" *ngIf="mrn.factura_consultada">
         <ion-avatar slot="start">
           <i style="font-size: 2.4em;color: gray" class="fas fa-dollar-sign"></i>
         </ion-avatar>
         <ion-label>
           <h1>{{mrn.factura_consultada.valorPago|number}}</h1>
-          <p>{{'Valor de pago'}}</p>
+          <p>{{'Valor total de la factura'}}</p>
         </ion-label>
+
+        <ion-label *ngIf="mrn.factura_consultada.pagoParcial" position="stacked">Valor a pagar</ion-label>
+        <ion-input *ngIf="mrn.factura_consultada.pagoParcial" style="font-size: 1.5em" formControlName="valor" type="number"></ion-input>
       </ion-item>
       <ion-item style="marign-top:35px" *ngIf="mrn.factura_consultada">
         <ion-label position="stacked">Numero celular</ion-label>
-        <ion-input style="font-size: 1.5em" formControlName="telefono" type="number"></ion-input>
+        <ion-input style="font-size: 1.5em"  formControlName="telefono" type="number"></ion-input>
       </ion-item>
     </ion-list>
     <div style="margin-top: 15px" *ngIf="mrn.factura_consultada">

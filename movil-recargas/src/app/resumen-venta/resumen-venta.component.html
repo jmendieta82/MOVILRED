@@ -15,7 +15,6 @@
         <p>Referencia de pago</p>
       </ion-label>
     </ion-item>
-
     <ion-item *ngIf="mrn.obj_venta.direccion">
       <ion-label>
         <h3>{{mrn.obj_venta.direccion}}</h3>
@@ -55,7 +54,7 @@
     <ion-item>
       <ion-label *ngIf="mrn.obj_venta.valor">
         <h1>${{mrn.obj_venta.valor|number}}</h1>
-        <p>{{mrn.empresaSeleccionada.nom_empresa}}</p>
+        <p>Valor a pagar</p>
       </ion-label>
     </ion-item>
   </ion-list>

@@ -9,11 +9,13 @@ import { Device } from '@awesome-cordova-plugins/device/ngx';
 @Injectable()
 export class ApiService {
 
-  load = false;
-  //readonly baseURL = 'http://127.0.0.1:8000';
-  readonly baseURL = 'https://api-produccion-recargas-mrn.click';
+  readonly baseURL = 'http://127.0.0.1:8000';
+  //readonly baseURL = 'https://api-produccion-recargas-mrn.click';
+
+
   readonly conceptoURL = 'https://150.136.18.204'//produccion;
   //readonly conceptoURL = 'https://129.159.64.15' // pruebas;
+  load = false;
   API_Key_Concepto_produccion = '$2b$10$5hBiWZcdxXo6sQjy5equ1eUl/axKYblXTJ0Y0UG4lmiDtbRd846P2'
   //API_Key_Concepto_pruebas = ' $2b$10$8CT.SGdhz1oQbF4ZZ7cFp.Zv2yk.UBKaSlQ/Po3LV68OGC5Jr.Z1e'
   URL_methods = '';

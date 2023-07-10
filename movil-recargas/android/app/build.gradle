@@ -1,22 +1,37 @@
 apply plugin: 'com.android.application'
 
 android {
-
-    namespace 'com.recargas_movil'
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.recargas_movil"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 14
-        versionName "2.1.44"
+        versionCode 16
+        versionName "2.1.45"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
+      ndk {
+        abiFilters 'armeabi','armeabi-v7a', 'arm64-v8a','x86','x86_64','libEmvCore.so','libEmvCoreJNI.so','libJNIEMV.so','libJNIMAC.so','libJNISerial.so','libwltdecode.so'
+      }
     }
+  sourceSets {
+    main {
+      jniLibs.srcDirs = ['armeabi', 'libs']
+    }
+  }
+  /*splits {
+    abi {
+      enable true
+      reset()
+      enable enableSeparateBuildPerCPUArchitecture
+      universalApk true  // If true, also generate a universal APK
+      include "armeabi", "armeabi-v7a", "x86", "x86_64", "mips", "arm64-v8a"
+    }
+  }*/
     buildTypes {
         release {
             minifyEnabled false
@@ -41,18 +56,10 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation files('libs/POS2.8.7.180522_R.jar')
 }
 
-dependencies {
-  constraints {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
-      because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
-    }
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
-      because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
-    }
-  }
-}
 apply from: 'capacitor.build.gradle'
 
 try {

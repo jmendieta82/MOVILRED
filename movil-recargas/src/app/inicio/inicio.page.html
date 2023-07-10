@@ -8,9 +8,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <!--<ion-button (click)="printStuff()">
-    imprimir
-  </ion-button>-->
+  <ion-button (click)="printStuff()">
+    mensaje
+  </ion-button>
   <ion-refresher slot="fixed" (ionRefresh)="actualizarVentasInicio($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-circle-outline"
@@ -85,6 +85,10 @@
               <th>Venta id</th>
               <td>{{venta.id}}</td>
             </tr>
+            <tr *ngIf="venta.referencia_pago != 'n/a'">
+              <th>Referencia</th>
+              <td>{{venta.referencia_pago}}</td>
+            </tr>
             <tr>
               <th>Codigo aprobacion</th>
               <td>{{venta.codigo_transaccion_externa}}</td>
@@ -96,6 +100,10 @@
             <tr>
               <th>Operador</th>
               <td>{{venta.producto_venta.producto.empresa.nom_empresa}}</td>
+            </tr>
+            <tr *ngIf="venta.convenio_pago != 'n/a'">
+              <th>Convenio</th>
+              <td>{{venta.convenio_pago}}</td>
             </tr>
             <tr>
               <th>Saldo anterior</th>
@@ -110,6 +118,10 @@
               <td>$ {{venta.saldo_actual|number}}</td>
             </tr>
             <tr>
+              <th>Telefono</th>
+              <td>{{venta.numeroDestino}}</td>
+            </tr>
+            <tr>
               <th>Codigo resultado</th>
               <td>{{venta.codigo_resultado}}</td>
             </tr>
@@ -119,21 +131,15 @@
             <tr *ngIf="venta.soporte">
               <td colspan="2" style="text-align: justify;color: grey"><a href="{{venta.soporte}}">Ver documento</a></td>
             </tr>
+            <tr style="text-align: right" *ngIf="api.nodoActual['imprime']">
+              <td colspan="2" style="color: darkblue">
+                <span  (click)="mrn.imprimir_soporte(venta)">Imprimir recibo</span>
+              </td>
+            </tr>
           </table>
         </div>
       </ion-accordion>
     </ion-accordion-group>
   </div>
-  <!--<ion-slides>
-    <ion-slide>
-      <h1>Slide 1</h1>
-    </ion-slide>
-    <ion-slide>
-      <h1>Slide 2</h1>
-    </ion-slide>
-    <ion-slide>
-      <h1>Slide 3</h1>
-    </ion-slide>
-  </ion-slides>-->
 </ion-content>
 <app-footer></app-footer>

@@ -39,4 +39,12 @@ export class SaldoPage implements OnInit {
   segmentChanged(ev: any) {
     this.segmento = ev.detail.value
   }
+
+  getIcon(transaccion: any) {
+    if(transaccion.estado == 'Rechazado'){
+      return ['close-circle','#C71A1A']
+    }else {
+      return ['checkmark-circle','#0E9434']
+    }
+  }
 }

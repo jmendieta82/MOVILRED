@@ -15,16 +15,16 @@
     <ion-card-content>
       Por favor seleccione una fecha para realizar su consulta.
       <ion-item>
-        <ion_label>Desde: </ion_label>
+        <ion-label>Desde: </ion-label>
         <ion-input [(ngModel)]="fechai" type="date"></ion-input>
       </ion-item>
       <ion-item>
-        <ion_label>Hasta: </ion_label>
+        <ion-label>Hasta: </ion-label>
         <ion-input [(ngModel)]="fechaf" type="date"></ion-input>
       </ion-item>
       <div style="margin-top: 35px" >
         <ion-button shape="round" expand="block" [disabled]="!fechai&&!fechaf"
-                    (click)="consultar()">Consultar</ion-button>
+                    (click)="this.mrn.get_ventas_by_fecha(this.fechai,this.fechaf)">Consultar</ion-button>
       </div>
     </ion-card-content>
   </ion-card>
@@ -35,7 +35,8 @@
           <img src="{{transaccion.data.producto_venta.producto.empresa.imagen}}" alt="">
         </ion-avatar>
         <ion-label>
-          <h2>$ {{mrn.calcular_totales(transaccion.items)|number}}</h2>
+          <h2>Ventas: ${{mrn.calcular_totales(transaccion.items)|number}}</h2>
+          <h2>Ganancias: ${{mrn.calcular_totales_ganancias(transaccion.items)|number}}</h2>
           <p>{{transaccion.data.producto_venta.producto.empresa.nom_empresa}}</p>
         </ion-label>
       </ion-item>
@@ -44,9 +45,13 @@
           <ion-accordion *ngFor="let venta of transaccion.items" value="{{venta.info.id}}">
             <ion-item slot="header">
               <ion-label style="color:{{(venta.info.codigo_resultado=='001'||venta.info.codigo_resultado=='00')?'':'darkred'}}">
-                <h3>{{venta.info.numeroDestino}}</h3>
-                <h5>${{venta.info.valor|number}}</h5>
-                <p>{{venta.info.hour_at|date:'medium'}} </p>
+                <h3 style="color: {{getIcon(venta.info.codigo_resultado)[1]}}">
+                  <ion-icon name="{{getIcon(venta.info.codigo_resultado)[0]}}" style="color: {{getIcon(venta.info.codigo_resultado)[1]}}"></ion-icon>
+                  {{venta.info.numeroDestino}}</h3>
+                <h5>Valor : ${{venta.info.valor|number}}</h5>
+                <h5>Ganancia : ${{venta.info.ganancia|number}}</h5>
+                <h5>Venta desde : ${{venta.info.venta_desde}}</h5>
+                <p>Fecha : {{venta.info.hour_at|date:'medium'}} </p>
               </ion-label>
             </ion-item>
             <div style="padding: 10px" slot="content">
@@ -59,16 +64,20 @@
                   <td>{{venta.info.id}}</td>
                 </tr>
                 <tr>
-                  <th>Codigo aprobacion</th>
-                  <td>{{venta.info.codigo_transaccion_externa}}</td>
+                  <th>Operador</th>
+                  <td>{{venta.info.producto_venta.producto.empresa.nom_empresa}}</td>
+                </tr>
+                <tr>
+                  <th>Convenio</th>
+                  <td>{{venta.info.convenio_pago}}</td>
+                </tr>
+                <tr>
+                  <th>Referencia</th>
+                  <td>{{venta.info.referencia_pago}}</td>
                 </tr>
                 <tr>
                   <th>Venta desde</th>
                   <td>{{venta.info.venta_desde}}</td>
-                </tr>
-                <tr>
-                  <th>Operador</th>
-                  <td>{{venta.info.producto_venta.producto.empresa.nom_empresa}}</td>
                 </tr>
                 <tr>
                   <th>Saldo anterior</th>
@@ -81,6 +90,10 @@
                 <tr>
                   <th>Nuevo saldo</th>
                   <td>$ {{venta.info.saldo_actual|number}}</td>
+                </tr>
+                <tr>
+                  <th>Ganancia</th>
+                  <td>$ {{venta.info.ganancia|number}}</td>
                 </tr>
                 <tr>
                   <th>Codigo resultado</th>
@@ -100,6 +113,10 @@
     <ion-label slot="end">
       <h1>$ {{mrn.total_consulta_ventas|number}}</h1>
       <p>Total ventas</p>
+    </ion-label>
+    <ion-label slot="start">
+      <h1>$ {{mrn.total_consulta_ganancias|number}}</h1>
+      <p>Total ganancias</p>
     </ion-label>
   </ion-item>
 </ion-content>

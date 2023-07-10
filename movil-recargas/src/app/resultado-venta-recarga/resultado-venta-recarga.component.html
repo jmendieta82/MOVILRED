@@ -9,6 +9,12 @@
 </ion-header>
 
 <ion-content fullscreen>
+  <div style="text-align: center;margin-top: 10px">
+    <ion-icon  style="font-size: 2.4em;color: {{getColorIcon(mrn.trans_resultado_venta.codigo_resultado)[0]}}"  name="{{getColorIcon(mrn.trans_resultado_venta.codigo_resultado)[1]}}"></ion-icon>
+  </div>
+  <div style="text-align: center">
+    <span style="font-size: 1.5em;font-weight: bold">{{mrn.trans_resultado_venta.resultado}}</span>
+  </div>
   <ion-list>
     <ion-item>
       <ion-label>
@@ -18,20 +24,8 @@
     </ion-item>
     <ion-item>
       <ion-label>
-        <h3>$ {{mrn.trans_resultado_venta.ultimoSaldo|number}}</h3>
-        <p>Saldo antes de la venta</p>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <h3>$ {{mrn.trans_resultado_venta.valor|number}}</h3>
-        <p>Valor venta</p>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <h3>$ {{mrn.trans_resultado_venta.saldo_actual|number}}</h3>
-        <p>Saldo despues de la venta</p>
+        <h3>{{mrn.trans_resultado_venta.hour_at| date:'short'}}</h3>
+        <p>Fecha</p>
       </ion-label>
     </ion-item>
     <ion-item>
@@ -40,6 +34,18 @@
         <p>Número celular</p>
       </ion-label>
     </ion-item>
+    <ion-item *ngIf="this.mrn.factura_consultada">
+      <ion-label>
+        <h5>{{this.mrn.trans_resultado_venta.convenio_pago}}</h5>
+        <p>Convenio</p>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="!this.mrn.factura_consultada">
+    <ion-label>
+      <h5>{{mrn.trans_resultado_venta.nom_producto}}</h5>
+      <p>Producto en venta</p>
+    </ion-label>
+  </ion-item>
     <ion-item>
       <ion-label>
         <h3>{{mrn.trans_resultado_venta.nombre_empresa}}</h3>
@@ -48,107 +54,19 @@
     </ion-item>
     <ion-item>
       <ion-label>
-        <h3>{{mrn.trans_resultado_venta.hour_at| date:'short'}}</h3>
-        <p>Fecha</p>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <h3>{{mrn.trans_resultado_venta.hour_at| date:'short'}}</h3>
-        <p>Fecha</p>
-      </ion-label>
-    </ion-item>
-    <ion-item *ngIf="this.mrn.factura_consultada">
-      <ion-label>
-        <h5>{{this.mrn.factura_consultada.nconvenio?this.mrn.factura_consultada.nconvenio:this.mrn.factura_consultada.nombre}}</h5>
-        <p>Convenio</p>
-      </ion-label>
-    </ion-item>
-    <ion-item *ngIf="this.mrn.factura_consultada">
-      <ion-label>
-        <h5>{{mrn.trans_resultado_venta.nom_producto}}</h5>
-        <p>Producto en venta</p>
-      </ion-label>
-    </ion-item>
-    <ion-item *ngIf="this.mrn.factura_consultada">
-      <ion-label>
-        <h5>{{mrn.trans_resultado_venta.resultado}}</h5>
-        <p>Resultado</p>
-      </ion-label>
-    </ion-item>
-    <ion-item *ngIf="this.mrn.factura_consultada">
-      <ion-label>
-        <h5>{{mrn.trans_resultado_venta.codigo_resultado}}</h5>
-        <p>Codigo resultado</p>
+        <h3>$ {{mrn.trans_resultado_venta.valor|number}}</h3>
+        <p>Valor venta</p>
       </ion-label>
     </ion-item>
   </ion-list>
-  <!--<ion-list *ngIf="mrn.trans_resultado_venta ">
-    <ion-item>
-      <ion-label>
-        <p>Transacción N° </p>
-        <h2><i [style]="{'color':mrn.trans_resultado_venta.codigo_resultado == '001'?'darkgreen':'darkred','margin-right':'10px'}"
-               [class]="mrn.trans_resultado_venta.codigo_resultado == '001'?'fas fa-check-circle':'fas fa-times-circle'"></i>{{mrn.trans_resultado_venta.id}}</h2>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <p>Saldo antes de la venta</p>
-        <h2>$ {{mrn.trans_resultado_venta.ultimoSaldo|number}}</h2>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <p>Valor venta</p>
-        <h2>$ {{mrn.trans_resultado_venta.valor|number}}</h2>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <p>Saldo despues de la venta</p>
-        <h2>$ {{mrn.trans_resultado_venta.saldo_actual|number}}</h2>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <p>Empresa</p>
-        <h2>{{mrn.trans_resultado_venta.nombre_empresa}}</h2>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <p>Número celular</p>
-        <h2>{{mrn.trans_resultado_venta.numeroDestino}}</h2>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <p>Fecha de venta</p>
-        <h2>{{mrn.trans_resultado_venta.hour_at| date:'short'}}</h2>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <p>Producto en venta</p>
-        <h2>{{mrn.trans_resultado_venta.nom_producto}}</h2>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <p>Resultado</p>
-        <h2>{{mrn.trans_resultado_venta.resultado}}</h2>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <p>Codigo resultado</p>
-        <h2>{{mrn.trans_resultado_venta.codigo_resultado}}</h2>
-      </ion-label>
-    </ion-item>
-  </ion-list>-->
   <ion-button style="margin-top: 30px" shape="round" expand="block"
               (click)="mrn.trans_resultado_venta = '';dismissModal();
-              mrn.formVentasRecaudo.reset();
+              mrn.formVentasRecaudo.reset();mrn.convenio_seleccionado = '';
               mrn.factura_consultada=''">
     Aceptar</ion-button>
+  <ion-button color="secondary" *ngIf="api.nodoActual['imprime']" style="margin-top: 30px" shape="round" expand="block"
+              (click)="mrn.imprimir_soporte(mrn.trans_resultado_venta);mrn.trans_resultado_venta = '';dismissModal();
+              mrn.formVentasRecaudo.reset();mrn.convenio_seleccionado = '';
+              mrn.factura_consultada=''">
+    Imprimir</ion-button>
 </ion-content>

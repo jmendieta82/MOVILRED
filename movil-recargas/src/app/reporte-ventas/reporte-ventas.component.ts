@@ -45,40 +45,16 @@ export class ReporteVentasComponent implements OnInit {
       'dismissed': true
     });
   }
-  /*VentaChart(){
-    if (this.ventaFechaChart) {
-      this.ventaFechaChart.destroy();
-    }
-    this.labels = []
-    this.datos = []
-    this.colores = []
-    for(let venta of  this.mrn.ventas_by_fecha){
-      for(let empresa of  venta.items){
-        this.datos.push(empresa.info.valor)
-        this.labels.push(empresa.label)
-        this.colores.push(this.colorRGB())
-      }
-    }
-    this.ventaFechaChart = new Chart(this.ventaFechaCanvas.nativeElement, {
-      type: 'pie',
-      data : {
-        labels: this.labels,
-        datasets: [{
-          label: '',
-          data: this.datos,
-          backgroundColor: this.colores,
-          borderColor: ['rgb(255,255,255)',],
-          borderWidth: 1
-        }]
-      }
-    });
-  }*/
 
   formatDate(value: string) {
     return moment(value).format('YYYY-MM-DD');
   }
-  consultar() {
-    //this.popoverController.dismiss()
-    this.mrn.get_ventas_by_fecha(this.fechai,this.fechaf)
+
+  getIcon(resultado: any) {
+    if(resultado == '00' || resultado == '001'){
+      return ['checkmark-circle','#0E9434']
+    }else {
+      return ['close-circle','#C71A1A']
+    }
   }
 }

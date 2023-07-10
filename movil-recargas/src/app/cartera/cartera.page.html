@@ -24,9 +24,9 @@
           <h3>Pagado: $ {{transaccion.valor - transaccion.saldo_pendiente_pago|number}}</h3>
           <h3>Saldo:  $ {{transaccion.saldo_pendiente_pago|number}}</h3>
           <p>Vence : {{transaccion.fecha_pago|date:"dd-MM-yyyy"}} </p>
-          <p>Estado : {{transaccion.estadoPago}} </p>
+          <p>Estado pago : {{transaccion.estadoPago}} </p>
         </ion-label>
-        <ion-checkbox *ngIf="transaccion.saldo_pendiente_pago" slot="end" (ionChange)="seleccionarFactura(transaccion)" ></ion-checkbox>
+        <ion-checkbox *ngIf="transaccion.saldo_pendiente_pago && transaccion.estadoPago == 'Pendiente'" slot="end" (ionChange)="seleccionarFactura(transaccion)" ></ion-checkbox>
       </ion-item>
     </ion-list>
     <div *ngIf="mrn.facturasSeleccionadas.length" style="text-align: center;width: 100%;margin-top: 30px">
