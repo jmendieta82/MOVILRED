@@ -30,6 +30,7 @@ export class VentaRecaudoPage implements OnInit {
     return await modal.present();
   }
 
+
   async present_resumen_ventas() {
     this.mrn.obj_venta = '';
     let val = this.tipo_pago?this.mrn.formVentasRecaudo.value['valor']:this.mrn.factura_consultada.valorPago
