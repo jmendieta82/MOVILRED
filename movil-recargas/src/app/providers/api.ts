@@ -11,8 +11,6 @@ export class ApiService {
 
   readonly baseURL = 'http://127.0.0.1:8000';
   //readonly baseURL = 'https://api-produccion-recargas-mrn.click';
-
-
   readonly conceptoURL = 'https://150.136.18.204'//produccion;
   //readonly conceptoURL = 'https://129.159.64.15' // pruebas;
   load = false;
@@ -72,32 +70,6 @@ export class ApiService {
     let url = `${this.baseURL+'/'+finisher}`;
     this.crear_header(this.usuario['token'],url)
     return this.http.get(this.URL_methods,this.optionsAll).pipe(catchError(this.handleError<any>()))
-
-    /*return this.getNetworkTestRequest().pipe(
-      tap(success => {
-        this.crear_header(this.usuario['token'],url,true);
-        console.log('este es el de success',success)
-        console.log(this.optionsAll)
-      },error => {
-        this.crear_header(this.usuario['token'],url,false);
-        console.log('este es de el error',error)
-        console.log(this.optionsAll)
-      }),
-      switchMap(success =>
-        success ? this.http.get(this.URL_methods,this.optionsAll)  : of(null)
-      ),
-      catchError(this.handleError<any>())
-    )*/
-    /*this.getNetworkTestRequest().subscribe(success => {
-      this.load = true;
-      let url = `${this.baseURL+'/'+finisher}`;
-      this.crear_header(this.usuario['token'],url,true)
-      return this.http.get(this.URL_methods,this.optionsAll).pipe(catchError(this.handleError<any>()))
-    },error => {
-      let url = `${this.baseURL+'/'+finisher}`;
-      this.crear_header(this.usuario['token'],url,false)
-      return this.http.get(this.URL_methods,this.optionsAll).pipe(catchError(this.handleError<any>()))
-    })*/
 
   }
   //POST

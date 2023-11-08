@@ -23,9 +23,6 @@
       </ion-item>
     </ion-card-content>
   </ion-card>
-<!--    <div style="padding: 5px;width: 100%">-->
-<!--      <canvas #doughnutCanvas style="height:50vh!important"></canvas>-->
-<!--    </div>-->
     <ion-list *ngIf="api.nodoActual['tipoComision']=='CV'">
       <ion-item  *ngFor="let item of convencion">
         <ion-avatar style="margin-right: 15px">
@@ -35,7 +32,7 @@
           <h3>{{item.proveedorEmpresa.empresa.nom_empresa}}</h3>
         </ion-label>
         <ion-label slot="end">
-          <h3>{{item.micomision}}%</h3>
+          <h3>{{item.micomision <= 50?item.micomision + '%':'$'+item.micomision}}</h3>
         </ion-label>
       </ion-item>
     </ion-list>

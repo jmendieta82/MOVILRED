@@ -11,13 +11,32 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div *ngIf="mrn.cartera.length">
-    <ion-card *ngIf="!mrn.facturasSeleccionadas.length">
-      <ion-card-content>
-        Seleccione una o más transacciones y presione el boton "Pagar factura"
-      </ion-card-content>
-    </ion-card>
-    <ion-list>
+  <ion-card *ngIf="!mrn.facturasSeleccionadas.length">
+    <ion-card-content>
+      Seleccione una o más transacciones y presione el boton "Pagar factura"
+    </ion-card-content>
+  </ion-card>
+  <div>
+    <ion-list *ngIf=" mrn.facturasMora.length">
+      <ion-list-header lines="inset">
+        <ion-label><h2 style="font-weight: bold">En mora</h2></ion-label>
+      </ion-list-header>
+      <ion-item  *ngFor="let transaccion of mrn.facturasMora">
+        <ion-label>
+          <h2>Transaccion {{transaccion.id}}</h2>
+          <h3><ion-badge color="danger">En mora</ion-badge></h3>
+          <h3>Pagado: $ {{transaccion.valor - transaccion.saldo_pendiente_pago|number}}</h3>
+          <h3>Saldo:  $ {{transaccion.saldo_pendiente_pago|number}}</h3>
+          <p>Aprobado : {{transaccion.fecha_aprobacion|date:"dd-MM-yyyy"}} </p>
+          <p>Estado : {{transaccion.estadoPago}} </p>
+        </ion-label>
+        <ion-checkbox *ngIf="transaccion.saldo_pendiente_pago" slot="end" (ionChange)="seleccionarFactura(transaccion)" ></ion-checkbox>
+      </ion-item>
+    </ion-list>
+    <ion-list *ngIf=" mrn.cartera.length" >
+      <ion-list-header lines="inset">
+        <ion-label><h2 style="font-weight: bold">Pendientes</h2></ion-label>
+      </ion-list-header>
       <ion-item  *ngFor="let transaccion of mrn.cartera">
         <ion-label>
           <h2>Transaccion {{transaccion.id}}</h2>
@@ -33,12 +52,6 @@
       <ion-button (click)="presentModal()" shape="round" size="small" expand="block">Pagar factura</ion-button>
     </div>
   </div>
-  <ion-card *ngIf="!mrn.cartera.length">
-    <ion-card-content>
-      No tiene transacciones pendientes por pagar, para consultar el estado de sus transacciones diríjase a la opción "Solicitud de saldo" del menú principal.
-    </ion-card-content>
-  </ion-card>
-
 </ion-content>
 <ion-footer>
   <ion-toolbar class="header_page">

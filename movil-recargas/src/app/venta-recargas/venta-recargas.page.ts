@@ -91,4 +91,7 @@ export class VentaRecargasPage implements OnInit {
   }
 
 
+  limpiarTelefono() {
+    this.mrn.formVentasRecargas.reset()
+  }
 }

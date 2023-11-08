@@ -59,14 +59,23 @@
       </ion-label>
     </ion-item>
   </ion-list>
-  <ion-button style="margin-top: 30px" shape="round" expand="block"
-              (click)="mrn.trans_resultado_venta = '';dismissModal();
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button style="margin-top: 30px" shape="round" expand="block"
+                    (click)="mrn.trans_resultado_venta = '';dismissModal();
               mrn.formVentasRecaudo.reset();mrn.convenio_seleccionado = '';
-              mrn.factura_consultada=''">
-    Aceptar</ion-button>
-  <ion-button color="secondary" *ngIf="api.nodoActual['imprime']" style="margin-top: 30px" shape="round" expand="block"
-              (click)="mrn.imprimir_soporte(mrn.trans_resultado_venta);mrn.trans_resultado_venta = '';dismissModal();
+              mrn.factura_consultada=''">Aceptar
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button color="secondary" *ngIf="api.nodoActual['imprime']" style="margin-top: 30px" shape="round" expand="block"
+                    (click)="mrn.imprimir_soporte(mrn.trans_resultado_venta);mrn.trans_resultado_venta = '';dismissModal();
               mrn.formVentasRecaudo.reset();mrn.convenio_seleccionado = '';
-              mrn.factura_consultada=''">
-    Imprimir</ion-button>
+              mrn.factura_consultada=''">Imprimir</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
 </ion-content>

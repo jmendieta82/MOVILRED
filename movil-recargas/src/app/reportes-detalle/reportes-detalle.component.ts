@@ -30,33 +30,14 @@ export class ReportesDetalleComponent implements OnInit {
       this.doughnutChart.destroy();
     }
     let comisiones = this.mrn.lista_comisiones_venta.filter(item=>item['data'].proveedorEmpresa.empresa.catServicio.id == event['detail'].value)
-    this.labels = []
-    this.datos = []
-    this.colores = []
     this.convencion = []
     for(let comision of  comisiones){
       for(let empresa of  comision.items){
-        if(empresa.info.micomision>0){
+        if(empresa.info.micomision>0 && empresa.info.proveedorEmpresa.empresa.imagen){
           this.convencion.push(empresa.info)
-          this.datos.push((this.api.nodoActual['tipoComision']=='CV')?empresa.info.micomision:this.api.nodoActual['comisionAnticipada'])
-          this.labels.push(empresa.label)
-          this.colores.push(this.colorRGB())
         }
       }
     }
-    this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
-      type: 'pie',
-      data : {
-        labels: this.labels,
-        datasets: [{
-          label: '',
-          data: this.datos,
-          backgroundColor: this.colores,
-          borderColor: ['rgb(255,255,255)',],
-          borderWidth: 1
-        }]
-      }
-    });
   }
   generarNumero(numero){
     return (Math.random()*numero).toFixed(0);

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar class="background-image header_page">
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button (click)="limpiarTelefono()"></ion-back-button>
     </ion-buttons>
     <ion-title *ngIf="mrn.empresaSeleccionada">{{mrn.empresaSeleccionada.nom_empresa}}</ion-title>
   </ion-toolbar>
@@ -135,7 +135,7 @@
             <ion-card-header>
               <ion-item detail (click)="presentModal()">
                 <ion-avatar slot="start">
-                  <img  src="{{mrn.empresaSeleccionada.imagen}}" alt="">
+                  <img  src="{{mrn.empresaSeleccionada.logo_empresa}}" alt="">
                 </ion-avatar>
                 <ion-label>
                   Paquetes {{mrn.empresaSeleccionada.nom_empresa}}
@@ -168,7 +168,6 @@
                             (click)="present_resumen_ventas(mrn.formVentasRecargas.value)">Vender</ion-button>
                 <ion-button shape="round" color="light" expand="block" (click)="mrn.cancelartVenta()">Cancelar</ion-button>
               </ion-col>
-
             </ion-row>
           </ion-grid>
         </div>

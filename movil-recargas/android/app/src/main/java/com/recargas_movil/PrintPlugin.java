@@ -1,5 +1,7 @@
 package com.recargas_movil;
 
+import android.os.Build;
+
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -23,6 +25,18 @@ public class PrintPlugin extends Plugin {
     call.resolve(ret);
 
     this.printerGeneral.printerDirectSuntech(getActivity(), value);
+  }
+
+  @PluginMethod()
+  public void canPrint(PluginCall call) {
+    String[] supportedABIs = Build.SUPPORTED_ABIS;
+    boolean puedeImprimir = supportedABIs[0].equals("armeabi-v7a");
+    System.out.println("a ver si puede imprimir::: " + puedeImprimir);
+
+    JSObject ret = new JSObject();
+    ret.put("value", puedeImprimir);
+    call.resolve(ret);
+
   }
 
   @PluginMethod

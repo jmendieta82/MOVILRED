@@ -11,11 +11,11 @@ import {ModalController} from "@ionic/angular";
   styleUrls: ['./cartera.page.scss'],
 })
 export class CarteraPage implements OnInit {
-
-  selected = false;
   constructor(public mrn:Mrn,public router:Router,public api:ApiService,public modalController: ModalController) { }
 
   ngOnInit() {
+    this.mrn.getFacturasMora(this.api.nodoActual, false)
+    this.mrn.getCartera(this.api.nodoActual)
   }
   async presentModal() {
     this.mrn.formPagos.patchValue({
@@ -55,6 +55,7 @@ export class CarteraPage implements OnInit {
   doRefresh(event) {
     this.mrn.getCartera(this.api.nodoActual)
     this.mrn.getMisBolsasDinero();
+    this.mrn.getFacturasMora(this.api.nodoActual, false)
     setTimeout(() => {
       event.target.complete();
     }, 2000);

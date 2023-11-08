@@ -1,6 +1,7 @@
 package com.recargas_movil;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
 import com.imagpay.Settings;
@@ -16,11 +17,14 @@ public class MainActivity extends BridgeActivity implements SwipeListener {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    String[] supportedABIs = Build.SUPPORTED_ABIS;
     registerPlugin(PrintPlugin.class);
     super.onCreate(savedInstanceState);
 
     try {
-      initViews();
+      if (supportedABIs[0].equals("armeabi-v7a")) {
+        initViews();
+      }
     } catch (Exception ex) {
       System.out.println("Excepcion ... " + ex.toString());
       //DialogMessage.createDialog(context, "Excepcion", ex.toString()).show();

@@ -28,7 +28,7 @@ export class InicioPage implements OnInit {
 
   ngOnInit() {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id');
-    this.listPrinter()
+    this.mrn.getFacturasMora(this.api.nodoActual,false)
   }
 
   seleccionarCategoria(categoria) {
@@ -36,6 +36,7 @@ export class InicioPage implements OnInit {
     this.mrn.productoCodificadoSeleccionado = ''
     //this.router.navigate(['empresas']);
     this.mrn.empresaSeleccionada = ''
+    console.log( this.mrn.categoriaSeleccionada)
   }
 
   async presentModalUltimasVentas() {
@@ -46,11 +47,13 @@ export class InicioPage implements OnInit {
   }
 
   seleccionarEmpresa(empresa: any) {
-    this.mrn.empresaSeleccionada = empresa['info'].proveedorEmpresa.empresa;
-    this.mrn.proveedorSeleccionado = empresa['info'].proveedorEmpresa.proveedor;
-    this.mrn.getProductosProveedor(empresa['info'].proveedorEmpresa.proveedor.id,this.mrn.empresaSeleccionada.id)
+    console.log(empresa)
+    this.mrn.empresaSeleccionada = empresa;
+    //this.mrn.proveedorSeleccionado = empresa['info'].proveedorEmpresa.proveedor;
+    this.mrn.getProductosProveedor(empresa.proveedor_id,empresa.empresa_id)
     this.mrn.getMisBolsasDinero();
-    switch(this.mrn.empresaSeleccionada.catServicio.nombre) {
+    console.log(this.mrn.empresaSeleccionada.nom_categoria)
+    switch(this.mrn.empresaSeleccionada.nom_categoria) {
       case 'Pines': {
         this.router.navigate(['venta-pines']);
         break;
@@ -104,16 +107,7 @@ export class InicioPage implements OnInit {
       return await modal.present();
   }
 
-  //This will list all of your bluetooth devices
-  listPrinter() {
 
-  }
-//This will store selected bluetooth device mac address
-  selectPrinter(macAddress)
-  {
-    //Selected printer macAddress stored here
-    this.selectedPrinter=macAddress;
-  }
 
 //This will print
   printStuff(){

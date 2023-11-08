@@ -15,6 +15,7 @@ import { BarcodeScanner } from '@awesome-cordova-plugins/barcode-scanner/ngx'
 export class VentaRecaudoPage implements OnInit {
   title = 'pruebaimpresora';
   texto = "escriba algo";
+  tipo_pago = false
   constructor(public api:ApiService,public mrn:Mrn,public modalController: ModalController,
               private barcodeScanner: BarcodeScanner
   ) { }
@@ -31,7 +32,7 @@ export class VentaRecaudoPage implements OnInit {
 
   async present_resumen_ventas() {
     this.mrn.obj_venta = '';
-    let val = this.mrn.factura_consultada.pagoParcial?this.mrn.formVentasRecaudo.value['valor']:this.mrn.factura_consultada.valorPago
+    let val = this.tipo_pago?this.mrn.formVentasRecaudo.value['valor']:this.mrn.factura_consultada.valorPago
     this.mrn.formVentasRecaudo.patchValue({
       convenio:this.mrn.convenio_seleccionado?this.mrn.convenio_seleccionado.nombre:this.mrn.factura_consultada.nconvenio,
       valor:val,

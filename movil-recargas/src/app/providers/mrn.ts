@@ -313,6 +313,7 @@ export class Mrn {
     factura_consultada: any;
     factura_pagada: any;
     trans_resultado_venta: any;
+    lista_comisiones_empresas = [];
 
 
     constructor(public api: ApiService, private fb: FormBuilder,private router:Router,
@@ -1314,34 +1315,78 @@ export class Mrn {
         return parents
     }
 
-    async getComisiones(nodo) {
-        this.comisiones = [];
-        this.lista_comisiones_venta = [];
-        await this.presentLoading()
-        this.api.get('comision_list/?nodo=' + nodo.id)
-            .subscribe(
-                data => {
-                    if (!isUndefined(data)) {
-                        this.comisiones = data
-                        if(nodo.tipoComision == 'CA'){
-                            let comiAux = this.comisiones.filter(item=>item.proveedorEmpresa.empresa.catServicio.nombre=='Recargas y Paquetes')
-                            this.lista_comisiones_venta = this.crearArbolComisiones(comiAux.filter(item=>item.proveedorEmpresa.empresa.nom_empresa.toUpperCase()!='Directv'.toUpperCase()))
-                            //this.lista_comisiones_venta = this.crearArbolComisiones(comiAux)
-                            this.categoriaSeleccionada =  this.lista_comisiones_venta[0]
-                            this.togleVentas(1,true)
-                        }else {
-                            this.lista_comisiones_venta = this.crearArbolComisiones(this.comisiones)
-                            this.categoriaSeleccionada =''
-                            this.togleVentas(0,true)
-                        }
-                    } else {
-                        this.comisiones = [];
-                        this.lista_comisiones_venta = [];
-                    }
-                    this.loadingController.dismiss()
-                }
-            )
-    }
+  async getComisiones(nodo) {
+    this.comisiones = [];
+    this.lista_comisiones_venta = [];
+    await this.presentLoading()
+    this.api.get('comision_app_list/?nodo=' + nodo.id)
+      .subscribe(
+        data => {
+          if (!isUndefined(data)) {
+
+            this.comisiones = data
+            if(nodo.tipoComision == 'CA'){
+              let comiAux = this.comisiones.filter(item=>item.nom_empresa=='Recargas y Paquetes')
+              this.lista_comisiones_venta = this.crearArbolComisiones(comiAux.filter(item=>item.nom_empresa.toUpperCase()!='Directv'.toUpperCase()))
+              this.categoriaSeleccionada =  this.lista_comisiones_venta[0]
+              this.togleVentas(1,true)
+            }else {
+              this.lista_comisiones_venta = this.crearArbolComisiones(this.comisiones.filter(item=>item.logo_empresa))
+              this.categoriaSeleccionada =''
+              this.togleVentas(0,true)
+            }
+          } else {
+            this.comisiones = [];
+            this.lista_comisiones_venta = [];
+          }
+          this.loadingController.dismiss()
+        }
+      )
+  }
+
+  async getComisionesImages(id_categoria,nodo_id) {
+    this.lista_comisiones_empresas= [];
+    await this.presentLoading()
+    this.api.get('comision_images_list/?nodo=' + nodo_id+'&id_categoria='+id_categoria)
+      .subscribe(
+        data => {
+          if (!isUndefined(data)) {
+            console.log(data)
+            this.lista_comisiones_empresas = data
+          } else {
+            this.lista_comisiones_empresas = [];
+          }
+          this.loadingController.dismiss()
+        }
+      )
+  }
+  /*async getComisiones(nodo) {
+    this.comisiones = [];
+    this.lista_comisiones_venta = [];
+    await this.presentLoading()
+    this.api.get('comision_list/?nodo=' + nodo.id)
+      .subscribe(
+        data => {
+          if (!isUndefined(data)) {
+            this.comisiones = data
+            if(nodo.tipoComision == 'CA'){
+              let comiAux = this.comisiones.filter(item=>item.proveedorEmpresa.empresa.catServicio.nombre=='Recargas y Paquetes')
+              this.lista_comisiones_venta = this.crearArbolComisiones(comiAux.filter(item=>item.proveedorEmpresa.empresa.nom_empresa.toUpperCase()!='Directv'.toUpperCase()))
+              this.categoriaSeleccionada =  this.lista_comisiones_venta[0]
+              this.togleVentas(1,true)
+            }else {
+              this.lista_comisiones_venta = this.crearArbolComisiones(this.comisiones.filter(item=>item.proveedorEmpresa.empresa.imagen))
+              this.categoriaSeleccionada =''
+              this.togleVentas(0,true)
+            }
+          } else {
+            this.comisiones = [];
+            this.lista_comisiones_venta = [];
+          }
+          this.loadingController.dismiss()
+        }
+      )
+  }*/
 
     getMisComisiones(nodo?) {
       this.misComisiones = [];
@@ -2006,7 +2051,7 @@ export class Mrn {
     }
 
     getMisBolsasDinero() {
-        this.api.get('bolsa_dinero/?nodo=' + this.api.nodoActual['id'])
+        this.api.get('bolsa_dinero_app/?nodo=' + this.api.nodoActual['id'])
             .subscribe(
                 data => {
                     if (!isUndefined(data)) {
@@ -2609,20 +2654,10 @@ export class Mrn {
                 data => {
                     if (data.length) {
                         this.facturasMora = data;
-                        console.log(data)
                     } else {
                         if(nodo.mora){
                             nodo.mora = false
                             this.updateNodo(nodo)
-                        }
-                        if (showAuthorization) {
-                            /*this.confirmationService.confirm({
-                                message: 'Desea aprobar esta solicitud?',
-                                accept: () => {
-                                    this.facturasMora = [];
-                                    this.autorizar_transaccion_credito(this.transaccionSeleccionada)
-                                }
-                            });*/
                         }
                     }
 
@@ -2638,9 +2673,7 @@ export class Mrn {
             if(data != undefined){
               if (data.length) {
                 this.cartera = data;
-              }else {this.mensajes('No se encontraron facruras pendientes, Usted esta al dia!')}
-            }else{
-              this.mensajes('No se encontraron facruras pendientes, Usted esta al dia!')
+              }
             }
           }
         )
@@ -2671,26 +2704,24 @@ export class Mrn {
 
     crearArbolComisiones(data) {
         let lista = [];
+        console.log(data)
         for (let item of data) {
             if (!lista.length) {
-                lista.push({data: item, label: item.proveedorEmpresa.empresa.catServicio.nombre, items: []})
+                lista.push({id:item.id,nom_categoria: item.nom_categoria, empresas: []})
             } else {
-                if (!lista.filter(l => l.label == item.proveedorEmpresa.empresa.catServicio.nombre).length) {
-                    lista.push({data: item, label: item.proveedorEmpresa.empresa.catServicio.nombre, items: []})
+                if (!lista.filter(l => l.nom_categoria == item.nom_categoria).length) {
+                    lista.push({id:item.id,nom_categoria: item.nom_categoria, empresas: []})
                 }
             }
         }
 
-        for (let item of data) {
-            lista.filter(l => l.label == item.proveedorEmpresa.empresa.catServicio.nombre)[0]['items']
-                .push({
-                    label: item.proveedorEmpresa.empresa.nom_empresa,
-                    imagen: item.proveedorEmpresa.empresa.imagen,
-                    empresa_id: item.proveedorEmpresa.empresa.id,
-                    info: item
-                })
-
-        }
+        data.forEach(item => {
+          const categoria = lista.find(l => l.nom_categoria === item.nom_categoria);
+          if (categoria) {
+            categoria.empresas.push(item);
+          }
+        });
+        console.log(lista)
         return lista
     }
 
@@ -3644,7 +3675,7 @@ export class Mrn {
     getLastVentasByNodo(state?) {
       this.presentLoading()
         this.ventas_by_nodo = [];
-        this.api.get('ultimas_ventas/?nodo='+this.api.nodoActual['id'])
+        this.api.get('ultimas_ventas_app/?nodo='+this.api.nodoActual['id'])
             .subscribe(data => {
                 if(!isUndefined(data)){
                     if(data.length){
@@ -3736,6 +3767,7 @@ export class Mrn {
   get_ventas_by_fecha(fi: any,ff: any) {
     this.loading = true
     this.total_consulta_ventas = 0;
+    this.total_consulta_ganancias = 0;
     this.ventas_by_fecha = [];
     this.api.get('ventas_by_fecha/?fechaInicial='+fi+'&fechaFinal='+ff+'&nodo='+this.api.nodoActual['id'])
       .subscribe(
@@ -3949,11 +3981,9 @@ export class Mrn {
             this.facturasSeleccionadas = []
             this.totalFacturasAPagar = 0
             this.modalController.dismiss();
+            this.getFacturasMora(this.api.nodoActual,false)
+            this.getCartera(this.api.nodoActual)
             if(this.api.nodoActual['mora']){
-              this.getFacturasMora(this.api.nodoActual,false)
-              this.router.navigate(['/mora'])
-            }else{
-              this.getCartera(this.api.nodoActual)
               this.router.navigate(['/cartera'])
             }
           }
@@ -4025,7 +4055,7 @@ export class Mrn {
             let respuesta = JSON.parse(datos)
             if(respuesta['data']['data']['reply'] == 'ok' && respuesta['codigo']=='00'){
               this.factura_consultada = respuesta['data']['data']
-              console.log( this.factura_consultada)
+              // console.log( this.factura_consultada)
             }else {
               alert(respuesta['data']['data']['nombre']?respuesta['data']['data']['nombre']:respuesta['data']['data']['reply'])
               this.convenio_seleccionado = '';
@@ -4052,7 +4082,7 @@ export class Mrn {
       "claveventa": this.PWD_PRACTI,
       "celular":this.formVentasRecaudo.value['telefono'],
       "operador":"fc",
-      "valor":this.factura_consultada.valorPago,
+      "valor":this.formVentasRecaudo.value['valor'],
       "jsonAdicional":{"idPre":this.factura_consultada.idPre},
       "idtrans":"1",
       "end_point":"pracRec",
@@ -4075,14 +4105,14 @@ export class Mrn {
             this.trans_resultado_venta = respuesta.data
             this.factura_pagada = datos
             this.present_resumen_ventas()
-            this.loadingController.dismiss()
-            this.modalController.dismiss({
-              'dismissed': true
-            });
+            this.getMisBolsasDinero()
           }else{
             alert(respuesta.mensaje)
-            this.loadingController.dismiss()
           }
+          this.loadingController.dismiss()
+          this.modalController.dismiss({
+            'dismissed': true
+          });
         }
       )
   }
@@ -4104,20 +4134,13 @@ export class Mrn {
     }
     this.api.nodoActual = usuario['nodo'];
     this.api.usuario['puntoAcceso'] = this.tokenMessage
-    if (!this.api.nodoActual['mora']) {
-      if(this.api.nodoActual['tipo']=='Comercio'){
-        this.getComisiones(this.api.nodoActual)
-        this.getCatServicio();
-        this.getMisBolsasDinero();
-        this.router.navigate(['inicio']);
-      }else {
-        this.mensajes('El usuario que esta intentando ingresar es de tipo distribuidor, ' +
-          'en MRN Colombia tenemos otra aplicacion especializada para usted.')
-      }
-    } else {
-      this.getNodoPadre()
-      this.getFacturasMora(this.api.nodoActual,false)
-      this.router.navigate(['/mora'])
+    if(this.api.nodoActual['tipo']=='Comercio'){
+      this.getComisiones(this.api.nodoActual)
+      this.getMisBolsasDinero();
+      this.router.navigate(['inicio']);
+    }else {
+      this.mensajes('El usuario que esta intentando ingresar es de tipo distribuidor, ' +
+        'en MRN Colombia tenemos otra aplicacion especializada para usted.')
     }
     this.registrarPuntoDeAcceso(this.api.usuario)
   }
@@ -4150,28 +4173,30 @@ export class Mrn {
 
 
   async imprimir_soporte(venta) {
-    let nom_prod = venta.producto_venta?venta.producto_venta.producto.nom_producto:venta.nom_producto
-    let nom_empresa = venta.producto_venta?venta.producto_venta.producto.nom_producto:venta.nombre_empresa
+    let nom_prod = venta.nom_producto?venta.nom_producto:venta.producto_venta.producto.nom_producto
+    let nom_empresa = venta.nombre_empresa?venta.nombre_empresa:venta.producto_venta.producto.empresa.nom_empresa
     let fecha = moment(venta.hour_at).format("DD/MM/YYYY hh:mm:ss")
     let recibo = `
-:::::::::::::MRN RECARGAS:::::::::::::::
-::::::COMPROBANTE DE TRANSACCION::::::::
-::::::::::TRANSACCION EXITOSA:::::::::::
+::::::::::MRN RECARGAS::::::::::
+:::COMPROBANTE DE TRANSACCION:::
+:::::::TRANSACCION EXITOSA::::::
 
 TRANSACCION ID: ${venta.id}
 
 FECHA:${fecha}
 VALOR: $${this.separadorDeMiles(venta.valor)}
-PRODUCTO: ${nom_prod}
 EMPRESA: ${nom_empresa}
 CONVENIO:
 ${venta.convenio_pago?venta.convenio_pago:'n/a'}
+PRODUCTO: ${venta.convenio_pago?'n/a':nom_prod}
 REFERENCIA: ${venta.referencia_pago?venta.referencia_pago:'n/a'}
+CODIGO DE APROBACION: ${venta.numeroAprobacion?venta.numeroAprobacion:'n/a'}
 CEL: ${venta.numeroDestino}
-:::::::::GRACIAS POR SU COMPRA!:::::::::
+EMAIL: ${venta.email?venta.email:'n/a'}
+::::::GRACIAS POR SU COMPRA:::::
 
 `;
-    console.log(recibo)
+
     let { value } = await Print.print({ value: recibo });
 }
 
