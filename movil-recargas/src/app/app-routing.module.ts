@@ -16,10 +16,10 @@ const routes: Routes = [
     path: 'reportes',
     loadChildren: () => import('./reportes/reportes.module').then( m => m.ReportesPageModule)
   },
-  {
+  /*{
     path: 'mora',
     loadChildren: () => import('./mora/mora.module').then( m => m.MoraPageModule)
-  },
+  },*/
   {
     path: 'saldo',
     loadChildren: () => import('./saldo/saldo.module').then( m => m.SaldoPageModule)
@@ -40,10 +40,10 @@ const routes: Routes = [
     path: 'venta-certificados',
     loadChildren: () => import('./venta-certificados/venta-certificados.module').then( m => m.VentaCertificadosPageModule)
   },
-  {
+  /*{
     path: 'venta-soat',
     loadChildren: () => import('./venta-soat/venta-soat.module').then( m => m.VentaSoatPageModule)
-  },
+  },*/
   {
     path: 'venta-apuestas',
     loadChildren: () => import('./venta-apuestas/venta-apuestas.module').then( m => m.VentaApuestasPageModule)

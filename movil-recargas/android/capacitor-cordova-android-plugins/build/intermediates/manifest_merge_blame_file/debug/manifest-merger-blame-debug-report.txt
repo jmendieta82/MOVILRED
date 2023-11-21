@@ -1,0 +1,110 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:amazon="http://schemas.amazon.com/apk/res/android"
+3    xmlns:android="http://schemas.android.com/apk/res/android"
+4    package="capacitor.android.plugins" >
+5
+6    <uses-sdk
+7        android:minSdkVersion="22"
+7-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml
+8        android:targetSdkVersion="32" />
+8-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml
+9
+10    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+10-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:12:1-76
+10-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:12:18-74
+11
+12    <queries>
+12-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:13:1-27:11
+13        <intent>
+13-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:14:3-16:12
+14            <action android:name="android.media.action.IMAGE_CAPTURE" />
+14-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:15:5-64
+14-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:15:13-62
+15        </intent>
+16        <intent>
+16-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:17:3-19:12
+17            <action android:name="android.intent.action.GET_CONTENT" />
+17-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:18:5-63
+17-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:18:13-61
+18        </intent>
+19        <intent>
+19-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:20:3-22:12
+20            <action android:name="android.intent.action.PICK" />
+20-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:21:5-56
+20-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:21:13-54
+21        </intent>
+22        <intent>
+22-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:23:3-26:12
+23            <action android:name="com.android.camera.action.CROP" />
+23-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:24:5-60
+23-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:24:13-58
+24
+25            <data
+25-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:25:5-64
+26                android:mimeType="image/*"
+26-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:25:36-62
+27                android:scheme="content" />
+27-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:25:11-35
+28        </intent>
+29    </queries>
+30
+31    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+31-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:28:1-74
+31-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:28:18-72
+32    <uses-permission android:name="android.permission.CAMERA" />
+32-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:29:1-60
+32-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:29:18-58
+33    <uses-permission android:name="android.permission.FLASHLIGHT" />
+33-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:30:1-64
+33-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:30:18-62
+34
+35    <uses-feature
+35-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:31:1-79
+36        android:name="android.hardware.camera"
+36-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:31:15-53
+37        android:required="true" />
+37-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:31:54-77
+38
+39    <application>
+39-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:5:1-11:15
+40        <provider
+40-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:6:1-8:12
+41            android:name="org.apache.cordova.camera.FileProvider"
+41-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:6:11-64
+42            android:authorities="${applicationId}.cordova.plugin.camera.provider"
+42-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:6:65-134
+43            android:exported="false"
+43-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:6:135-159
+44            android:grantUriPermissions="true" >
+44-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:6:160-194
+45            <meta-data
+45-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:7:3-112
+46                android:name="android.support.FILE_PROVIDER_PATHS"
+46-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:7:14-64
+47                android:resource="@xml/camera_provider_paths" />
+47-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:7:65-110
+48        </provider>
+49
+50        <activity
+50-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:9:1-302
+51            android:name="com.google.zxing.client.android.CaptureActivity"
+51-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:9:11-73
+52            android:clearTaskOnLaunch="true"
+52-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:9:74-106
+53            android:configChanges="orientation|keyboardHidden|screenSize"
+53-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:9:107-168
+54            android:exported="false"
+54-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:9:276-300
+55            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+55-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:9:169-227
+56            android:windowSoftInputMode="stateAlwaysHidden" />
+56-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:9:228-275
+57        <activity
+57-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:10:1-103
+58            android:name="com.google.zxing.client.android.encode.EncodeActivity"
+58-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:10:11-79
+59            android:label="Share" />
+59-->/Volumes/Datos/MOVILRED/movil-recargas/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml:10:80-101
+60    </application>
+61
+62</manifest>

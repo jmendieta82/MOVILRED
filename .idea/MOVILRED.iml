@@ -6,8 +6,12 @@
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/movil-recargas/www" />
+      <excludeFolder url="file://$MODULE_DIR$/movil-recargas/android" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="7f24555a-a5d4-4bd6-aa2f-223516e425fe" />
   </component>
 </module>

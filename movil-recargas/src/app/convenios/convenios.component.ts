@@ -22,14 +22,6 @@ export class ConveniosComponent implements OnInit {
     });
   }
 
-  filtrarConvenio(event) {
-    if(!event){
-      this.mrn.convenios_filtrados = []
-    }else {
-      this.mrn.convenios_filtrados = this.mrn.convenios.filter(item=>item.nombre.toLowerCase().includes(event.toLowerCase()))
-    }
-  }
-
   seleccionarConvenio(convenio: any) {
     this.mrn.convenio_seleccionado = convenio
     this.modalController.dismiss()

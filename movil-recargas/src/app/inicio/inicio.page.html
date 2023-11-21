@@ -64,8 +64,7 @@
           <ion-label>
             <h3 [style]="{'color':(venta.codigo_resultado != '001'&&venta.codigo_resultado != '00'?' darkred':'darkgreen')}">
               <i class="fas fa-{{venta.codigo_resultado != '001'&&venta.codigo_resultado != '00'?'times-circle':'check-circle'}}"
-                   [style]="{'color':(venta.codigo_resultado != '001'&&venta.codigo_resultado != '00'?' darkred':'darkgreen')}"></i>
-              {{venta.numeroDestino}}</h3>
+                   [style]="{'color':(venta.codigo_resultado != '001'&&venta.codigo_resultado != '00'?' darkred':'darkgreen')}"></i> {{venta.numeroDestino}}</h3>
             <p>{{venta.created_at|date:"dd-MM-yyyy"}} {{venta.hour_at|date:'shortTime'}} </p>
             <p *ngIf="venta.venta_desde" >
               Venta desde:

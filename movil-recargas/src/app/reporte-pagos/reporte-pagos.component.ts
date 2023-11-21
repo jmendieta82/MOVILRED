@@ -27,7 +27,7 @@ export class ReportePagosComponent implements OnInit {
       'dismissed': true
     });
   }
-  formatDate(value: string) {
+  formatDate(value: any) {
     return moment(value).format('YYYY-MM-DD');
   }
   consultar(fecha,fecha2) {

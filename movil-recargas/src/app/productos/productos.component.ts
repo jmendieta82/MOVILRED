@@ -65,10 +65,6 @@ export class ProductosComponent implements OnInit {
 
   }
 
-  productos_sin_tiempo_aire() {
-    return this.mrn.productosByProveedor.filter(item => item.producto.nom_producto != 'Tiempo al aire');
-  }
-
   buscar(valorBusqueda) {
     if(valorBusqueda){
       let lista1 = this.mrn.productosByProveedorSinTiempoAlAire.filter(item=>item.producto.nom_producto.toUpperCase().includes(valorBusqueda.toUpperCase()))

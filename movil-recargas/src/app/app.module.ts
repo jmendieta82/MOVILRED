@@ -39,12 +39,24 @@ const maskConfig: Partial<IConfig> = {
 };
 
 @NgModule({
-  declarations: [AppComponent, ProductosComponent, SoatVigenteComponent,
-    SoatVencidoComponent, SolicitudSaldoComponent, PagarFacturaComponent, ReportesDetalleComponent, ReporteVentasComponent,
-    ReporteSolicitudesComponent, UltimasVentasComponent, ResumenVentaComponent,
-    ReportePagosComponent, ConveniosComponent, InfoRecaudosComponent, VerSoportePagoComponent,
-    InfoFacturaPagadaComponent,ResultadoVentaRecargaComponent],
-  entryComponents: [],
+  declarations: [
+      AppComponent,
+    ProductosComponent,
+    SoatVigenteComponent,
+    SoatVencidoComponent,
+    SolicitudSaldoComponent,
+    PagarFacturaComponent,
+    ReportesDetalleComponent,
+    ReporteVentasComponent,
+    ReporteSolicitudesComponent,
+    UltimasVentasComponent,
+    ResumenVentaComponent,
+    ReportePagosComponent,
+    ConveniosComponent,
+    InfoRecaudosComponent,
+    VerSoportePagoComponent,
+    InfoFacturaPagadaComponent,
+    ResultadoVentaRecargaComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),

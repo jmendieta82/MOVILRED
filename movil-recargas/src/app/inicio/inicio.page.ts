@@ -6,7 +6,7 @@ import {ModalController, Platform} from "@ionic/angular";
 import {UltimasVentasComponent} from "../ultimas-ventas/ultimas-ventas.component";
 import {InfoRecaudosComponent} from "../info-recaudos/info-recaudos.component";
 import {PrintService} from "../providers/print.service";
-declare const Buffer
+
 
 @Component({
   selector: 'app-inicio',
@@ -16,19 +16,13 @@ declare const Buffer
 export class InicioPage implements OnInit {
   public folder: string;
   segmento='ventas';
-  bluetoothList:any=[];
-  selectedPrinter:any;
   constructor(private router:Router,private activatedRoute: ActivatedRoute,public mrn:Mrn,public api:ApiService
-  ,public modalController: ModalController,private platform: Platform,private impresionService:PrintService) {
-    /*this.platform.backButton.subscribeWithPriority(9999, () => {
-      this.api.logOut()
-    });*/
+  ,public modalController: ModalController) {
 
   }
 
   ngOnInit() {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id');
-    this.mrn.getFacturasMora(this.api.nodoActual,false)
   }
 
   seleccionarCategoria(categoria) {
@@ -37,13 +31,6 @@ export class InicioPage implements OnInit {
     //this.router.navigate(['empresas']);
     this.mrn.empresaSeleccionada = ''
     console.log( this.mrn.categoriaSeleccionada)
-  }
-
-  async presentModalUltimasVentas() {
-    const modal = await this.modalController.create({
-      component: UltimasVentasComponent,
-    });
-    return await modal.present();
   }
 
   seleccionarEmpresa(empresa: any) {
@@ -107,17 +94,5 @@ export class InicioPage implements OnInit {
       return await modal.present();
   }
 
-
-
-//This will print
-  printStuff(){
-    let obj = {'hola':'hola'}
-   this.api.post_soap('enviar_sms',obj)
-     .subscribe(
-       data =>{
-         console.log(data)
-       }
-     )
-  }
 
 }

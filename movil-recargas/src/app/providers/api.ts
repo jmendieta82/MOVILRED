@@ -9,8 +9,10 @@ import { Device } from '@awesome-cordova-plugins/device/ngx';
 @Injectable()
 export class ApiService {
 
-  readonly baseURL = 'http://127.0.0.1:8000';
-  //readonly baseURL = 'https://api-produccion-recargas-mrn.click';
+  //readonly baseURL = 'http://127.0.0.1:8000';
+  readonly baseURL = 'https://api-produccion-recargas-mrn.click';
+
+
   readonly conceptoURL = 'https://150.136.18.204'//produccion;
   //readonly conceptoURL = 'https://129.159.64.15' // pruebas;
   load = false;
@@ -31,7 +33,6 @@ export class ApiService {
   public manufacturer = ''
   public platform = ''
   public uuid = ''
-  isConnected = false
   public conectado = false
 
   constructor(private http: HttpClient,private router:Router,
@@ -62,9 +63,6 @@ export class ApiService {
     return this.http.post(url,credencials,this.optionsLogin).pipe(catchError(this.handleError<any>()))
   }
   //GET
-  public getNetworkTestRequest(): Observable<any> {
-    return this.http.get('https://jsonplaceholder.typicode.com/todos/1');
-  }
   get(finisher:string): Observable<any[]>{
     this.load = true;
     let url = `${this.baseURL+'/'+finisher}`;
@@ -87,11 +85,6 @@ export class ApiService {
     return this.http.post(this.URL_methods,data,this.optionsAll).pipe(catchError(this.handleError<any>()))
   }
   // GET BY ID
-  getBy(finisher:string,id:number): Observable<any[]>{
-    this.load = true;
-    let url = `${this.baseURL+'/'+finisher+'/'+id+'/'}`;
-    return this.http.get(this.URL_methods,this.optionsAll).pipe(catchError(this.handleError<any>()))
-  }
   //PUT
   update(finisher:string,id:number,data:any){
     this.load = true;
@@ -101,13 +94,6 @@ export class ApiService {
     return this.http.patch(this.URL_methods,dJson,this.optionsAll).pipe(catchError(this.handleError<any>()))
   }
   //DELETE
-  delete(finisher:string,id:number){
-    this.load = true;
-    let url = `${this.baseURL+'/'+finisher+'/'+id+'/'}`;
-    this.crear_header(this.usuario['token'],url)
-    return this.http.delete(this.URL_methods,this.optionsAll).pipe(catchError(this.handleError<any>()))
-  }
-
   crear_header(token:string,url,){
    if(!this.conectado){
       this.tipo_datos = 'patrocinados'

@@ -17,7 +17,7 @@ export class ResumenVentaComponent implements OnInit {
   }
 
   vender(b: boolean) {
-    switch(this.mrn.empresaSeleccionada.catServicio.nombre) {
+    switch(this.mrn.empresaSeleccionada.nom_categoria) {
       case 'Pines': {
         this.mrn.presentLoading()
         this.mrn.venderPines(b)
@@ -25,7 +25,6 @@ export class ResumenVentaComponent implements OnInit {
       }
       case 'Recargas y Paquetes': {
         this.mrn.presentLoadingVentas()
-        //this.mrn.venderRecarga(b)
         this.mrn.venderRecargaVer2(b)
         break;
       }

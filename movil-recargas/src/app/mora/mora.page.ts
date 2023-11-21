@@ -16,17 +16,6 @@ export class MoraPage implements OnInit {
 
   ngOnInit() {
   }
-  /*async presentModal(transaccion) {
-    this.mrn.transaccionSeleccionada = transaccion
-    this.mrn.get_abonos_factura(transaccion)
-    this.mrn.formPagos.patchValue({
-      abono:transaccion.valor
-    })
-    const modal = await this.modalController.create({
-      component: PagarFacturaComponent,
-    });
-    return await modal.present();
-  }*/
 
   async presentModal() {
     this.mrn.formPagos.patchValue({

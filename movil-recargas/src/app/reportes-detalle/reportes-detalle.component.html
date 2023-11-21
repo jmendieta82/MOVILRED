@@ -17,8 +17,8 @@
       <ion-item>
         <ion-label>Categorias</ion-label>
         <ion-select (ionChange)="seleccionarCategoria($event)">
-          <ion-select-option *ngFor="let categoria of mrn.lista_comisiones_venta"  value="{{categoria['data'].proveedorEmpresa.empresa.catServicio.id}}">
-            {{categoria['data'].proveedorEmpresa.empresa.catServicio.nombre}}</ion-select-option>
+          <ion-select-option *ngFor="let categoria of mrn.lista_comisiones_venta"  value="{{categoria.nom_categoria}}">
+            {{categoria.nom_categoria}}</ion-select-option>
         </ion-select>
       </ion-item>
     </ion-card-content>
@@ -26,10 +26,10 @@
     <ion-list *ngIf="api.nodoActual['tipoComision']=='CV'">
       <ion-item  *ngFor="let item of convencion">
         <ion-avatar style="margin-right: 15px">
-          <img src="{{item.proveedorEmpresa.empresa['imagen']}}" alt="">
+          <img src="{{item.logo_empresa}}" alt="">
         </ion-avatar>
         <ion-label>
-          <h3>{{item.proveedorEmpresa.empresa.nom_empresa}}</h3>
+          <h3>{{item.nom_empresa}}</h3>
         </ion-label>
         <ion-label slot="end">
           <h3>{{item.micomision <= 50?item.micomision + '%':'$'+item.micomision}}</h3>
@@ -39,10 +39,10 @@
   <ion-list *ngIf="api.nodoActual['tipoComision']=='CA'">
     <ion-item  *ngFor="let item of convencion">
       <ion-avatar style="margin-right: 15px">
-        <img src="{{item.proveedorEmpresa.empresa['imagen']}}" alt="">
+        <img src="{{item.logo_empresa}}" alt="">
       </ion-avatar>
       <ion-label>
-        <h3>{{item.proveedorEmpresa.empresa.nom_empresa}}</h3>
+        <h3>{{item.nom_empresa}}</h3>
       </ion-label>
       <ion-label slot="end">
         <h3>{{api.nodoActual['comisionAnticipada']}}%</h3>

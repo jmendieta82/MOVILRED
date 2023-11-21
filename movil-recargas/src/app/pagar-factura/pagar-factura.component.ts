@@ -28,16 +28,7 @@ export class PagarFacturaComponent implements OnInit {
       'dismissed': true
     });
   }
-  guardarPago() {
-    this.mrn.formPagos.patchValue({
-      transaccion_id: this.mrn.transaccionSeleccionada.id,
-    });
-    this.mrn.abonar_factura(this.mrn.formPagos.value);
-  }
   tomar_foto(){
-    /*this.mrn.formPagos.patchValue({
-      soporte:'https://firebasestorage.googleapis.com/v0/b/recargas-326621.appspot.com/o/pago_facturas%2Fsoporte_pago_2555?alt=media&token=b575a806-0c81-4202-bf42-1af85a95b2d8'
-    })*/
     this.camera.getPicture(this.options).then((imageData) => {
       let base64Image = 'data:image/jpeg;base64,' + imageData;
       this.foto = base64Image;
